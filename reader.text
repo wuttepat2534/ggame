@@ -1,0 +1,5 @@
+terminal -> npm install express ejs mysql 
+terminal -> npm install nodemon
+terminal -> npx nodemon index.js
+
+http://localhost:4000/
