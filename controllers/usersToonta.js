@@ -595,7 +595,8 @@ exports.financeUser = (req, res) => {
                                                         deposit_member: quantity,
                                                         message: "มีการแจ้งฝากเงินจำนวน"
                                                     }]
-
+                                                
+                                                let lintNotify = logEdit.testLine('ฝากเงิน', quantity, phonenumber, formattedDate, formattedTime)
                                                 io.emit('notify-management-deposit', { data: post });
                                                 res.send({
                                                     message: "เติมเงินสำเร็จ",
@@ -725,7 +726,7 @@ exports.WinhdrawUser = (req, res) => {
                                                             withdraw_member: quantity,
                                                             message: "มีการแจ้งถอนเงินจำนวน"
                                                         }]
-
+                                                    let lintNotify = logEdit.testLine('ถอนเงิน', quantity, phonenumber, formattedDate, formattedTime)
                                                     io.emit('notify-management-withdraw', { data: post });
                                                     res.send({
                                                         message: "รอการอนุมัติการถอนเงิน",
@@ -2706,7 +2707,6 @@ exports.getRepostTurnover = (require, response) => {
     const date = require.body.dataDate;
     const endDate = require.body.dataEndDate;
     const depositwithdrawal = require.body.depositwithdrawal;
-
     //console.log(searchPhones, pageSize, offset, date, endDate)
     if (searchPhones === '') {
         let sql = `
@@ -2896,7 +2896,7 @@ exports.getRepostTurnoverGameCamp = (require, response) => {
     const offset = (pageNumber - 1) * pageSize;
     const date = require.body.dataDate;
     const endDate = require.body.dataEndDate;
-
+    //console.log(searchPhones, date, endDate);
     if (searchPhones === '' && searcGameCamp === '') {
 
         let sql = `SELECT * FROM turnoverrepost WHERE day >='${date}' AND day <= '${endDate}' ORDER BY day DESC LIMIT ${pageSize} OFFSET ${offset}`;

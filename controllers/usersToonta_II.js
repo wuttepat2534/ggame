@@ -134,7 +134,7 @@ exports.ConfirmationWithdraw = async (req, res, next) => {
                 } else {
                     if (statusWithdraw === 'failed') {
                         let sql_Withdraw = `UPDATE logfinanceuser set status = 'ไม่สำเร็จ',trans_ref = '${approval_person}', qrcodeData = '${tpyeApproval_person}'
-                        WHERE bill_number ='${bill_number}'`;
+                        , nameimg = '${noteConfirmation}' WHERE bill_number ='${bill_number}'`;
                         connection.query(sql_Withdraw, (error, withdraw) => {
                             let sql = `UPDATE member set credit = '${convertedCredit + convertedLatest_withdrawal}', latest_withdrawal = '${0.00}',
                             withdraw_member = '${convertedWithdraw_member - convertedLatest_withdrawal}'  WHERE username ='${usernameUser}' AND agent_id ='${agent_id}'`;
@@ -1226,7 +1226,7 @@ exports.getRepostGameList = (require, response) => {
     const endDate = require.body.dataEndDate;
     const campGame = require.body.campGame;
     const username = require.body.username;
-    //console.log(date, endDate, date)
+    //console.log(date, endDate, campGame, username)
     let sql = `SELECT 
         usernameuser,
         currency,
@@ -1251,7 +1251,7 @@ exports.getRepostGameList = (require, response) => {
             connection.query(totalCount, (error, res) => {
                 if (error) { console.log(error); }
                 else {
-                    // console.log(results)
+                    //console.log(results)
                     response.send({
                         data: results,
                         valusData: results.length,

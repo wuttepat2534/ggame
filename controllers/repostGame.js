@@ -686,13 +686,13 @@ function repostlistgame(post) {
                 const losewin = floatbet - floatwit;
                 a_w = losewin * (resultspercen[0].percentagegame / 100);
                 a_l = 0;
-                c_w = 0;
-                c_l = losewin - (losewin * (resultspercen[0].percentagegame / 100));
+                c_w = losewin - (losewin * (resultspercen[0].percentagegame / 100));
+                c_l = 0;
             } else { //ผู้เล่นชนะ
                 a_w = 0;
                 a_l = winlose * (resultspercen[0].percentagegame / 100); //4.5
-                c_w = winlose - (winlose * (resultspercen[0].percentagegame / 100)); //0.5
-                c_l = 0;
+                c_w = 0;
+                c_l = winlose - (winlose * (resultspercen[0].percentagegame / 100)); //0.5
             }
 
             let sql_before = `INSERT INTO repostlistgame (usernameuser, namegame, namegamecamp, currency, bet, grosscomm, 

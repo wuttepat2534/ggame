@@ -232,26 +232,18 @@ app.post('/list_users', auth, (require, response) => {
 });
 
 // http://localhost:5000/list_user/1
-// app.get('/list_user/:user_id', (require, response) => {
-//     let user_id = require.params.user_id;
-//     let sql = `SELECT * FROM member WHERE id='${user_id}' AND status_delete='N' 
-//     ORDER BY member_code ASC`;
-//     connection.query(sql, (error, results) => {
-//         if (error) { console.log(error) }
-//         response.send({
-//             message: 'member id',
-//             data: results
-//         });
-//         response.end();
-//     });
-// });
-
-//http://localhost:5000/list_user/1
 app.get('/list_user/:user_id', (require, response) => {
-    response.send({
-        message: 'member id',
+    let user_id = require.params.user_id;
+    let sql = `SELECT * FROM member WHERE id='${user_id}' AND status_delete='N' 
+    ORDER BY member_code ASC`;
+    connection.query(sql, (error, results) => {
+        if (error) { console.log(error) }
+        response.send({
+            message: 'member id',
+            data: results
+        });
+        response.end();
     });
-    response.end();
 });
 
 http://localhost:5000/list_user/1

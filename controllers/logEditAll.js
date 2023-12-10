@@ -7,7 +7,7 @@ const os = require('os');
 const md5 = require('md5');
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
-
+const axios = require('axios'); //npm install axios
 const logEdit = require('./logEditAll')
 
 const app = express();
@@ -97,9 +97,9 @@ module.exports = class Post {
                     created_atdate, created_attime, note) value 
               ('${agent_id}','${post.edittype}','${post.idedit}','${username}','${post.id}','${nametpyeEdit}','ข้อมูลmember',
               '${'ชื่อจริง-นามสุกุล' + ' ' + dataMenber.accountName + ' ' + 'กลุ่มลูกค้า' + ' ' + dataMenber.groupmember
-                + ' ' + 'username' + ' ' + dataMenber.username + ' ' + 'ไลน์' + ' ' + dataMenber.lineid}',
-              '${'ชื่อจริง-นามสุกุล' + ' ' + post.accountName + ' ' + 'กลุ่มลูกค้า' + ' ' + post.customerGroup + ' ' 
-               + 'username' + ' ' + post.contact_number + ' ' + 'ไลน์' + ' ' + post.IDLIne}'
+                        + ' ' + 'username' + ' ' + dataMenber.username + ' ' + 'ไลน์' + ' ' + dataMenber.lineid}',
+              '${'ชื่อจริง-นามสุกุล' + ' ' + post.accountName + ' ' + 'กลุ่มลูกค้า' + ' ' + post.customerGroup + ' '
+                        + 'username' + ' ' + post.contact_number + ' ' + 'ไลน์' + ' ' + post.IDLIne}'
               ,now(), now(),'${note}')`;
                     connection.query(sql_before, (error, resultAfter) => {
                         console.log(dataMenber.lastName)
@@ -172,5 +172,30 @@ module.exports = class Post {
                 }
             }
         });
+    }
+
+    static testLine(action, valus, username, date, time) {
+        const text = 'มีการทำรายการ ' + action + ' จำนวน ' + valus +' บาท ' + ' โดย ' + username +' วันที่ ' + date + ' เวลา ' + time 
+        try {
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: 'https://notify-api.line.me/api/notify',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Bearer GVJGIAacXqdKUPQ6D2pruWxT7tp6xfgNpqjchXnAxWk'
+                },
+                data: `message=${text}`
+            };
+            axios.request(config)
+                .then((response) => {
+                    console.log(JSON.stringify(response.data));
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        } catch (err) {
+            console.log(err);
+        }
     }
 };
