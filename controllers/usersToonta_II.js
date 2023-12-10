@@ -1241,10 +1241,10 @@ exports.getRepostGameList = (require, response) => {
           SUM(w_company) AS w_company, 
           SUM(l_company) AS l_company
         FROM repostlistgame 
-        WHERE date >= '${date}' AND date <= '${endDate}' AND namegamecamp = '${campGame}' AND usernameuser = '${username}'
-        GROUP BY namegame 
+        WHERE date >= '${date}' AND date <= '${endDate}' AND namegamecamp = '${campGame}' AND usernameuser = '${username}' 
+        GROUP BY namegame, usernameuser, currency, namegamecamp 
         LIMIT ${pageSize} OFFSET ${offset}`;
-    connection.query(sql, async (error, results) => {
+    connection.query(sql, (error, results) => {
         try {
             if (error) { console.log(error); }
             const totalCount = `SELECT COUNT(*) as count FROM repostlistgame WHERE date >='${date}' AND date <= '${endDate}' AND namegamecamp = '${campGame}' AND usernameuser = '${username}'`
