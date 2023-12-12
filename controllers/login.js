@@ -642,16 +642,18 @@ exports.SettleBetAsk = async (req, res) => {
   const authHeader = req.body.token;
   const userAgent = req.headers['user-agent'];
   const userAgentt = req.useragent;
-  username = 'member001';
-  let spl = `SELECT credit FROM member WHERE phonenumber ='${account}' AND status_delete='N'`;
+
+  let spl = `SELECT credit, turnover, gameplayturn, playgameuser  FROM member WHERE phonenumber ='${account}' AND status_delete='N'`;
   try {
     connection.query(spl, (error, results) => {
       if (error) { console.log(error) }
       else {
+        const namegame = results[0].playgameuser;
         const balanceUser = parseFloat(results[0].credit);
         const balanceNow = balanceUser + amount;
         const post = {
-          username: account, gameid: "ASKMEBET", bet: 0, win: amount, balance_credit: balanceNow, userAgent: userAgent, platform: userAgentt, trans_id: trans_id
+          username: account, gameid: "ASKMEBET", bet: 0, win: amount, balance_credit: balanceNow, 
+          userAgent: userAgent, platform: userAgentt, trans_id: trans_id, namegame: namegame
         }
         let repost = repostGame.uploadLogRepostGameAsk(post)
 
