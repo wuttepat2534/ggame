@@ -13,6 +13,7 @@ const logEdit = require('./logEditAll')
 const promotiontoonta = require('./promotiontoonta')
 const repostGame = require('./repostGame')
 const Finance = require('./Finance')
+const moment = require('moment-timezone')
 const app = express();
 app.use(express.static('public'));
 require('dotenv').config()
@@ -117,7 +118,10 @@ exports.ConfirmationWithdraw = async (req, res, next) => {
     const approval_person = req.body.approval_person
     const tpyeApproval_person = req.body.tpye_Approval_person
     const agent_id = req.body.agent_id;
-    //statusWithdraw = success, failed
+
+    const currentTimeInThailand = moment().tz('Asia/Bangkok');
+    const formattedDate = currentTimeInThailand.format('YYYY-MM-DD');
+    const formattedTime = currentTimeInThailand.format('HH:mm:ss');
 
     let sql_agent = `SELECT * FROM member WHERE username ='${usernameUser}' AND agent_id ='${agent_id}'`;
     connection.query(sql_agent, (error, userMember) => {
@@ -141,11 +145,13 @@ exports.ConfirmationWithdraw = async (req, res, next) => {
                             connection.query(sql, (error, resultAfter) => {
                                 if (error) {
                                     console.log(error);
+                                } else {
+                                    let lintNotify = logEdit.winhdrawLinenoti('ไม่อนุมัติการถอนเงิน', convertedWithdraw_member, usernameUser, formattedDate, formattedTime, approval_person)
+                                    res.send({
+                                        message: "รอการอนุมัติการถอนเงิน",
+                                    });
+                                    res.end();
                                 }
-                                res.send({
-                                    message: "รอการอนุมัติการถอนเงิน",
-                                });
-                                res.end();
                             });
                         })
 
@@ -153,13 +159,17 @@ exports.ConfirmationWithdraw = async (req, res, next) => {
                         let sql_Withdraw = `UPDATE logfinanceuser set status = 'สำเร็จ',trans_ref = '${approval_person}',qrcodeData = '${tpyeApproval_person}' 
                         WHERE bill_number ='${bill_number}'`;
                         connection.query(sql_Withdraw, (error, withdraw) => {
-                            let updateRepostFinance = Finance.UpdateLogRepostFinance(usernameUser, 'ถอน', convertedLatest_withdrawal)
-                            res.send({
-                                message: "ถอนเงินสำเร็จ",
-                            });
-                            res.end();
+                            if (error) {
+                                console.log(error);
+                            } else {
+                                let lintNotify = logEdit.winhdrawLinenoti('อนุมัติการถอนเงิน', convertedWithdraw_member, usernameUser, formattedDate, formattedTime, approval_person)
+                                let updateRepostFinance = Finance.UpdateLogRepostFinance(usernameUser, 'ถอน', convertedLatest_withdrawal)
+                                res.send({
+                                    message: "ถอนเงินสำเร็จ",
+                                });
+                                res.end();
+                            }
                         })
-
                     }
                 }
             } catch (err) {

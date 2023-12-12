@@ -174,6 +174,7 @@ module.exports = class Post {
         });
     }
 
+    //GVJGIAacXqdKUPQ6D2pruWxT7tp6xfgNpqjchXnAxWk ใช้ test niranam hui
     static testLine(action, valus, username, date, time) {
         const text = 'มีการทำรายการ ' + action + ' จำนวน ' + valus +' บาท ' + ' โดย ' + username +' วันที่ ' + date + ' เวลา ' + time 
         try {
@@ -183,7 +184,33 @@ module.exports = class Post {
                 url: 'https://notify-api.line.me/api/notify',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': 'Bearer GVJGIAacXqdKUPQ6D2pruWxT7tp6xfgNpqjchXnAxWk'
+                    'Authorization': 'Bearer euglgxDIgESrrRcV20UMPSCJtcrkUkflroC0jCbCw1d'
+                },
+                data: `message=${text}`
+            };
+            axios.request(config)
+                .then((response) => {
+                    console.log(JSON.stringify(response.data));
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static winhdrawLinenoti(action, valus, username, date, time, approval_person) {
+        const text = 'การอนุมัติคำร้องถอน ' + action + ' จำนวน ' + valus +' บาท ' + ' ของUser ' + username + 
+        ' ผู้จัดการคำร้อง ' + approval_person +' วันที่ ' + date + ' เวลา ' + time + ' (รายละเอียดเพิ่มเติมสามารถดูได้ที่webAdmin)'
+        try {
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: 'https://notify-api.line.me/api/notify',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Bearer euglgxDIgESrrRcV20UMPSCJtcrkUkflroC0jCbCw1d'
                 },
                 data: `message=${text}`
             };
