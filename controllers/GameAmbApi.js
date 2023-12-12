@@ -815,32 +815,34 @@ exports.AmebaGame = async (req, res) => {
                     const bet_amt = req.body.bet_amt;
                     const amount = parseFloat(bet_amt);
                     const balanceNum = parseFloat(balanceUser);
-                    const balanceNow = balanceNum - amount
-                    const balanceString = balanceNow.toString();
+                    if (balanceNum > amount) {
+                        const balanceNow = balanceNum - amount
+                        const balanceString = balanceNow.toString();
 
-                    let balanceturnover = hasSimilarData(results[0].gameplayturn, 'AMEBA', results[0].turnover, amount)
-                    const post = {
-                        username: account_name, gameid: "AMEBA", bet: amount, win: 0, balance_credit: balanceNow,
-                        userAgent: userAgent, platform: userAgent, trans_id: sessionid, namegame: namegame
-                    }
-                    let repost = repostGame.uploadLogRepostGameAsk(post)
-                    const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${amount}', turnover='${balanceturnover}'
-                    WHERE phonenumber ='${account_name}'`;
-                    connection.query(sql_update, (error, resultsGame) => {
-                        if (balanceNow > 0) {
-                            res.status(201).json({
-                                error_code: "OK",
-                                balance: balanceString,
-                                time: time
-                            });
-                        } else {
-                            res.status(201).json({
-                                error_code: "PlayerNotFound",
-                                balance: "0",
-                                time: time
-                            });
+                        let balanceturnover = hasSimilarData(results[0].gameplayturn, 'AMEBA', results[0].turnover, amount)
+                        const post = {
+                            username: account_name, gameid: "AMEBA", bet: amount, win: 0, balance_credit: balanceNow,
+                            userAgent: userAgent, platform: userAgent, trans_id: sessionid, namegame: namegame
                         }
-                    });
+                        let repost = repostGame.uploadLogRepostGameAsk(post)
+                        const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${amount}', turnover='${balanceturnover}'
+                        WHERE phonenumber ='${account_name}'`;
+                        connection.query(sql_update, (error, resultsGame) => {
+                            if (balanceNow > 0) {
+                                res.status(201).json({
+                                    error_code: "OK",
+                                    balance: balanceString,
+                                    time: time
+                                });
+                            }
+                        });
+                    } else {
+                        res.status(201).json({
+                            error_code: "PlayerNotFound",
+                            balance: "0",
+                            time: time
+                        });
+                    }
                 } else if (action === 'payout') {
                     const game_id = req.body.game_id;
                     const round_id = req.body.round_id;
@@ -852,29 +854,31 @@ exports.AmebaGame = async (req, res) => {
                     const sum_payout_amt = req.body.sum_payout_amt;
                     const amount = parseFloat(sum_payout_amt);
                     const balanceNum = parseFloat(balanceUser);
-                    const balanceNow = balanceNum + amount
-                    const balanceString = balanceNow.toString();
-                    const post = {
-                        username: account_name, gameid: "AMEBA", bet: 0, win: amount, balance_credit: balanceNow,
-                        userAgent: userAgent, platform: userAgent, trans_id: sessionid, namegame: namegame
-                    }
-                    let repost = repostGame.uploadLogRepostGameAsk(post)
-                    const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${amount}' WHERE phonenumber ='${account_name}'`;
-                    connection.query(sql_update, (error, resultsGame) => {
-                        if (balanceNow > 0) {
-                            res.status(201).json({
-                                error_code: "OK",
-                                balance: balanceString,
-                                time: time
-                            });
-                        } else {
-                            res.status(201).json({
-                                error_code: "PlayerNotFound",
-                                balance: "0",
-                                time: time
-                            });
+                    if (balanceNum > amount) {
+                        const balanceNow = balanceNum + amount
+                        const balanceString = balanceNow.toString();
+                        const post = {
+                            username: account_name, gameid: "AMEBA", bet: 0, win: amount, balance_credit: balanceNow,
+                            userAgent: userAgent, platform: userAgent, trans_id: sessionid, namegame: namegame
                         }
-                    });
+                        let repost = repostGame.uploadLogRepostGameAsk(post)
+                        const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${amount}' WHERE phonenumber ='${account_name}'`;
+                        connection.query(sql_update, (error, resultsGame) => {
+                            if (balanceNow > 0) {
+                                res.status(201).json({
+                                    error_code: "OK",
+                                    balance: balanceString,
+                                    time: time
+                                });
+                            }
+                        });
+                    } else {
+                        res.status(201).json({
+                            error_code: "PlayerNotFound",
+                            balance: "0",
+                            time: time
+                        });
+                    }
                 } else {
                     const game_id = req.body.game_id;
                     const round_id = req.body.round_id;
