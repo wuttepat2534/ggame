@@ -390,7 +390,7 @@ exports.EVOPLAYSeamless = async (req, res) => {
                     const balanceString = balanceNow.toString();
 
                     const post = {
-                        username: results[0].username, gameid: 'EVOPLAY', bet: amount, win: 0, balance_credit: balanceNow, 
+                        username: results[0].username, gameid: 'EVOPLAY', bet: amount, win: 0, balance_credit: balanceNow,
                         userAgent: userAgent, platform: userAgent, trans_id: data.action_id, namegame: namegame
                     }
                     let repost = repostGame.uploadLogRepostGameAsk(post)
@@ -415,7 +415,7 @@ exports.EVOPLAYSeamless = async (req, res) => {
                     const balanceNow = balanceNum + amount
                     const balanceString = balanceNow.toString();
                     const post = {
-                        username: results[0].username, gameid: 'EVOPLAY', bet: 0, win: amount, balance_credit: balanceNow, 
+                        username: results[0].username, gameid: 'EVOPLAY', bet: 0, win: amount, balance_credit: balanceNow,
                         userAgent: userAgent, platform: userAgent, trans_id: data.action_id, namegame: namegame
                     }
                     let repost = repostGame.uploadLogRepostGameAsk(post)
@@ -502,7 +502,7 @@ exports.PlaceBetFunky = async (req, res) => {
                 const balanceNow = balanceNum - amount
                 let balanceturnover = hasSimilarData(results[0].gameplayturn, 'FUNKY', results[0].turnover, amount)
                 const post = {
-                    username: results[0].username, gameid: 'FUNKY', bet: amount, win: 0, balance_credit: balanceNow, 
+                    username: results[0].username, gameid: 'FUNKY', bet: amount, win: 0, balance_credit: balanceNow,
                     userAgent: userAgent, platform: userAgent, trans_id: bet.refNo, namegame: namegame
                 }
                 let repost = repostGame.uploadLogRepostGameAsk(post)
@@ -544,7 +544,7 @@ exports.SettleBetFunky = async (req, res) => {
                 const balanceUser = parseFloat(results[0].credit);
                 const balanceNow = balanceUser + betResultReq.winAmount;
                 const post = {
-                    username: betResultReq.playerId, gameid: 'FUNKY', bet: 0, win: betResultReq.winAmount, balance_credit: balanceNow, 
+                    username: betResultReq.playerId, gameid: 'FUNKY', bet: 0, win: betResultReq.winAmount, balance_credit: balanceNow,
                     userAgent: userAgent, platform: userAgent, trans_id: refNo, namegame: namegame
                 }
                 let repost = repostGame.uploadLogRepostGameAsk(post)
@@ -675,7 +675,7 @@ exports.PlaceBetYggdrasil = async (req, res) => {
                 const namegame = results[0].playgameuser
                 let balanceturnover = hasSimilarData(results[0].gameplayturn, 'YGGDRASIL', results[0].turnover, amount)
                 const post = {
-                    username: usernames, gameid: "YGGDRASIL", bet: amount, win: 0, balance_credit: balanceNow, 
+                    username: usernames, gameid: "YGGDRASIL", bet: amount, win: 0, balance_credit: balanceNow,
                     userAgent: userAgent, platform: userAgent, trans_id: betId, namegame: namegame
                 }
                 let repost = repostGame.uploadLogRepostGameAsk(post)
@@ -720,7 +720,7 @@ exports.PayoutYggdrasil = async (req, res) => {
                 const balanceNow = balanceUser + amount;
                 const namegame = results[0].playgameuser
                 const post = {
-                    username: usernames, gameid: "YGGDRASIL", bet: 0, win: amount, balance_credit: balanceNow, 
+                    username: usernames, gameid: "YGGDRASIL", bet: 0, win: amount, balance_credit: balanceNow,
                     userAgent: userAgent, platform: userAgent, trans_id: betId, namegame: namegame
                 }
                 let repost = repostGame.uploadLogRepostGameAsk(post)
@@ -820,18 +820,26 @@ exports.AmebaGame = async (req, res) => {
 
                     let balanceturnover = hasSimilarData(results[0].gameplayturn, 'AMEBA', results[0].turnover, amount)
                     const post = {
-                        username: account_name, gameid: "AMEBA", bet: amount, win: 0, balance_credit: balanceNow, 
+                        username: account_name, gameid: "AMEBA", bet: amount, win: 0, balance_credit: balanceNow,
                         userAgent: userAgent, platform: userAgent, trans_id: sessionid, namegame: namegame
                     }
                     let repost = repostGame.uploadLogRepostGameAsk(post)
                     const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${amount}', turnover='${balanceturnover}'
                     WHERE phonenumber ='${account_name}'`;
                     connection.query(sql_update, (error, resultsGame) => {
-                        res.status(201).json({
-                            error_code: "OK",
-                            balance: balanceString,
-                            time: time
-                        });
+                        if (balanceNow > 0) {
+                            res.status(201).json({
+                                error_code: "OK",
+                                balance: balanceString,
+                                time: time
+                            });
+                        } else {
+                            res.status(201).json({
+                                error_code: "PlayerNotFound",
+                                balance: "0",
+                                time: time
+                            });
+                        }
                     });
                 } else if (action === 'payout') {
                     const game_id = req.body.game_id;
@@ -847,17 +855,25 @@ exports.AmebaGame = async (req, res) => {
                     const balanceNow = balanceNum + amount
                     const balanceString = balanceNow.toString();
                     const post = {
-                        username: account_name, gameid: "AMEBA", bet: 0, win: amount, balance_credit: balanceNow, 
+                        username: account_name, gameid: "AMEBA", bet: 0, win: amount, balance_credit: balanceNow,
                         userAgent: userAgent, platform: userAgent, trans_id: sessionid, namegame: namegame
                     }
                     let repost = repostGame.uploadLogRepostGameAsk(post)
                     const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${amount}' WHERE phonenumber ='${account_name}'`;
                     connection.query(sql_update, (error, resultsGame) => {
-                        res.status(201).json({
-                            error_code: "OK",
-                            balance: balanceString,
-                            time: time
-                        });
+                        if (balanceNow > 0) {
+                            res.status(201).json({
+                                error_code: "OK",
+                                balance: balanceString,
+                                time: time
+                            });
+                        } else {
+                            res.status(201).json({
+                                error_code: "PlayerNotFound",
+                                balance: "0",
+                                time: time
+                            });
+                        }
                     });
                 } else {
                     const game_id = req.body.game_id;
@@ -1182,7 +1198,7 @@ exports.SpadeGaming = async (req, res) => {
                     if (type === 1) {
                         balanceNow = balanceUser - amounts;
                         const post = {
-                            username: acctId, gameid: "SPADE", bet: amounts, win: 0, balance_credit: balanceNow, 
+                            username: acctId, gameid: "SPADE", bet: amounts, win: 0, balance_credit: balanceNow,
                             userAgent: userAgent, platform: userAgent, trans_id: transferId, namegame: namegame
                         }
                         let repost = repostGame.uploadLogRepostGameAsk(post)
@@ -1190,7 +1206,7 @@ exports.SpadeGaming = async (req, res) => {
                     } else if (type === 2) {
                         balanceNow = balanceUser + amounts;
                         const post = {
-                            username: acctId, gameid: "SPADE", bet: 0, win: amounts, balance_credit: balanceNow, 
+                            username: acctId, gameid: "SPADE", bet: 0, win: amounts, balance_credit: balanceNow,
                             userAgent: userAgent, platform: userAgent, trans_id: transferId, namegame: namegame
                         }
                         let repost = repostGame.uploadLogRepostGameAsk(post)
