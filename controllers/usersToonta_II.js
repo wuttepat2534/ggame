@@ -114,10 +114,10 @@ exports.ConfirmationWithdraw = async (req, res, next) => {
     const statusWithdraw = req.body.statusWithdraw;
     const noteConfirmation = req.body.noteConfirmation;
     const usernameUser = req.body.username;
-    const approval_person = req.body.approval_person
+    const approval_person = req.body.approval_person;
     const tpyeApproval_person = req.body.tpye_Approval_person
     const agent_id = req.body.agent_id;
-
+    const value = req.body.value;
     const currentTimeInThailand = moment().tz('Asia/Bangkok');
     const formattedDate = currentTimeInThailand.format('YYYY-MM-DD');
     const formattedTime = currentTimeInThailand.format('HH:mm:ss');
@@ -128,7 +128,7 @@ exports.ConfirmationWithdraw = async (req, res, next) => {
         const convertedCredit = parseFloat(userMember[0].credit);
         const convertedLatest_withdrawal = parseFloat(userMember[0].latest_withdrawal);
         const convertedWithdraw_member = parseFloat(userMember[0].withdraw_member);
-
+        //console.log(value);
         let sql_Withdraw = `UPDATE withdraw set status_withdraw = '${statusWithdraw}', note = '${noteConfirmation}' WHERE bill_number ='${bill_number}'`;
         connection.query(sql_Withdraw, (error, withdraw) => {
             try {
@@ -145,7 +145,7 @@ exports.ConfirmationWithdraw = async (req, res, next) => {
                                 if (error) {
                                     console.log(error);
                                 } else {
-                                    let lintNotify = logEdit.winhdrawLinenoti('ไม่อนุมัติการถอนเงิน', convertedWithdraw_member, usernameUser, formattedDate, formattedTime, approval_person)
+                                    let lintNotify = logEdit.winhdrawLinenoti('ไม่อนุมัติการถอนเงิน', value, usernameUser, formattedDate, formattedTime, approval_person)
                                     res.send({
                                         message: "รอการอนุมัติการถอนเงิน",
                                     });
@@ -161,7 +161,7 @@ exports.ConfirmationWithdraw = async (req, res, next) => {
                             if (error) {
                                 console.log(error);
                             } else {
-                                let lintNotify = logEdit.winhdrawLinenoti('อนุมัติการถอนเงิน', convertedWithdraw_member, usernameUser, formattedDate, formattedTime, approval_person)
+                                let lintNotify = logEdit.winhdrawLinenoti('อนุมัติการถอนเงิน', value, usernameUser, formattedDate, formattedTime, approval_person)
                                 let updateRepostFinance = Finance.UpdateLogRepostFinance(usernameUser, 'ถอน', convertedLatest_withdrawal)
                                 res.send({
                                     message: "ถอนเงินสำเร็จ",
