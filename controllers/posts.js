@@ -469,42 +469,59 @@ exports.listSubAgent = async (require, response) => {
 http://localhost:5000/post/MemberSubAgent/1
 exports.MemberSubAgent = async (require, response) => {
   const id_SubAgent = require.params.id_SubAgent;
-  const searchKeyword = require.body.name;
+  const searchKeyword = require.body.searchKeyword;
   const pageSize = require.body.pageSize;
   const pageNumber = require.body.pageIndex;
   const offset = (pageNumber - 1) * pageSize;
+  const tpyeadmin = require.body.tpyeadmin;
+  const token = require.body.token
 
-  if (searchKeyword === '' && searchKeyword === undefined) {
-    let sql = `SELECT * FROM member WHERE agent_id ='${id_SubAgent}' AND status_delete='N' LIMIT ${pageSize} OFFSET ${offset}`;
-    connection.query(sql, async (error, results) => {
-      if (error) { console.log(error); }
-      const totalCount = `SELECT COUNT(*) as count FROM member WHERE status_delete='N'`
-      connection.query(totalCount, (error, resTotal) => {
-        if (error) { console.log(error); }
-        response.send({
-          message: 'SubagentNoSearch',
-          data: results,
-          total: results.length
-        });
+  let sql_token = `SELECT tokenlogin FROM ${tpyeadmin} WHERE tokenlogin = '${token}'`;
+  connection.query(sql_token, (error, res) => {
+    if (error) {
+      console.log(error);
+      response.status(500).send({ error: 'Database error' });
+      response.end();
+    }
+    else {
+      if (res.length >= 1 && res.length !== 0) {
+        if (searchKeyword === '' && searchKeyword === undefined) {
+          let sql = `SELECT * FROM member WHERE agent_id ='${id_SubAgent}' AND status_delete='N' LIMIT ${pageSize} OFFSET ${offset}`;
+          connection.query(sql, async (error, results) => {
+            if (error) { console.log(error); }
+            const totalCount = `SELECT COUNT(*) as count FROM member WHERE status_delete='N'`
+            connection.query(totalCount, (error, resTotal) => {
+              if (error) { console.log(error); }
+              response.send({
+                message: 'SubagentNoSearch',
+                data: results,
+                total: results.length
+              });
+              response.end();
+            });
+          });
+        } else {
+          let sql = `SELECT * FROM member WHERE agent_id = '${id_SubAgent}' AND status_delete='N' AND 
+                  username LIKE '%${searchKeyword}%' OR name LIKE '%${searchKeyword}%' OR username LIKE '%${searchKeyword}%' LIMIT ${pageSize} OFFSET ${offset}`;
+          connection.query(sql, async (error, results) => {
+            if (error) { console.log(error); }
+            const totalCount = `SELECT COUNT(*) as count FROM member WHERE status_delete='N'`
+            connection.query(totalCount, (error, resTotal) => {
+              response.send({
+                message: 'Sub agent_Search',
+                data: results,
+                total: resTotal[0].count
+              });
+              response.end();
+            })
+          });
+        }
+      } else {
+        response.status(500).send({ error: 'DatabaseError' });
         response.end();
-      });
-    });
-  } else {
-    let sql = `SELECT * FROM member WHERE agent_id = '${id_SubAgent}' AND status_delete='N' AND 
-        username LIKE '%${searchKeyword}%' OR name LIKE '%${searchKeyword}%' OR username LIKE '%${searchKeyword}%' LIMIT ${pageSize} OFFSET ${offset}`;
-    connection.query(sql, async (error, results) => {
-      if (error) { console.log(error); }
-      const totalCount = `SELECT COUNT(*) as count FROM member WHERE status_delete='N'`
-      connection.query(totalCount, (error, resTotal) => {
-        response.send({
-          message: 'Sub agent_Search',
-          data: results,
-          total: resTotal[0].count
-        });
-        response.end();
-      })
-    });
-  }
+      }
+    }
+  });
 };
 
 http://localhost:5000/post/getMenberId/1 
@@ -569,6 +586,35 @@ exports.getBank = async (req, res, next) => {
           dataBank: results[0],
         });
         res.end();
+      }
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.convertTokenWeb = async (require, response, next) => {
+  const tpyeadmin = require.body.tpyeadmin;
+  const token = require.body.token
+  let sql_token = `SELECT tokenlogin FROM ${tpyeadmin} WHERE tokenlogin = '${token}'`;
+  try {
+    connection.query(sql_token, (error, res) => {
+      if (error) {
+        console.log(error);
+        response.status(500).send({ error: 'DatabaseError' });
+        response.end();
+      }
+      else {
+        if (res.length >= 1 && res.length !== 0){
+          response.status(200).send({ message: 'DatabaseOk' });
+          response.end();
+        } else {
+          response.status(500).send({ error: 'DatabaseError' });
+          response.end();
+        }
       }
     });
   } catch (err) {

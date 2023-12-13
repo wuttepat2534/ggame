@@ -48,7 +48,7 @@ const imageUpload = multer({
 router.get('/Balance', postsController.getBalance);
 // routerLogin
 router.post('/token', post);
-
+router.post('/convertTokenWeb', postsController.convertTokenWeb);
 router.get('/test', postsController.getOne);
 router.get('/game', postsController.getGame)
 router.post('/convertToken', postsController.convertToken)

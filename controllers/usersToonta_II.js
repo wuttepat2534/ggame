@@ -369,10 +369,6 @@ exports.LoginAgentWeb = (require, response) => {
                 error.statusCode = 401;
                 response.status(201).json({ message: 'notEmployee' });
             } else {
-                let update = `UPDATE employee set ip_address = '${ipAddress}' WHERE id='${results[0].id}' AND agent_id = '${agent_id}' `;
-                connection.query(update, async (error, results) => {
-                    if (error) { console.log(error) }
-                })
                 const storedUser = data[0];
 
                 const hashedPassword = md5(password)
@@ -390,7 +386,13 @@ exports.LoginAgentWeb = (require, response) => {
                     'secretfortoken',
                     { expiresIn: '24h' }
                 );
-                response.status(201).json({ message: 'OkLogin', token: token, data: storedUser });
+                let update = `UPDATE employee set ip_address = '${ipAddress}', tokenlogin = '${token}' WHERE id='${results[0].id}' AND agent_id = '${agent_id}' `;
+                connection.query(update, async (error, results) => {
+                    if (error) { console.log(error) } 
+                    else {
+                        response.status(201).json({ message: 'OkLogin', token: token, data: storedUser });
+                    }
+                })
             }
 
         } catch (err) {

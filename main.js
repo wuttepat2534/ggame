@@ -410,7 +410,7 @@ app.post('/login/agent', async (require, response, next) => {
     let username = require.body.username;
     let password = require.body.password;
     let agent_id = require.body.agent_id
-    let sql = `SELECT * FROM agent WHERE username='${username}' AND status_delete='N' ORDER BY username ASC`;
+    let sql = `SELECT * FROM agent WHERE username ='${username}' AND agent_id = '${agent_id}' AND status_delete='N' ORDER BY username ASC`;
     connection.query(sql, async (error, results) => {
         try {
             const data = results;
@@ -447,7 +447,13 @@ app.post('/login/agent', async (require, response, next) => {
                     'secretfortoken',
                     { expiresIn: '5h' }
                 );
-                response.status(201).json({ token: token, data: storedUser });
+                let update = `UPDATE agent set tokenlogin = '${token}' WHERE username = '${username}' AND agent_id = '${agent_id}' `;
+                connection.query(update, async (error, results) => {
+                    if (error) { console.log(error) }
+                    else {
+                        response.status(201).json({ token: token, data: storedUser });
+                    }
+                })
             }
         } catch (err) {
             if (!err.statusCode) {
@@ -474,9 +480,6 @@ app.post('/login/member', async (require, response, next) => {
         }
         return acc;
     }, '');
-    // end check ip address
-
-    //start check Browser
     const userAgent = require.headers['user-agent'];
     let browser;
     if (userAgent.includes('Chrome')) {
@@ -495,7 +498,7 @@ app.post('/login/member', async (require, response, next) => {
     else {
         browser = 'Google Chrome';
     }
-    
+
     const currentTimeInThailand = moment().tz('Asia/Bangkok');
     const formattedDate = currentTimeInThailand.format('YYYY-MM-DD');
 
@@ -1082,7 +1085,7 @@ app.post('/userplayGame', async (req, res) => {
     const username = req.body.username;
     const agent_id = req.body.agent_id;
     const nameGame = req.body.nameGame;
-    
+
     let sql_member = `UPDATE member set playgameuser = '${nameGame}' WHERE username ='${username}' AND agent_id = '${agent_id}'`;
     connection.query(sql_member, async (error, results) => {
         if (error) { console.log(error); }
@@ -1240,7 +1243,7 @@ app.post('/depositToonta', async (req, res) => { //ทดลองอัพโ�
         const Url = `https://dogzilla.live/images/${req.body.filename}`
         const restest = await axios.post(
             'https://api.slipok.com/api/line/apikey/9496',
-            { url: Url},
+            { url: Url },
             {
                 headers: {
                     'x-authorization': 'SLIPOKCJ8CI5X',
@@ -1248,7 +1251,7 @@ app.post('/depositToonta', async (req, res) => { //ทดลองอัพโ�
                 },
             }
         )
-       // console.log(restest.data.data.receiver.account);
+        // console.log(restest.data.data.receiver.account);
         const financeToonta = FInance.CheckInformation(restest.data, req.body)
             .then(calculatedValues => {
                 res.send({ message: calculatedValues });
@@ -1359,12 +1362,12 @@ function getItem(key) {
 
 app.post('/testToken', async (req, res) => {
 
-    let x = 2 * 
+    let x = 2 *
 
-    res.send({
-        wingame: formattedDateStart,
-        betGame: formattedDateEnd,
-    });
+        res.send({
+            wingame: formattedDateStart,
+            betGame: formattedDateEnd,
+        });
     res.end();
 
 })

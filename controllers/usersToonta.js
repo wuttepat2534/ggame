@@ -595,7 +595,7 @@ exports.financeUser = (req, res) => {
                                                         deposit_member: quantity,
                                                         message: "มีการแจ้งฝากเงินจำนวน"
                                                     }]
-                                                
+
                                                 let lintNotify = logEdit.testLine('ฝากเงิน', quantity, phonenumber, formattedDate, formattedTime)
                                                 io.emit('notify-management-deposit', { data: post });
                                                 res.send({
@@ -2557,145 +2557,164 @@ exports.getRepostDeposit = (require, response) => {
 exports.getRepostWebdaily = (require, response) => {
     const date = require.body.dataDate;
     const endDate = require.body.dataEndDate;
-    let win = 0;
-    let bet = 0;
-    let membervalue = 0;
-    let allmember = 0;
-    let depositvalut = 0;
-    let withdrawvalue = 0;
-    let depositvalutTotal = 0;
-    let withdrawvalueTotal = 0;
-    let topuserwit;
-    let topuserlose;
-    let topuserturnover;
-    let topDeposit;
-    let topWithdraw;
-    let roundplayvalueTotal = 0;
-    let valususerplayDay = 0;
+    const tpyeadmin = require.body.tpyeadmin;
+    const token = require.body.token
 
-    const post = {
-        startdate: date, endDate: endDate
-    }
-    repostGame.valuewinbet(post)
-        .then(calculatedValues => {
-            win = calculatedValues.win
-            bet = calculatedValues.bet
-        })
-        .catch(error => {
-            console.error(error);
-        });
+    let sql_token = `SELECT tokenlogin FROM ${tpyeadmin} WHERE tokenlogin = '${token}'`;
+    connection.query(sql_token, (error, res) => {
+        if (error) {
+            console.log(error);
+            response.status(500).send({ error: 'Database error' });
+            response.end();
+        }
+        else {
+            //console.log(res.length);
+            if (res.length >= 1 && res.length !== 0) {
+                let win = 0;
+                let bet = 0;
+                let membervalue = 0;
+                let allmember = 0;
+                let depositvalut = 0;
+                let withdrawvalue = 0;
+                let depositvalutTotal = 0;
+                let withdrawvalueTotal = 0;
+                let topuserwit;
+                let topuserlose;
+                let topuserturnover;
+                let topDeposit;
+                let topWithdraw;
+                let roundplayvalueTotal = 0;
+                let valususerplayDay = 0;
 
-    repostGame.valuedailyRegisterMamber(post)
-        .then(calculatedValues => {
-            membervalue = calculatedValues.membervalue
-            allmember = calculatedValues.allmember
-        })
-        .catch(error => {
-            console.error(error);
-        });
+                const post = {
+                    startdate: date, endDate: endDate
+                }
+                repostGame.valuewinbet(post)
+                    .then(calculatedValues => {
+                        win = calculatedValues.win
+                        bet = calculatedValues.bet
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
 
-    repostGame.valuedailyFinanceDeposit(post)
-        .then(calculatedValues => {
-            depositvalut = calculatedValues.depositvalut
-        })
-        .catch(error => {
-            console.error(error);
-        });
+                repostGame.valuedailyRegisterMamber(post)
+                    .then(calculatedValues => {
+                        membervalue = calculatedValues.membervalue
+                        allmember = calculatedValues.allmember
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
 
-    repostGame.valuedailyFinanceWithdraw(post)
-        .then(calculatedValues => {
-            withdrawvalue = calculatedValues.withdrawvalue
-        })
-        .catch(error => {
-            console.error(error);
-        });
+                repostGame.valuedailyFinanceDeposit(post)
+                    .then(calculatedValues => {
+                        depositvalut = calculatedValues.depositvalut
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
 
-    repostGame.valuedailyFinanceDepositTotal()
-        .then(calculatedValues => {
-            depositvalutTotal = calculatedValues.depositvalutTotal
-        })
-        .catch(error => {
-            console.error(error);
-        });
+                repostGame.valuedailyFinanceWithdraw(post)
+                    .then(calculatedValues => {
+                        withdrawvalue = calculatedValues.withdrawvalue
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
 
-    repostGame.valuedailyFinanceWithdrawTotal()
-        .then(calculatedValues => {
-            withdrawvalueTotal = calculatedValues.withdrawvalueTotal
-        })
-        .catch(error => {
-            console.error(error);
-        });
-    repostGame.topwit(post)
-        .then(calculatedValues => {
-            topuserwit = calculatedValues
-        })
-        .catch(error => {
-            console.error(error);
-        });
+                repostGame.valuedailyFinanceDepositTotal()
+                    .then(calculatedValues => {
+                        depositvalutTotal = calculatedValues.depositvalutTotal
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
 
-    repostGame.toplose(post)
-        .then(calculatedValues => {
-            topuserlose = calculatedValues
-        })
-        .catch(error => {
-            console.error(error);
-        });
+                repostGame.valuedailyFinanceWithdrawTotal()
+                    .then(calculatedValues => {
+                        withdrawvalueTotal = calculatedValues.withdrawvalueTotal
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+                repostGame.topwit(post)
+                    .then(calculatedValues => {
+                        topuserwit = calculatedValues
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
 
-    repostGame.topturnover(post)
-        .then(calculatedValues => {
-            topuserturnover = calculatedValues
-        })
-        .catch(error => {
-            console.error(error);
-        });
+                repostGame.toplose(post)
+                    .then(calculatedValues => {
+                        topuserlose = calculatedValues
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
 
-    repostGame.topWithdraw(post)
-        .then(calculatedValues => {
-            topWithdraw = calculatedValues
-        })
-        .catch(error => {
-            console.error(error);
-        });
+                repostGame.topturnover(post)
+                    .then(calculatedValues => {
+                        topuserturnover = calculatedValues
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
 
-    repostGame.topDeposit(post)
-        .then(calculatedValues => {
-            topDeposit = calculatedValues
-        })
-        .catch(error => {
-            console.error(error);
-        });
+                repostGame.topWithdraw(post)
+                    .then(calculatedValues => {
+                        topWithdraw = calculatedValues
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
 
-    repostGame.totalroundplayday(post)
-        .then(calculatedValues => {
-            roundplayvalueTotal = calculatedValues.roundplayvalueTotal;
-            valususerplayDay = calculatedValues.valususerplayDay;
-        })
-        .catch(error => {
-            console.error(error);
-        });
+                repostGame.topDeposit(post)
+                    .then(calculatedValues => {
+                        topDeposit = calculatedValues
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
 
-    setTimeout(() => {
-        response.send({
-            wingame: win,
-            betGame: bet,
-            membervalueday: membervalue,
-            allmember: allmember,
-            depositvalut: depositvalut,
-            withdrawvalue: withdrawvalue,
-            depositvalutTotal: depositvalutTotal,
-            withdrawvalueTotal: withdrawvalueTotal,
-            startdate: date,
-            enddate: endDate,
-            topuserturnover: topuserturnover,
-            topuserwit: topuserwit,
-            topuserlose: topuserlose,
-            topDeposit: topDeposit,
-            topWithdraw: topWithdraw,
-            roundplayvalueTotal: roundplayvalueTotal,
-            valususerplayDay: valususerplayDay,
-        });
-        response.end();
-    }, 500);
+                repostGame.totalroundplayday(post)
+                    .then(calculatedValues => {
+                        roundplayvalueTotal = calculatedValues.roundplayvalueTotal;
+                        valususerplayDay = calculatedValues.valususerplayDay;
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+
+                setTimeout(() => {
+                    response.send({
+                        wingame: win,
+                        betGame: bet,
+                        membervalueday: membervalue,
+                        allmember: allmember,
+                        depositvalut: depositvalut,
+                        withdrawvalue: withdrawvalue,
+                        depositvalutTotal: depositvalutTotal,
+                        withdrawvalueTotal: withdrawvalueTotal,
+                        startdate: date,
+                        enddate: endDate,
+                        topuserturnover: topuserturnover,
+                        topuserwit: topuserwit,
+                        topuserlose: topuserlose,
+                        topDeposit: topDeposit,
+                        topWithdraw: topWithdraw,
+                        roundplayvalueTotal: roundplayvalueTotal,
+                        valususerplayDay: valususerplayDay,
+                    });
+                    response.end();
+                }, 500);
+            } else {
+                response.status(500).send({ error: 'DatabaseError' });
+                response.end();
+            }
+        }
+    })
 }
 
 //http://localhost:5000/post/getRepostDeposit getRepostDeposit
