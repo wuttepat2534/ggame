@@ -159,7 +159,7 @@ exports.GamePlaceBets = async (req, res) => {
                 const balanceUser = parseFloat(results[0].credit);
                 const betPlay = txnsGame[0].betAmount;
                 let balanceNow = balanceUser - betPlay;
-                console.log(balanceUser, betPlay, 'GamePlaceBets');
+                //console.log(balanceUser, betPlay, 'GamePlaceBets');
                 if (balanceUser <= 0 && balanceUser < betPlay) {
                     const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${betPlay}' WHERE phonenumber ='${usernameGame}'`;
                     connection.query(sql_update, (error, resultsGame) => {
@@ -222,7 +222,7 @@ exports.GameSettleBets = async (req, res) => {
                 const betPlay = txnsGame[0].betAmount;
                 let balanceNow = (balanceUser - betPlay) + betAmount;
                 let status = 0;
-                console.log(balanceUser, betAmount, betPlay, 'GameSettleBets');
+                //console.log(balanceUser, betAmount, betPlay, 'GameSettleBets');
 
                 if (balanceUser > 0 && balanceUser > betPlay) {
                     let balanceturnover = hasSimilarData(results[0].gameplayturn, productId, results[0].turnover, betPlay)

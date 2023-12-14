@@ -1280,6 +1280,56 @@ exports.getRepostGameList = (require, response) => {
     });
 }
 
+//http://localhost:5000/post/getRepostDeposit getRepostDeposit
+exports.getRepostGameListCamp = (require, response) => {
+    const pageSize = require.body.pageSize;
+    const pageNumber = require.body.pageIndex;
+    const offset = (pageNumber - 1) * pageSize;
+    const date = require.body.dataDate;
+    const endDate = require.body.dataEndDate;
+    const campGame = require.body.campGame;
+    //console.log(date, endDate, campGame, username)
+    let sql = `SELECT 
+        currency,
+        namegamecamp,
+        namegame,
+          SUM(roundplay) AS roundplay,
+          SUM(bet) AS bet, 
+          SUM(w_user) AS w_user, 
+          SUM(l_user) AS l_user, 
+          SUM(w_agent) AS w_agent, 
+          SUM(l_agent) AS l_agent, 
+          SUM(w_company) AS w_company, 
+          SUM(l_company) AS l_company
+        FROM repostlistgame 
+        WHERE date >= '${date}' AND date <= '${endDate}' AND namegamecamp = '${campGame}'
+        GROUP BY namegame, currency, namegamecamp 
+        LIMIT ${pageSize} OFFSET ${offset}`;
+    connection.query(sql, (error, results) => {
+        try {
+            if (error) { console.log(error); }
+            const totalCount = `SELECT COUNT(*) as count FROM repostlistgame WHERE date >='${date}' AND date <= '${endDate}' AND namegamecamp = '${campGame}'`
+            connection.query(totalCount, (error, res) => {
+                if (error) { console.log(error); }
+                else {
+                    //console.log(results)
+                    response.send({
+                        data: results,
+                        valusData: results.length,
+                        total: results.length,
+                    });
+                    response.end();
+                }
+            });
+        } catch (err) {
+            if (!err.statusCode) {
+                err.statusCode = 500;
+            }
+            next(err);
+        }
+    });
+}
+
 //http://localhost:5000/post/getRepostGameListGame getRepostGameListGame
 exports.getRepostGameListGame = (require, response) => {
     const searchPhones = require.body.searchPhone;

@@ -104,6 +104,7 @@ router.post('/GetCouponMember', userstoonTaII.GetCouponMember) //รับคู
 router.post('/getRepostCoupon', userstoonTaII.getRepostCoupon)
 router.post('/getRepostCouponPassword', userstoonTaII.getRepostCouponPassword)
 router.post('/getRepostGameList', userstoonTaII.getRepostGameList)
+router.post('/getRepostGameListCamp', userstoonTaII.getRepostGameListCamp)
 router.post('/getRepostGameListGame', userstoonTaII.getRepostGameListGame)
 router.post('/getRepostEdit', userstoonTaII.getRepostEdit)
 router.post('/getturnoverGrach', userstoonTaII.getturnoverGrach)
