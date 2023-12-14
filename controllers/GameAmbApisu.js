@@ -159,22 +159,8 @@ exports.GamePlaceBets = async (req, res) => {
                 const balanceUser = parseFloat(results[0].credit);
                 const betPlay = txnsGame[0].betAmount;
                 let balanceNow = balanceUser - betPlay;
-                console.log(balanceUser, betAmount, betPlay);
+                console.log(balanceUser, betPlay, 'GamePlaceBets');
                 if (balanceUser <= 0 && balanceUser < betPlay) {
-                    balanceNow = 0;
-                    status = 10002;
-                    res.status(201).json({
-                        id: id,
-                        statusCode: 10002,
-                        timestampMillis: timestampMillis,
-                        productId: productId,
-                        currency: currency,
-                        balanceBefore: balanceUser,
-                        balanceAfter: balanceNow,
-                        username: usernameGame
-                    });
-                }
-                else {
                     const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${betPlay}' WHERE phonenumber ='${usernameGame}'`;
                     connection.query(sql_update, (error, resultsGame) => {
                         if (error) { console.log(error) }
@@ -190,6 +176,20 @@ exports.GamePlaceBets = async (req, res) => {
                                 username: usernameGame
                             });
                         }
+                    });
+                }
+                else {
+                    balanceNow = 0;
+                    status = 10002;
+                    res.status(201).json({
+                        id: id,
+                        statusCode: 10002,
+                        timestampMillis: timestampMillis,
+                        productId: productId,
+                        currency: currency,
+                        balanceBefore: balanceUser,
+                        balanceAfter: balanceNow,
+                        username: usernameGame
                     });
                 }
             }
@@ -222,22 +222,9 @@ exports.GameSettleBets = async (req, res) => {
                 const betPlay = txnsGame[0].betAmount;
                 let balanceNow = (balanceUser - betPlay) + betAmount;
                 let status = 0;
-                console.log(balanceUser, betAmount, betPlay);
-                if (balanceUser <= 0 && balanceUser < betPlay) {
-                    balanceNow = 0;
-                    status = 10002;
-                    res.status(201).json({
-                        id: id,
-                        statusCode: 10002,
-                        timestampMillis: timestampMillis,
-                        productId: productId,
-                        currency: currency,
-                        balanceBefore: balanceUser,
-                        balanceAfter: balanceNow,
-                        username: usernameGame
-                    });
-                }
-                else {
+                console.log(balanceUser, betAmount, betPlay, 'GameSettleBets');
+
+                if (balanceUser > 0 && balanceUser > betPlay) {
                     let balanceturnover = hasSimilarData(results[0].gameplayturn, productId, results[0].turnover, betPlay)
 
                     const post = {
@@ -263,6 +250,20 @@ exports.GameSettleBets = async (req, res) => {
                                 username: usernameGame
                             });
                         }
+                    });
+                }
+                else {
+                    balanceNow = 0;
+                    status = 10002;
+                    res.status(201).json({
+                        id: id,
+                        statusCode: 10002,
+                        timestampMillis: timestampMillis,
+                        productId: productId,
+                        currency: currency,
+                        balanceBefore: balanceUser,
+                        balanceAfter: balanceNow,
+                        username: usernameGame
                     });
                 }
             }
