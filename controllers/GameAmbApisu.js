@@ -159,6 +159,7 @@ exports.GamePlaceBets = async (req, res) => {
                 const balanceUser = parseFloat(results[0].credit);
                 const betPlay = txnsGame[0].betAmount;
                 let balanceNow = balanceUser - betPlay;
+                console.log(balanceUser, betAmount, betPlay);
                 if (balanceUser <= 0 && balanceUser < betPlay) {
                     balanceNow = 0;
                     status = 10002;
@@ -221,7 +222,7 @@ exports.GameSettleBets = async (req, res) => {
                 const betPlay = txnsGame[0].betAmount;
                 let balanceNow = (balanceUser - betPlay) + betAmount;
                 let status = 0;
-                //console.log(balanceNow);
+                console.log(balanceUser, betAmount, betPlay);
                 if (balanceUser <= 0 && balanceUser < betPlay) {
                     balanceNow = 0;
                     status = 10002;
