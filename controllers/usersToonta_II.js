@@ -388,7 +388,7 @@ exports.LoginAgentWeb = (require, response) => {
                 );
                 let update = `UPDATE employee set ip_address = '${ipAddress}', tokenlogin = '${token}' WHERE id='${results[0].id}' AND agent_id = '${agent_id}' `;
                 connection.query(update, async (error, results) => {
-                    if (error) { console.log(error) } 
+                    if (error) { console.log(error) }
                     else {
                         response.status(201).json({ message: 'OkLogin', token: token, data: storedUser });
                     }
@@ -1355,5 +1355,40 @@ exports.getRepostEdit = (require, response) => {
                 response.end();
             }
         });
+    });
+}
+
+//http://localhost:5000/post/getRepostDeposit getRepostDeposit
+exports.getturnoverGrach = (require, response) => {
+    const date = require.body.dataDate;
+    const endDate = require.body.dataEndDate;
+    //console.log(date, endDate, campGame, username)
+    let sql = `SELECT 
+          SUM(turnover) AS turnover
+        FROM totalturnoverrepost 
+        WHERE day >= '${date}' AND day <= '${endDate}'
+        GROUP BY day `;
+    connection.query(sql, (error, results) => {
+        try {
+            if (error) { console.log(error); }
+            else {
+                let sqlGamecamp = `SELECT namegamecamp, SUM(roundplay) AS roundplay FROM gamecamptotal 
+                            WHERE day >= '${date}' AND day <= '${endDate}' GROUP BY namegamecamp `;
+                connection.query(sqlGamecamp, (error, resultsGame) => {
+                    //console.log(resultsGame)
+                    response.send({
+                        data: results,
+                        dataB: resultsGame,
+                    });
+                    response.end();
+                })
+
+            }
+        } catch (err) {
+            if (!err.statusCode) {
+                err.statusCode = 500;
+            }
+            next(err);
+        }
     });
 }

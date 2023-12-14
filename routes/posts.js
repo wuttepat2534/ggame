@@ -106,6 +106,7 @@ router.post('/getRepostCouponPassword', userstoonTaII.getRepostCouponPassword)
 router.post('/getRepostGameList', userstoonTaII.getRepostGameList)
 router.post('/getRepostGameListGame', userstoonTaII.getRepostGameListGame)
 router.post('/getRepostEdit', userstoonTaII.getRepostEdit)
+router.post('/getturnoverGrach', userstoonTaII.getturnoverGrach)
 
 router.get('/getDepositaccount/:agent_id', userToonta.getDepositaccount)
 router.get('/getWithdrawalaccount', userToonta.getWithdrawalaccount)
