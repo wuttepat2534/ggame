@@ -160,14 +160,14 @@ exports.GamePlaceBets = async (req, res) => {
                 const betPlay = txnsGame[0].betAmount;
                 let balanceNow = balanceUser - betPlay;
                 //console.log(balanceUser, betPlay, 'GamePlaceBets');
-                if (balanceUser <= 0 && balanceUser < betPlay) {
+                if (balanceUser >= 0 && balanceUser > betPlay) {
                     const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${betPlay}' WHERE phonenumber ='${usernameGame}'`;
                     connection.query(sql_update, (error, resultsGame) => {
                         if (error) { console.log(error) }
                         else {
                             res.status(201).json({
                                 id: id,
-                                statusCode: status,
+                                statusCode: 0,
                                 timestampMillis: timestampMillis,
                                 productId: productId,
                                 currency: currency,
@@ -224,7 +224,7 @@ exports.GameSettleBets = async (req, res) => {
                 let status = 0;
                 //console.log(balanceUser, betAmount, betPlay, 'GameSettleBets');
 
-                if (balanceUser > 0 && balanceUser > betPlay) {
+                if (balanceUser >= 0 && balanceUser > betPlay) {
                     let balanceturnover = hasSimilarData(results[0].gameplayturn, productId, results[0].turnover, betPlay)
 
                     const post = {
@@ -241,7 +241,7 @@ exports.GameSettleBets = async (req, res) => {
                         else {
                             res.status(201).json({
                                 id: id,
-                                statusCode: status,
+                                statusCode: 0,
                                 timestampMillis: timestampMillis,
                                 productId: productId,
                                 currency: currency,

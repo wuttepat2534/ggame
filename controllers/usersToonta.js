@@ -2172,7 +2172,6 @@ exports.getRepostGame = (require, response) => {
     const post = {
         startdate: date, endDate: endDate
     }
-
     repostGame.valuewinbet(post)
         .then(calculatedValues => {
             win = calculatedValues.win
@@ -2183,7 +2182,7 @@ exports.getRepostGame = (require, response) => {
         });
 
     setTimeout(() => {
-        //console.log(date, endDate);
+        console.log(date, endDate);
         if (searchPhones === '' && searcGameCamp === '') {
             let sql = `SELECT * FROM repostgame WHERE created_atdate >='${date}' AND created_atdate <= '${endDate}' ORDER BY created_atdate DESC LIMIT ${pageSize} OFFSET ${offset}`;
             connection.query(sql, async (error, results) => {
@@ -2192,6 +2191,7 @@ exports.getRepostGame = (require, response) => {
                 connection.query(totalCount, (error, res) => {
                     if (error) { console.log(error); }
                     else {
+                        //console.log(results)
                         response.send({
                             data: results,
                             valusData: results.length,
