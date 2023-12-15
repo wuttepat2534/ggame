@@ -122,6 +122,13 @@ exports.saveTestGame = async (require, response) => {
                         arrayWinCount.push(winCountArr);
                         arrayCredit.push(user_credit);
                         arrayWinLine.push(winlineArrLoop);
+
+                        const post = {
+                            username: results_check[0].username, gameid: 'DOGZILLA', bet: 0, win: win, balance_credit: user_credit, 
+                            userAgent: userAgent, platform: userAgentt, namegame: namegame
+                        }
+                        let repost = repostGame.uploadLogRepostGame(post)
+
                         let sql_insert = `INSERT INTO user_play (member_id, game_id, bet, win, tiles, winline, winstyle, winCount, credit, created_at, game_feespin) 
             value ('${user_id}','${game_id}','${bet}','${win}','${tiles}','${winlineArrLoop}','${winStyle}','${winCount}','${credit}',now(), '${isWinFreeSpin}')`;
                         connection.query(sql_insert, (error, result_insert_play) => {
@@ -478,6 +485,10 @@ exports.saveTestGameBuy = async (require, response) => {
                 let arrayCredit = [];
                 isWinFreeSpinBuy = true;
                 let x = 0;
+                const post = {
+                    username: results_check[0].username, gameid: 'DOGZILLA', bet: betFreeSpin, win: win, balance_credit: user_credit, userAgent: userAgent, platform: userAgentt
+                }
+                let repost = repostGame.uploadLogRepostGame(post)
                 for (let i = 0; i !== 10; i++) {
                     setTimeout(() => {
                         let jsonGame = MainGame(user_credit, bet);
@@ -501,9 +512,8 @@ exports.saveTestGameBuy = async (require, response) => {
                         arrayWinStyle.push(winStyle);
                         arrayWinCount.push(winCountArr)
                         const post = {
-                            username: results_check[0].username, gameid: 'DOGZILLA', bet: betFreeSpin, win: win, balance_credit: user_credit, userAgent: userAgent, platform: userAgentt
+                            username: results_check[0].username, gameid: 'DOGZILLA', bet: 0, win: win, balance_credit: user_credit, userAgent: userAgent, platform: userAgentt
                         }
-                        let repost = repostGame.uploadLogRepostGame(post)
                         let balanceturnover = hasSimilarData(results_check[0].gameplayturn, "DOGZILLA", results_check[0].turnover, betFreeSpin)
                         let sql_insert = `INSERT INTO user_play (member_id, game_id, bet, win, tiles, winline, winstyle, winCount, credit, created_at, game_feespin) 
             value ('${user_id}','${game_id}','${bet}','${win}','${tiles}','${winline}','${winStyle}','${winCount}','${user_credit}',now(), '${isWinFreeSpin}')`;
@@ -527,6 +537,7 @@ exports.saveTestGameBuy = async (require, response) => {
                                                         console.log(error)
                                                     } else {
                                                         x = x + i;
+                                                        let repost = repostGame.uploadLogRepostGame(post)
                                                         if (x === 45) {
                                                             const flattenedArray = arrayWinCount.flat();
                                                             const upPlay = result_logGame[0].play + 10;

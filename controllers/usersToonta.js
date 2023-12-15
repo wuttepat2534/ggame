@@ -2568,8 +2568,8 @@ exports.getRepostWebdaily = (require, response) => {
             response.end();
         }
         else {
-            //console.log(res.length);
             if (res.length >= 1 && res.length !== 0) {
+                console.log(tpyeadmin, token);
                 let win = 0;
                 let bet = 0;
                 let membervalue = 0;
