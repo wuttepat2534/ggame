@@ -149,8 +149,10 @@ exports.saveTestGame = async (require, response) => {
                     let spl = `SELECT * FROM member WHERE id ='${user_id}' AND status_delete='N'`;
                     try {
                         connection.query(spl, (error, results) => {
+                            const namegame  = results[0].playgameuser;
                             const post = {
-                                username: results[0].username, gameid: 'DOGZILLA', bet: bet, win: win, balance_credit: balance, userAgent: userAgent, platform: userAgentt
+                                username: results[0].username, gameid: 'DOGZILLA', bet: bet, win: win, balance_credit: balance, 
+                                userAgent: userAgent, platform: userAgentt, namegame: namegame
                             }
                             let repost = repostGame.uploadLogRepostGame(post)
                         })
@@ -724,8 +726,10 @@ function EndGame(passwordRound, winGame, winStreak, user_id, bet, isWin, game_id
         let spl = `SELECT * FROM member WHERE id ='${user_id}' AND status_delete='N'`;
         try {
             connection.query(spl, (error, results) => {
+                const namegame  = results[0].playgameuser;
                 const post = {
-                    username: results[0].username, gameid: 'DOGZILLA', bet: bet, win: win, balance_credit: results[0].credit, userAgent: userAgent, platform: userAgentt
+                    username: results[0].username, gameid: 'DOGZILLA', bet: bet, win: win, balance_credit: results[0].credit, 
+                    userAgent: userAgent, platform: userAgentt, namegame: namegame
                 }
                 //console.log(post);
 

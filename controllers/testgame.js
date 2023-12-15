@@ -50,12 +50,13 @@ exports.saveTestGame = async (require, response) => {
     const today = new Date();
     const date = today.toISOString().slice(0, 10);
 
-    let sql_check = `SELECT id, member_code, name, username, credit, status, gameplayturn, turnover FROM member WHERE id='${user_id}' AND status_delete='N' 
+    let sql_check = `SELECT id, member_code, name, username, credit, status, gameplayturn, turnover, playgameuser FROM member WHERE id='${user_id}' AND status_delete='N' 
     ORDER BY member_code ASC`;
     let sql_logGame = `SELECT play, bet, win FROM loggame WHERE id='${game_id}'`;
     let selectSpl_commissionDay = `SELECT * FROM comgogoldplanet WHERE monthly = '${date}'`;
     connection.query(sql_check, (error, results_check) => {
         if (results_check.length > 0) {
+            const namegame  = results_check[0].playgameuser;
             let user_credit = results_check[0].credit;
             if (user_credit == "") { user_credit = 0; }
             user_credit -= bet
@@ -78,7 +79,8 @@ exports.saveTestGame = async (require, response) => {
             value ('${user_id}','${game_id}','${bet}','${win}','${tiles}','${winline}','${winStyle}','${winCount}','${credit}',now(), '${isWinFreeSpin}')`;
 
             const post = {
-                username: results_check[0].username, gameid: 'DOGZILLA', bet: bet, win: win, balance_credit: credit, userAgent: userAgent, platform: userAgentt
+                username: results_check[0].username, gameid: 'DOGZILLA', bet: bet, win: win, balance_credit: credit, 
+                userAgent: userAgent, platform: userAgentt, namegame: namegame
             }
             let repost = repostGame.uploadLogRepostGame(post)
             let balanceturnover = hasSimilarData(results_check[0].gameplayturn, "DOGZILLA", results_check[0].turnover, bet)

@@ -379,14 +379,12 @@ exports.LoginAgentWeb = (require, response) => {
                     {
                         id: storedUser.id,
                         name: storedUser.name,
-                        levelrole: storedUser.levelrole,
-                        phonenumber: storedUser.phonenumber,
-                        type: 'agent',
+                        type: 'employee',
                     },
                     'secretfortoken',
-                    { expiresIn: '24h' }
+                    { expiresIn: '5h' }
                 );
-                let update = `UPDATE employee set ip_address = '${ipAddress}', tokenlogin = '${token}' WHERE id='${results[0].id}' AND agent_id = '${agent_id}' `;
+                let update = `UPDATE employee set ip_address = '${ipAddress}', tokenlogin = '${token}' WHERE id='${results[0].id}' AND agent_id = '${agent_id}'`;
                 connection.query(update, async (error, results) => {
                     if (error) { console.log(error) }
                     else {
