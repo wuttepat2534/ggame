@@ -492,8 +492,7 @@ exports.financeUser = (req, res) => {
     const imgBank = req.body.imgBank
     const actualize = req.body.actualize
     let promotiontres = ''
-
-    //console.log(statusFinance);
+    //console.log(statusFinance)
     const io = socket.getIO();
     try {
         let sql_before = `SELECT * FROM member WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}' ORDER BY phonenumber ASC`;
@@ -564,7 +563,7 @@ exports.financeUser = (req, res) => {
                                         console.error(error);
                                     });
                             } else {
-
+                                //console.log('55555')
                                 let sql_before = `INSERT INTO logfinanceuser (idUser, agent_id, accountName, accountNumber, phonenumber, tpyefinance, quantity, creditbonus, 
                                     balance_before, balance, bill_number, numberbill, status, transaction_date, time, bank, imgBank, destinationAccount, destinationAccountNumber, trans_ref, qrcodeData, nameimg, actualize) value 
                                     ('${resultUser[0].id}','${resultUser[0].agent_id}','${resultUser[0].accountName}','${accountNumber}','${phonenumber}','${'ฝาก'}','${quantity}','${0}','${resultUser[0].credit}'
@@ -598,8 +597,9 @@ exports.financeUser = (req, res) => {
 
                                                 let lintNotify = logEdit.testLine('ฝากเงิน', quantity, phonenumber, formattedDate, formattedTime)
                                                 io.emit('notify-management-deposit', { data: post });
+                                                
                                                 res.send({
-                                                    message: "เติมเงินสำเร็จ",
+                                                    message: "เติมเงินสำเร็จ"
                                                 });
                                                 res.end();
                                             });
@@ -757,7 +757,7 @@ exports.WinhdrawUser = (req, res) => {
 
 
 function logTotalAmount(resultUser, formattedDateBill, type, destinationAccount, destinationAccountNumber, quantity, statusFinance) {
-    console.log(formattedDateBill, type);
+    //console.log(formattedDateBill, type);
     let sql_deposit = `SELECT * FROM depositaccount WHERE accountName ='${destinationAccount}' OR accountNumber = '${destinationAccountNumber}'`;
     let sql_before = `SELECT * FROM totalamountdaily WHERE date ='${formattedDateBill}' AND typeaction = '${type}'`;
     connection.query(sql_before, (error, resulttotal) => {
@@ -847,7 +847,7 @@ function logTotalAmount(resultUser, formattedDateBill, type, destinationAccount,
                                     if (error) {
                                         console.log(error)
                                     } else {
-                                        console.log(resulttotaldeposit)
+                                        //console.log(resulttotaldeposit)
                                         let sql = `UPDATE depositaccount set balance = '${resulttotaldeposit[0].billMatched + 0}', billMatched = '${resulttotaldeposit[0].billMatched + quantity}', complated = '${resulttotaldeposit[0].complated + 0}'
                                     WHERE accountName ='${destinationAccount}' AND accountNumber = '${destinationAccountNumber}' ORDER BY accountName ASC`;
                                         connection.query(sql, (error, resultDeposit) => {

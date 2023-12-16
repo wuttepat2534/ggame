@@ -472,6 +472,7 @@ exports.saveTestGameBuy = async (require, response) => {
     const sql_logGame = `SELECT play, bet, win FROM loggame WHERE id='${game_id}'`;
     connection.query(sql_check, (error, results_check) => {
         if (results_check.length > 0) {
+            const namegame  = results_check[0].playgameuser;
             let user_credit = results_check[0].credit;
             if (user_credit === "") { user_credit = 0; }
             if (betFreeSpin <= user_credit) {
@@ -486,7 +487,8 @@ exports.saveTestGameBuy = async (require, response) => {
                 isWinFreeSpinBuy = true;
                 let x = 0;
                 const post = {
-                    username: results_check[0].username, gameid: 'DOGZILLA', bet: betFreeSpin, win: 0, balance_credit: user_credit, userAgent: userAgent, platform: userAgentt
+                    username: results_check[0].username, gameid: 'DOGZILLA', bet: betFreeSpin, win: 0, balance_credit: user_credit, 
+                    userAgent: userAgent, platform: userAgentt, namegame: namegame
                 }
                 let repost = repostGame.uploadLogRepostGame(post)
                 for (let i = 0; i !== 10; i++) {
@@ -512,7 +514,8 @@ exports.saveTestGameBuy = async (require, response) => {
                         arrayWinStyle.push(winStyle);
                         arrayWinCount.push(winCountArr)
                         const post = {
-                            username: results_check[0].username, gameid: 'DOGZILLA', bet: 0, win: win, balance_credit: user_credit, userAgent: userAgent, platform: userAgentt
+                            username: results_check[0].username, gameid: 'DOGZILLA', bet: 0, win: win, balance_credit: user_credit, 
+                            userAgent: userAgent, platform: userAgentt, namegame: namegame
                         }
                         let balanceturnover = hasSimilarData(results_check[0].gameplayturn, "DOGZILLA", results_check[0].turnover, betFreeSpin)
                         let sql_insert = `INSERT INTO user_play (member_id, game_id, bet, win, tiles, winline, winstyle, winCount, credit, created_at, game_feespin) 
