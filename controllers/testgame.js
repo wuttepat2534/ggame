@@ -486,7 +486,7 @@ exports.saveTestGameBuy = async (require, response) => {
                 isWinFreeSpinBuy = true;
                 let x = 0;
                 const post = {
-                    username: results_check[0].username, gameid: 'DOGZILLA', bet: betFreeSpin, win: win, balance_credit: user_credit, userAgent: userAgent, platform: userAgentt
+                    username: results_check[0].username, gameid: 'DOGZILLA', bet: betFreeSpin, win: 0, balance_credit: user_credit, userAgent: userAgent, platform: userAgentt
                 }
                 let repost = repostGame.uploadLogRepostGame(post)
                 for (let i = 0; i !== 10; i++) {
