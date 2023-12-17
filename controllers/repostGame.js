@@ -84,6 +84,65 @@ module.exports = class Post {
         });
     }
 
+    static uploadLogRepostGameDogzilaFree(post) {
+
+        const currentTimeInThailand = moment().tz('Asia/Bangkok');
+        const formattedDate = currentTimeInThailand.format('YYYY-MM-DD');
+        const formattedTime = currentTimeInThailand.format('HH:mm:ss');
+        let number = post.bet;
+        let formattedNumber = number.toFixed(2); // แปลงเป็นสตริงและทำให้มีทศนิยม 2 ตำแหน่ง
+        formattedNumber = formattedNumber.padStart(6, '0');
+        let browser;
+        if (post.userAgent.includes('Chrome')) {
+            browser = 'Google Chrome';
+        } else if (post.userAgent.indexOf('Firefox') > -1) {
+            browser = 'Mozilla Firefox';
+        } else if (post.userAgent.indexOf('Safari') > -1) {
+            browser = 'Apple Safari';
+        } else if (post.userAgent.indexOf('Opera') > -1) {
+            browser = 'Opera';
+        } else if (post.userAgent.indexOf('Edg') > -1) {
+            browser = 'Microsoft Edge';
+        } else if (post.userAgent.indexOf('Trident') > -1) {
+            browser = 'Microsoft Internet Explorer';
+        }
+        else {
+            browser = 'Google Chrome';
+        }
+        const isMobile = /Mobile|Android/.test(post.userAgent);
+        let platform = 'Mobile';
+        if (isMobile) {
+            platform = 'Mobile';
+        } else {
+            platform = 'PC';
+        }
+
+        const sql = `SELECT * FROM member WHERE username = ?`;
+        connection.query(sql, [post.username], (error, result) => {
+            try {
+                if (error) { console.log(error) }
+                else {
+                    let turnoverrepostfun = turnoverrepost(post)
+
+                    promotiontoonta.user_Leaked_promotion(post)
+                    let datausername = result[0];
+                    let sql_before = `INSERT INTO repostgame (iduser, username, gameid, namegame, bet, win, balance_credit, get_browser, platform, created_atdate, created_attime) value 
+              ('${datausername.id}','${post.username}','${post.gameid}','${post.namegame}','${formattedNumber}','${post.win}','${post.balance_credit}','${browser}','${platform}','${formattedDate}','${formattedTime}')`;
+                    connection.query(sql_before, (error, resultAfter) => {
+                        if (error) { console.log(error); }
+                        else {
+                            return 'OK';
+                        }
+                    });
+                }
+            } catch (err) {
+                if (!err.statusCode) {
+                    err.statusCode = 500;
+                }
+            }
+        });
+    }
+
     static uploadLogRepostGameAsk(post) {
 
         const currentTimeInThailand = moment().tz('Asia/Bangkok');
@@ -129,7 +188,7 @@ module.exports = class Post {
                             //console.log(resulttransID.length);
                             if (resulttransID.length !== 0) {
                                 const postII = {
-                                    username: post.username, gameid: post.gameid, bet: resulttransID[0].bet, win: post.win, balance_credit: post.balance_credit, 
+                                    username: post.username, gameid: post.gameid, bet: resulttransID[0].bet, win: post.win, balance_credit: post.balance_credit,
                                     userAgent: post.userAgent, platform: post.platform, namegame: post.namegame
                                 }
                                 let turnoverrepostfun = turnoverrepost(postII)
@@ -682,7 +741,7 @@ function repostlistgame(post) {
         if (error) {
             console.log(error);
         } else {
-            if (winlose < 0){ //ผู้เล่นแพ้
+            if (winlose < 0) { //ผู้เล่นแพ้
                 const losewin = floatbet - floatwit;
                 a_w = losewin * (resultspercen[0].percentagegame / 100);
                 a_l = 0;
