@@ -145,7 +145,8 @@ exports.ConfirmationWithdraw = async (req, res, next) => {
                                 if (error) {
                                     console.log(error);
                                 } else {
-                                    let lintNotify = logEdit.winhdrawLinenoti('ไม่อนุมัติการถอนเงิน', value, usernameUser, formattedDate, formattedTime, approval_person)
+                                    const message = `ถอนเงินไม่สำเร็จ\nลูกค้า: ${usernameUser}\nจำนวนเงิน: ${value}\nทำโดย: ${approval_person}\nเวลา: ${formattedDate} ${formattedTime}`;
+                                    let lintNotify = logEdit.winhdrawLinenoti(message, value, usernameUser, formattedDate, formattedTime, approval_person)
                                     res.send({
                                         message: "รอการอนุมัติการถอนเงิน",
                                     });
@@ -161,7 +162,8 @@ exports.ConfirmationWithdraw = async (req, res, next) => {
                             if (error) {
                                 console.log(error);
                             } else {
-                                let lintNotify = logEdit.winhdrawLinenoti('อนุมัติการถอนเงิน', value, usernameUser, formattedDate, formattedTime, approval_person)
+                                const message = `ถอนเงินสำเร็จ\nลูกค้า: ${usernameUser}\nจำนวนเงิน: ${value}\nทำโดย: ${approval_person}\nเวลา: ${formattedDate} ${formattedTime}`;
+                                let lintNotify = logEdit.winhdrawLinenoti(message, value, usernameUser, formattedDate, formattedTime, approval_person)
                                 let updateRepostFinance = Finance.UpdateLogRepostFinance(usernameUser, 'ถอน', convertedLatest_withdrawal)
                                 res.send({
                                     message: "ถอนเงินสำเร็จ",
@@ -880,11 +882,11 @@ exports.addCoupon = async (req, res, next) => {
     const withdrawalType = req.body.withdrawalType;
     const withdraw_valus = req.body.withdraw_valus;
     const valusconpon = req.body.valusconpon;
-
+    const balance_conditions = rep.body.balance_conditions;
     let sql = `INSERT INTO coupon (id_agent, password_coupon, typebonus, valusbunus, couponpassword, statu_coupon, namepromotion, startcoupon, endcoupon, maxbunus, withdrawalType
-        , valustrunover, valusconpon, coupon_balance)
+        , valustrunover, valusconpon, coupon_balance, balance_conditions)
         value ('${idwebsite_coupon}','${password_coupon}','${typebonus}','${valusbunus}','${couponpassword}','${"Y"}','${namepromotion}','${startcoupon}','${endcoupon}','${maxbunus}',
-        '${withdrawalType}','${withdraw_valus}','${valusconpon}','${valusconpon}')`;
+        '${withdrawalType}','${withdraw_valus}','${valusconpon}','${valusconpon}','${balance_conditions}')`;
 
     connection.query(sql, (error, result) => {
         try {
@@ -1007,43 +1009,67 @@ exports.GetCouponMember = async (req, res, next) => {
         try {
             if (error) { console.log(error) }
             else {
-                if (result[0].promotionuser.includes("ไม่ได้รับโปรโมชั่น")) {
+                if (result[0].promotionuser.includes("ไม่ได้รับโปรโมชั่น")) { //เช็คว่าผู้เล่นไม่ได้ติดโปรโมชั่นอะไร
                     let sql_repost_coupon = `SELECT * FROM repost_coupon WHERE username = '${username}' AND coupon_password = '${couponpassword}'`;
                     connection.query(sql_repost_coupon, (error, result_repost_coupon) => {
-                        if (result_repost_coupon.length <= 0) {
+                        if (result_repost_coupon.length <= 0) { //เช็คว่าผู้เล่นไม่เคยรับคูปองนี้
                             let sql_conpon = `SELECT * FROM coupon WHERE couponpassword = '${couponpassword}' AND statu_coupon = 'Y'`;
                             connection.query(sql_conpon, (error, result_coupon) => {
-                                if (result_coupon.length > 0) {
-                                    if (result_coupon[0].couponpassword === couponpassword) {
-                                        let creditbonus = result[0].credit + result_coupon[0].valusbunus;
-                                        if (result_coupon[0].withdrawalType === 'Turnover Fixed') {
-                                            turnover = result[0].turnover + result_coupon[0].valusbunus
-                                        } else {
-                                            turnover = result[0].turnover + (result_coupon[0].valusbunus * result_coupon[0].valusbunus)
-                                        }
-                                        const formattedDateStart = result_coupon[0].startcoupon.toISOString().substring(0, 10);
-                                        const formattedDateEnd = result_coupon[0].endcoupon.toISOString().substring(0, 10);
+                                if (result_coupon.length > 0) { //เช็คว่ามีคูปองนี้อยู่
+                                    if (result_coupon[0].coupon_balance > 0) {
+                                        if (result_coupon[0].couponpassword === couponpassword) { //เช็คความถูกต้องของรหัสคูปอง
+                                            if (result[0].credit <= result_coupon[0].balance_conditions) { //เช็คเงือนไขการรับคูปอง
+                                                let creditbonus = result[0].credit + result_coupon[0].valusbunus;
+                                                if (result_coupon[0].withdrawalType === 'Turnover Fixed') {
+                                                    turnover = result[0].turnover + result_coupon[0].valusbunus
+                                                } else {
+                                                    turnover = result[0].turnover + (result_coupon[0].valusbunus * result_coupon[0].valusbunus)
+                                                }
+                                                const formattedDateStart = result_coupon[0].startcoupon.toISOString().substring(0, 10);
+                                                const formattedDateEnd = result_coupon[0].endcoupon.toISOString().substring(0, 10);
 
-                                        let sql_imsert_repost_coupon = `INSERT INTO repost_coupon (password_coupon, tpyebunus, valusbunus, coupon_password, namecoupon, 
-                                            startcoupon, endcoupon, created_at, time_at, credit, turnover, username)
-                                            value ('${result_coupon[0].password_coupon}','${result_coupon[0].typebonus}','${result_coupon[0].valusbunus}','${couponpassword}',
-                                            '${result_coupon[0].namepromotion}','${formattedDateStart}','${formattedDateEnd}',
-                                            '${formattedDate}','${formattedTime}','${creditbonus}','${turnover}','${username}')`;
-                                        connection.query(sql_imsert_repost_coupon, (error, result_repostcoupon) => {
-                                            if (error) { console.log(error) } else {
-                                                let sql_update = `UPDATE member set credit = '${creditbonus}', bonususer = '${result_coupon[0].valusbunus}', turnover = '${turnover}' 
-                                                WHERE username = '${username}' AND status = 'Y'`;
-                                                connection.query(sql_update, (error, result_memberupdate) => {
-                                                    res.send({
-                                                        message: "คุณรับคูปองสำเร็จ"
-                                                    });
-                                                    res.end();
+                                                let sql_imsert_repost_coupon = `INSERT INTO repost_coupon (password_coupon, tpyebunus, valusbunus, coupon_password, namecoupon, 
+                                                    startcoupon, endcoupon, created_at, time_at, credit, turnover, username)
+                                                    value ('${result_coupon[0].password_coupon}','${result_coupon[0].typebonus}','${result_coupon[0].valusbunus}','${couponpassword}',
+                                                    '${result_coupon[0].namepromotion}','${formattedDateStart}','${formattedDateEnd}',
+                                                    '${formattedDate}','${formattedTime}','${creditbonus}','${turnover}','${username}')`;
+                                                connection.query(sql_imsert_repost_coupon, (error, result_repostcoupon) => {
+                                                    if (error) { console.log(error) } else {
+                                                        let sql_update = `UPDATE member set credit = '${creditbonus}', bonususer = '${result_coupon[0].valusbunus}',
+                                                        promotionuser = '${result_coupon[0].namepromotion}', passwordpromotion = '${result_coupon[0].password_coupon}'
+                                                        WHERE username = '${username}' AND status = 'Y'`;
+                                                        connection.query(sql_update, (error, result_memberupdate) => {
+                                                            if (error) { console.log(error) } else {
+                                                                let sql_updateConpon = `UPDATE coupon set coupon_balance = '${result_coupon[0].coupon_balance - 1}'
+                                                                WHERE couponpassword = '${couponpassword}' AND statu_coupon = 'Y'`;
+                                                                connection.query(sql_updateConpon, (error, result_updateConpon) => {
+                                                                    if (error) { console.log(error) } else {
+                                                                        res.send({
+                                                                            message: "คุณรับคูปองสำเร็จ"
+                                                                        });
+                                                                        res.end();
+                                                                    }
+                                                                })
+                                                            }
+                                                        })
+                                                    }
                                                 })
+                                            } else {
+                                                res.send({
+                                                    message: "คุณไม่สามารถใช้คูปองได้ เนื่องจากคุณไม่เข้าเงือนไขการใช้งานคูปอง"
+                                                });
+                                                res.end();
                                             }
-                                        })
+
+                                        } else {
+                                            res.send({
+                                                message: "คุณไม่สามารถใช้คูปองได้ เนื่องจากคุณกรอกรหัสคูปองไม่ถูกต้อง"
+                                            });
+                                            res.end();
+                                        }
                                     } else {
                                         res.send({
-                                            message: "คุณไม่สามารถใช้คูปองได้ เนื่องจากคุณกรอกรหัสคูปองไม่ถูกต้อง"
+                                            message: "คุณไม่สามารถใช้คูปองได้ เนื่องจากคูปองถูกใช้ครบทุกสิทธิ์แล้ว"
                                         });
                                         res.end();
                                     }
@@ -1063,7 +1089,7 @@ exports.GetCouponMember = async (req, res, next) => {
                     })
                 } else {
                     res.send({
-                        message: "คุณไม่สามารถใช้คูปองได้ เนื่องจากคุณได้รับโปรโมชั่นไว้แล้ว"
+                        message: "คุณไม่สามารถใช้คูปองได้ เนื่องจากคุณได้รับโปรโมชั่นหรือได้ใช้คูปองนี้ไปแล้วไว้แล้ว"
                     });
                     res.end();
                 }

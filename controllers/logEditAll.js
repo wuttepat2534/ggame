@@ -97,8 +97,8 @@ module.exports = class Post {
                     created_atdate, created_attime, note) value 
               ('${agent_id}','${post.edittype}','${post.idedit}','${username}','${post.id}','${nametpyeEdit}','ข้อมูลmember',
               '${'ชื่อจริง-นามสุกุล' + ' ' + dataMenber.accountName + ' ' + 'กลุ่มลูกค้า' + ' ' + dataMenber.groupmember
-                        + ' ' + 'username' + ' ' + dataMenber.username + ' ' + 'ไลน์' + ' ' + dataMenber.lineid + ' ' + 'ชื่อบัญชี' +' '+dataMenber.accountName
-                + ' ' + 'เลขบัญชี' + ' ' + dataMenber.accountNumber}',
+                        + ' ' + 'username' + ' ' + dataMenber.username + ' ' + 'ไลน์' + ' ' + dataMenber.lineid + ' ' + 'ชื่อบัญชี' + ' ' + dataMenber.accountName
+                        + ' ' + 'เลขบัญชี' + ' ' + dataMenber.accountNumber}',
               '${'ชื่อจริง-นามสุกุล' + ' ' + post.accountName + ' ' + 'กลุ่มลูกค้า' + ' ' + post.customerGroup + ' '
                         + 'username' + ' ' + post.contact_number + ' ' + 'ไลน์' + ' ' + post.IDLIne + ' ' + 'ชื่อบัญชี' + ' ' + post.accountName
                         + ' ' + 'เลขบัญชี' + ' ' + post.accountNumber}'
@@ -178,7 +178,7 @@ module.exports = class Post {
 
     //GVJGIAacXqdKUPQ6D2pruWxT7tp6xfgNpqjchXnAxWk ใช้ test niranam hui
     static testLine(action, valus, username, date, time) {
-        const text = 'มีการทำรายการ ' + action + ' จำนวน ' + valus +' บาท ' + ' โดย ' + username +' วันที่ ' + date + ' เวลา ' + time 
+        //const text = 'มีการทำรายการ ' + action + ' จำนวน ' + valus +' บาท ' + ' โดย ' + username +' วันที่ ' + date + ' เวลา ' + time 
         try {
             let config = {
                 method: 'post',
@@ -186,9 +186,9 @@ module.exports = class Post {
                 url: 'https://notify-api.line.me/api/notify',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': 'Bearer euglgxDIgESrrRcV20UMPSCJtcrkUkflroC0jCbCw1d'
+                    'Authorization': 'Bearer GVJGIAacXqdKUPQ6D2pruWxT7tp6xfgNpqjchXnAxWk'
                 },
-                data: `message=${text}`
+                data: `message=${action}`
             };
             axios.request(config)
                 .then((response) => {
@@ -203,8 +203,8 @@ module.exports = class Post {
     }
 
     static winhdrawLinenoti(action, valus, username, date, time, approval_person) {
-        const text = 'การอนุมัติคำร้องถอน ' + action + ' จำนวน ' + valus +' บาท ' + ' ของUser ' + username + 
-        ' ผู้จัดการคำร้อง ' + approval_person +' วันที่ ' + date + ' เวลา ' + time + ' (รายละเอียดเพิ่มเติมสามารถดูได้ที่webAdmin)'
+        const text = 'การอนุมัติคำร้องถอน ' + action + ' จำนวน ' + valus + ' บาท ' + ' ของUser ' + username +
+            ' ผู้จัดการคำร้อง ' + approval_person + ' วันที่ ' + date + ' เวลา ' + time + ' (รายละเอียดเพิ่มเติมสามารถดูได้ที่webAdmin)'
         try {
             let config = {
                 method: 'post',
@@ -214,7 +214,31 @@ module.exports = class Post {
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'Authorization': 'Bearer euglgxDIgESrrRcV20UMPSCJtcrkUkflroC0jCbCw1d'
                 },
-                data: `message=${text}`
+                data: `message=${action}`
+            };
+            axios.request(config)
+                .then((response) => {
+                    console.log(JSON.stringify(response.data));
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    static DitpositLinenoti(action) {
+        try {
+            let config = {
+                method: 'post',
+                maxBodyLength: Infinity,
+                url: 'https://notify-api.line.me/api/notify',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Bearer euglgxDIgESrrRcV20UMPSCJtcrkUkflroC0jCbCw1d'
+                },
+                data: `message=${action}`
             };
             axios.request(config)
                 .then((response) => {

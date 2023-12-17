@@ -551,7 +551,14 @@ exports.financeUser = (req, res) => {
                                                     deposit_member: quantity,
                                                     message: "มีการแจ้งฝากเงินจำนวน"
                                                 }]
-
+                                            const message = `ฝากเงินสำเร็จ\nลูกค้า: ${resultUser[0].accountName}\nยูสเซอร์: ${phonenumber}
+จำนวนเงิน: ${quantity}
+_______________________
+หมายเหตุ : ยูสเซอร์ได้เลือกโปรโมชั่น: ${calculatedValues.promotion}, เพิ่มเทิร์นสำหรับผู้ที่รับโปรโมชั่น, ฝากเงินจำนวน: '${quantity}' >>> เทิร์น : 1 >>> เพิ่มยอดเทิร์นสำหรับรอบนี้คือ: '${calculatedValues.turnover}', Reward[ฝากเงิน] สำหรับรับผู้ที่ไม่ได้รับโปรโมชั่น สถานะ : เปิดใช้งาน, Reward[ฝากเงิน] ประเภท : FIX, Reward[ฝากเงิน] เงื่อนไข Credit : 10, Reward[ฝากเงิน] ไม่เข้าเงื่อนไข
+_______________________
+เวลา: ${formattedDate} ${formattedTime}
+`;
+                                            let lintNotify = logEdit.DitpositLinenoti(message)
                                             io.emit('notify-management-deposit', { data: post });
                                             res.send({
                                                 message: "เติมเงินสำเร็จ",
@@ -594,10 +601,16 @@ exports.financeUser = (req, res) => {
                                                         deposit_member: quantity,
                                                         message: "มีการแจ้งฝากเงินจำนวน"
                                                     }]
-
-                                                let lintNotify = logEdit.testLine('ฝากเงิน', quantity, phonenumber, formattedDate, formattedTime)
+                                                const message = `ฝากเงินสำเร็จ\nลูกค้า: ${resultUser[0].accountName}\nยูสเซอร์: ${phonenumber}
+จำนวนเงิน: ${quantity}
+_______________________
+หมายเหตุ : ยูสเซอร์ไม่ได้เลือกโปรโมชั่น, ยูสเซอร์ไม่ได้เลือกโปรโมชั่นก่อนฝาก, โปรโมชั่น : ไม่ทำงาน, Affiliate สถานะ : ไม่เข้าเงื่อนไข [ฝากครั้งแรก], เพิ่มเทิร์นสำหรับผู้ที่ไม่ได้รับโปรโมชั่น, ฝากเงินจำนวน : '${quantity}' >>> เทิร์น : 1 >>> เพิ่มยอดเทิร์นสำหรับรอบนี้คือ : '${quantity}', Reward[ฝากเงิน] สำหรับรับผู้ที่ไม่ได้รับโปรโมชั่น สถานะ : เปิดใช้งาน, Reward[ฝากเงิน] ประเภท : FIX, Reward[ฝากเงิน] เงื่อนไข Credit : 10, Reward[ฝากเงิน] ไม่เข้าเงื่อนไข, Reward[เพื่อนฝากเงิน] สำหรับรับผู้ที่ไม่ได้รับโปรโมชั่น สถานะ : ปิดใช้งาน, Reward[เพื่อนฝากเงิน] ไม่ทำงาน
+_______________________
+เวลา: ${formattedDate} ${formattedTime}
+`;
+                                                let lintNotify = logEdit.DitpositLinenoti(message)
                                                 io.emit('notify-management-deposit', { data: post });
-                                                
+
                                                 res.send({
                                                     message: "เติมเงินสำเร็จ"
                                                 });
@@ -650,96 +663,101 @@ exports.WinhdrawUser = (req, res) => {
             if (error) {
                 console.log(error)
             } else {
+                // if ()
                 let moneyUserWithDraw = resultUser[0].credit - resultUser[0].turnover
-                if (resultUser[0].credit > quantity && quantity <= moneyUserWithDraw) {
-                    //let totalamountdaily = logTotalAmountWithdraw(resultUser, formattedDateBill, 'ถอน', destinationAccount, destinationAccountNumber, quantity, statusFinance)
-                    let bill = `SELECT numberbill FROM logfinanceuser WHERE transaction_date = ? AND tpyefinance = 'ถอน' ORDER BY numberbill DESC LIMIT 1`;
-                    connection.query(bill, [formattedDate], (error, resultBill) => {
-                        if (error) {
-                            console.log(error)
-                        } else {
-                            let billnum = 0
-                            if (resultBill.length !== 0) {
-                                billnum = resultBill[0].numberbill + 1;
-                            } else { billnum += 1; }
-                            const formattedNumber = formatNumber(billnum);
-                            //console.log(formattedNumber)
-                            Finance.Withdrawmoney(resultUser[0], formattedDate, formattedNumber, billnum, quantity, resultUser[0].accountNumber, phonenumber, withdrawStatus)
-                                .then(calculatedValues => {
-                                    //console.log(calculatedValues);
-                                })
-                                .catch(error => {
-                                    console.error(error);
+                if (resultUser[0].credit > quantity && resultUser[0].turnover === 0) {
+                    if (resultUser[0].promotionuser.includes("ไม่ได้รับโปรโมชั่น")) { //เช็คว่าไม่ได้รับโปรโมชั่นหรือคูปอง
+                        let withdrawWebUser = WinhdrawUserOn(resultUser, formattedDate, quantity, phonenumber, withdrawStatus,
+                            actualize, statusWitdraw, formattedTime, agent_id)
+                            .then(data => {
+                                res.send({
+                                    message: "รอการอนุมัติการถอนเงิน",
                                 });
-
-                            const balance = quantity;
-                            let sql_Bank = `SELECT * FROM banknames WHERE bankname_name ='${resultUser[0].bank}'`;
-                            connection.query(sql_Bank, (error, resultBank) => {
-                                if (error) {
-                                    console.log(error)
+                                res.end();
+                            })
+                            .catch(error => {
+                                console.error("Error:", error);
+                            });
+                    } else {
+                        let sql_Promotion = `SELECT * FROM creditpromotion WHERE passwordpromotion ='${resultUser[0].passwordpromotion}'`;
+                        connection.query(sql_Promotion, (error, resultPromotion) => {
+                            if (error) {
+                                console.log(error)
+                            } else {
+                                if (resultPromotion.length === 1) {
+                                    res.send({
+                                        message: "ถอนเงินไม่ได้ เนื่องจากติดโปรโมชั่น",
+                                    });
+                                    res.end();
                                 } else {
-                                    let sql_before = `INSERT INTO logfinanceuser (idUser, agent_id, accountName, accountNumber, phonenumber, tpyefinance, quantity, creditbonus, 
-                                        balance_before, balance, bill_number, numberbill, status, transaction_date, time, bank, imgBank, destinationAccount, destinationAccountNumber, actualize) value 
-                                    ('${resultUser[0].id}','${resultUser[0].agent_id}','${resultUser[0].accountName}','${resultUser[0].accountNumber}','${phonenumber}','${'ถอน'}','${quantity}','${0}','${resultUser[0].credit}'
-                                    ,'${balance}','T${formattedDate}${formattedNumber}','${billnum}','${statusWitdraw}','${formattedDate}','${formattedTime}','${resultUser[0].bank}','${resultBank[0].images}'
-                                    ,'${resultUser[0].accountName}','${resultUser[0].accountNumber}','${actualize}')`;
-
-                                    connection.query(sql_before, (error, result) => {
-                                        if (error) {
-                                            console.log(error)
+                                    let sql_conpon = `SELECT * FROM coupon WHERE password_coupon ='${resultUser[0].passwordpromotion}'`;
+                                    connection.query(sql_conpon, (error, resultConpon) => {
+                                        if (resultConpon.length === 1) {
+                                            console.log(resultUser[0].credit, resultConpon[0].valustrunover);
+                                            if (resultUser[0].credit >= resultConpon[0].valustrunover) { //ผู้เล่นทำตามเงื่อนไขคูปองหรือยัง
+                                                let withdrawWebUser = WinhdrawUserOn(resultUser, formattedDate, quantity, phonenumber, withdrawStatus,
+                                                    actualize, statusWitdraw, formattedTime, agent_id)
+                                                    .then(data => {
+                                                        if (data.credit < 10) {
+                                                            let sql = `UPDATE member set promotionuser = 'ไม่ได้รับโปรโมชั่น', passwordpromotion = 'ไม่ได้รับโปรโมชั่น', gameplayturn = 'PlayAllGame', turnover = '${0}'
+                                                    WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}'`;
+                                                            connection.query(sql, (error, resultAfter) => {
+                                                                if (error) {
+                                                                    console.log(error);
+                                                                } else {
+                                                                    res.send({
+                                                                        message: "รอการอนุมัติการถอนเงิน",
+                                                                    });
+                                                                    res.end();
+                                                                }
+                                                            })
+                                                        } else {
+                                                            res.send({
+                                                                message: "รอการอนุมัติการถอนเงิน",
+                                                            });
+                                                            res.end();
+                                                        }
+                                                    }).catch(error => {
+                                                        console.error("Error:", error);
+                                                    });
+                                            } else {
+                                                res.send({
+                                                    message: "ถอนเงินไม่ได้ เนื่องจากติดโปรโมชั่น",
+                                                });
+                                                res.end();
+                                            }
                                         } else {
-                                            const balanceNow = resultUser[0].credit - quantity;
-                                            if (statusWitdraw === "สำเร็จ") {
-
-                                                const approval_person = req.body.approval_person
-                                                const tpyeApproval_person = req.body.tpye_Approval_person
-
-                                                let sql = `UPDATE member set credit = '${balanceNow}', withdraw_member = '${resultUser[0].withdraw_member + quantity}', latest_withdrawal = '${quantity}'
+                                            let withdrawWebUser = WinhdrawUserOn(resultUser, formattedDate, quantity, phonenumber, withdrawStatus,
+                                                actualize, statusWitdraw, formattedTime, agent_id)
+                                                .then(data => {
+                                                    if (data.credit < 10) {
+                                                        let sql = `UPDATE member set promotionuser = 'ไม่ได้รับโปรโมชั่น', passwordpromotion = 'ไม่ได้รับโปรโมชั่น', gameplayturn = 'PlayAllGame', turnover = '${0}'
                                                 WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}'`;
-                                                connection.query(sql, (error, resultAfter) => {
-                                                    if (error) {
-                                                        console.log(error);
-                                                    }
-
-                                                    let sql_Withdraw = `UPDATE logfinanceuser set trans_ref = '${approval_person}',qrcodeData = '${tpyeApproval_person}' 
-                                                    WHERE bill_number ='T${formattedDate}${formattedNumber}'`;
-                                                    connection.query(sql_Withdraw, (error, withdraw) => {
-                                                        let updateRepostFinance = Finance.UpdateLogRepostFinance(phonenumber, 'ถอน', quantity)
+                                                        connection.query(sql, (error, resultAfter) => {
+                                                            if (error) {
+                                                                console.log(error);
+                                                            } else {
+                                                                res.send({
+                                                                    message: "รอการอนุมัติการถอนเงิน",
+                                                                });
+                                                                res.end();
+                                                            }
+                                                        })
+                                                    } else {
                                                         res.send({
-                                                            message: "ถอนเงินสำเร็จ",
+                                                            message: "รอการอนุมัติการถอนเงิน",
                                                         });
                                                         res.end();
-                                                    })
-                                                });
-                                            }
-                                            else {
-                                                let sql = `UPDATE member set credit = '${balanceNow}', withdraw_member = '${resultUser[0].withdraw_member + quantity}', latest_withdrawal = '${quantity}'
-                                            WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}'`;
-                                                connection.query(sql, (error, resultAfter) => {
-                                                    if (error) {
-                                                        console.log(error);
                                                     }
-
-                                                    const post = [
-                                                        {
-                                                            username: resultUser[0].username,
-                                                            withdraw_member: quantity,
-                                                            message: "มีการแจ้งถอนเงินจำนวน"
-                                                        }]
-                                                    let lintNotify = logEdit.testLine('ถอนเงิน', quantity, phonenumber, formattedDate, formattedTime)
-                                                    io.emit('notify-management-withdraw', { data: post });
-                                                    res.send({
-                                                        message: "รอการอนุมัติการถอนเงิน",
-                                                    });
-                                                    res.end();
+                                                }).catch(error => {
+                                                    console.error("Error:", error);
                                                 });
-                                            }
                                         }
-                                    });
+                                    })
                                 }
-                            })
-                        }
-                    })
+                            }
+                        })
+                    }
                 } else {
                     res.send({
                         message: "ยอดเงินมีไม่เพียงพอ",
@@ -755,6 +773,98 @@ exports.WinhdrawUser = (req, res) => {
     }
 };
 
+function WinhdrawUserOn(resultUser, formattedDate, quantity, phonenumber, withdrawStatus, actualize, statusWitdraw, formattedTime, agent_id) {
+    return new Promise((resolve, reject) => {
+        const io = socket.getIO();
+        //let totalamountdaily = logTotalAmountWithdraw(resultUser, formattedDateBill, 'ถอน', destinationAccount, destinationAccountNumber, quantity, statusFinance)
+        let bill = `SELECT numberbill FROM logfinanceuser WHERE transaction_date = ? AND tpyefinance = 'ถอน' ORDER BY numberbill DESC LIMIT 1`;
+        connection.query(bill, [formattedDate], (error, resultBill) => {
+            if (error) {
+                console.log(error)
+            } else {
+                let billnum = 0
+                if (resultBill.length !== 0) {
+                    billnum = resultBill[0].numberbill + 1;
+                } else { billnum += 1; }
+                const formattedNumber = formatNumber(billnum);
+                //console.log(formattedNumber)
+                Finance.Withdrawmoney(resultUser[0], formattedDate, formattedNumber, billnum, quantity, resultUser[0].accountNumber, phonenumber, withdrawStatus)
+                    .then(calculatedValues => {
+                        //console.log(calculatedValues);
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+
+                const balance = quantity;
+                let sql_Bank = `SELECT * FROM banknames WHERE bankname_name ='${resultUser[0].bank}'`;
+                connection.query(sql_Bank, (error, resultBank) => {
+                    if (error) {
+                        console.log(error)
+                    } else {
+                        let sql_before = `INSERT INTO logfinanceuser (idUser, agent_id, accountName, accountNumber, phonenumber, tpyefinance, quantity, creditbonus, 
+                    balance_before, balance, bill_number, numberbill, status, transaction_date, time, bank, imgBank, destinationAccount, destinationAccountNumber, actualize) value 
+                    ('${resultUser[0].id}','${resultUser[0].agent_id}','${resultUser[0].accountName}','${resultUser[0].accountNumber}','${phonenumber}','${'ถอน'}','${quantity}','${0}','${resultUser[0].credit}'
+                    ,'${balance}','T${formattedDate}${formattedNumber}','${billnum}','${statusWitdraw}','${formattedDate}','${formattedTime}','${resultUser[0].bank}','${resultBank[0].images}'
+                    ,'${resultUser[0].accountName}','${resultUser[0].accountNumber}','${actualize}')`;
+
+                        connection.query(sql_before, (error, result) => {
+                            if (error) {
+                                console.log(error)
+                            } else {
+                                const balanceNow = resultUser[0].credit - quantity;
+                                if (statusWitdraw === "สำเร็จ") {
+
+                                    const approval_person = req.body.approval_person
+                                    const tpyeApproval_person = req.body.tpye_Approval_person
+
+                                    let sql = `UPDATE member set credit = '${balanceNow}', withdraw_member = '${resultUser[0].withdraw_member + quantity}', latest_withdrawal = '${quantity}'
+                                WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}'`;
+                                    connection.query(sql, (error, resultAfter) => {
+                                        if (error) {
+                                            console.log(error);
+                                        }
+
+                                        let sql_Withdraw = `UPDATE logfinanceuser set trans_ref = '${approval_person}',qrcodeData = '${tpyeApproval_person}' 
+                                    WHERE bill_number ='T${formattedDate}${formattedNumber}'`;
+                                        connection.query(sql_Withdraw, (error, withdraw) => {
+                                            let updateRepostFinance = Finance.UpdateLogRepostFinance(phonenumber, 'ถอน', quantity)
+                                            res.send({
+                                                message: "ถอนเงินสำเร็จ",
+                                            });
+                                            res.end();
+                                        })
+                                    });
+                                } else {
+                                    let sql = `UPDATE member set credit = '${balanceNow}', withdraw_member = '${resultUser[0].withdraw_member + quantity}', latest_withdrawal = '${quantity}'
+                                WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}'`;
+                                    connection.query(sql, (error, resultAfter) => {
+                                        if (error) {
+                                            console.log(error);
+                                        } else {
+                                            const post = [
+                                                {
+                                                    username: resultUser[0].username,
+                                                    withdraw_member: quantity,
+                                                    message: "มีการแจ้งถอนเงินจำนวน"
+                                                }]
+                                            const message = `ลูกค้าแจ้งถอน\nลูกค้า: ${phonenumber}\nจำนวนเงิน: ${quantity}\nเวลา: ${formattedDate} ${formattedTime}`;
+                                            let lintNotify = logEdit.testLine(message, quantity, phonenumber, formattedDate, formattedTime)
+
+                                            io.emit('notify-management-withdraw', { data: post });
+                                            let jsArray = { status: "รอการอนุมัติการถอนเงิน", credit: balanceNow };
+                                            resolve(jsArray);
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    }
+                })
+            }
+        })
+    })
+}
 
 function logTotalAmount(resultUser, formattedDateBill, type, destinationAccount, destinationAccountNumber, quantity, statusFinance) {
     //console.log(formattedDateBill, type);

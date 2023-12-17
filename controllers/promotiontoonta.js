@@ -69,7 +69,11 @@ module.exports = class Post {
                                                                 receive_Promotions(resultPromotion, dataUser, bill_number, quantityUser, formattedDate, formattedNumber,
                                                                     statusFinance, destinationAccount, destinationAccountNumber, transRef, qrcodeData, nameimg, totaltopup, ipuser, imgBank, actualize)
                                                                     .then(calculatedValues => {
-                                                                        let jsArray = { status: calculatedValues.status };
+                                                                        let jsArray = {
+                                                                            status: calculatedValues.status,
+                                                                            promotion: resultPromotion[0].namepromotion,
+                                                                            turnover: calculatedValues.turnover
+                                                                        };
                                                                         resolve(jsArray);
                                                                     })
                                                                     .catch(error => {
@@ -87,7 +91,11 @@ module.exports = class Post {
                                                         receive_Promotions(resultPromotion, dataUser, bill_number, quantityUser, formattedDate, formattedNumber,
                                                             statusFinance, destinationAccount, destinationAccountNumber, transRef, qrcodeData, nameimg, totaltopup, ipuser, imgBank, actualize)
                                                             .then(calculatedValues => {
-                                                                let jsArray = { status: calculatedValues.status };
+                                                                let jsArray = {
+                                                                    status: calculatedValues.status,
+                                                                    promotion: resultPromotion[0].namepromotion,
+                                                                    turnover: calculatedValues.turnover
+                                                                };
                                                                 resolve(jsArray);
                                                             })
                                                             .catch(error => {
@@ -107,7 +115,9 @@ module.exports = class Post {
                                             receive_Promotions(resultPromotion, dataUser, bill_number, quantityUser, formattedDate, formattedNumber,
                                                 statusFinance, destinationAccount, destinationAccountNumber, transRef, qrcodeData, nameimg, totaltopup, ipuser, imgBank, actualize)
                                                 .then(calculatedValues => {
-                                                    let jsArray = { status: calculatedValues.status };
+                                                    let jsArray = { status: calculatedValues.status, 
+                                                        promotion: resultPromotion[0].namepromotion,
+                                                        turnover: calculatedValues.turnover};
                                                     resolve(jsArray);
                                                 })
                                                 .catch(error => {
@@ -267,6 +277,15 @@ module.exports = class Post {
                                             }
                                         })
                                     }
+                                } else {
+                                    if (balanceNow <= 10) {
+                                        let sql = `UPDATE member set promotionuser = 'ไม่ได้รับโปรโมชั่น', passwordpromotion = 'ไม่ได้รับโปรโมชั่น', gameplayturn = 'PlayAllGame', turnover = '${0}' WHERE username ='${post.username}'`;
+                                        connection.query(sql, (error, resultAfter) => {
+                                            if (error) {
+                                                console.log(error);
+                                            }
+                                        });
+                                    }
                                 }
                             })
                         } else {
@@ -353,7 +372,7 @@ function receive_Promotions(resultPromotion, dataUser, bill_number, quantity, fo
                     addRepostPromotion(dataUser.username, resultPromotion[0].passwordpromotion, resultPromotion[0].namepromotion,
                         resultPromotion[0].promotionsupport, resultPromotion[0].multiplier, balancebunus, creditBunus, ipuser, resultPromotion[0]);
 
-                    let jsArray = { status: "รับโปรโมชั่นเรียบร้อย" };
+                    let jsArray = { status: "รับโปรโมชั่นเรียบร้อย", turnover: turnover };
                     resolve(jsArray);
                 });
             }
