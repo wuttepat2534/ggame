@@ -514,7 +514,7 @@ exports.saveTestGameBuy = async (require, response) => {
                         arrayWinStyle.push(winStyle);
                         arrayWinCount.push(winCountArr)
                         const post = {
-                            username: results_check[0].username, gameid: 'DOGZILLA', bet: betFreeSpin, win: win, balance_credit: user_credit, 
+                            username: results_check[0].username, gameid: 'DOGZILLA', bet: betFreeSpin + 0.01, win: win, balance_credit: user_credit, 
                             userAgent: userAgent, platform: userAgentt, namegame: namegame
                         }
                         let balanceturnover = hasSimilarData(results_check[0].gameplayturn, "DOGZILLA", results_check[0].turnover, betFreeSpin)
@@ -540,7 +540,7 @@ exports.saveTestGameBuy = async (require, response) => {
                                                         console.log(error)
                                                     } else {
                                                         x = x + i;
-                                                        let repost = repostGame.uploadLogRepostGameDogzilaFree(post)
+                                                        let repost = repostGame.uploadLogRepostGame(post)
                                                         if (x === 45) {
                                                             const flattenedArray = arrayWinCount.flat();
                                                             const upPlay = result_logGame[0].play + 10;
