@@ -554,7 +554,10 @@ exports.financeUser = (req, res) => {
                                             const message = `ฝากเงินสำเร็จ\nลูกค้า: ${resultUser[0].accountName}\nยูสเซอร์: ${phonenumber}
 จำนวนเงิน: ${quantity}
 _______________________
-หมายเหตุ : ยูสเซอร์ได้เลือกโปรโมชั่น: ${calculatedValues.promotion}, เพิ่มเทิร์นสำหรับผู้ที่รับโปรโมชั่น, ฝากเงินจำนวน: '${quantity}' >>> เทิร์น : 1 >>> เพิ่มยอดเทิร์นสำหรับรอบนี้คือ: '${calculatedValues.turnover}', Reward[ฝากเงิน] สำหรับรับผู้ที่ไม่ได้รับโปรโมชั่น สถานะ : เปิดใช้งาน, Reward[ฝากเงิน] ประเภท : FIX, Reward[ฝากเงิน] เงื่อนไข Credit : 10, Reward[ฝากเงิน] ไม่เข้าเงื่อนไข
+หมายเหตุ : ยูสเซอร์ได้เลือกโปรโมชั่น: ${calculatedValues.promotion}
+ยอดเงืนก่อน: ${resultUser[0].credit}
+ยอดเงินหลังฝาก: ${balance}
+เทิร์นโอเวอร์ที่ต้องทำ: ${resultUser[0].turnover + quantity}
 _______________________
 เวลา: ${formattedDate} ${formattedTime}
 `;
@@ -604,7 +607,10 @@ _______________________
                                                 const message = `ฝากเงินสำเร็จ\nลูกค้า: ${resultUser[0].accountName}\nยูสเซอร์: ${phonenumber}
 จำนวนเงิน: ${quantity}
 _______________________
-หมายเหตุ : ยูสเซอร์ไม่ได้เลือกโปรโมชั่น, ยูสเซอร์ไม่ได้เลือกโปรโมชั่นก่อนฝาก, โปรโมชั่น : ไม่ทำงาน, Affiliate สถานะ : ไม่เข้าเงื่อนไข [ฝากครั้งแรก], เพิ่มเทิร์นสำหรับผู้ที่ไม่ได้รับโปรโมชั่น, ฝากเงินจำนวน : '${quantity}' >>> เทิร์น : 1 >>> เพิ่มยอดเทิร์นสำหรับรอบนี้คือ : '${quantity}', Reward[ฝากเงิน] สำหรับรับผู้ที่ไม่ได้รับโปรโมชั่น สถานะ : เปิดใช้งาน, Reward[ฝากเงิน] ประเภท : FIX, Reward[ฝากเงิน] เงื่อนไข Credit : 10, Reward[ฝากเงิน] ไม่เข้าเงื่อนไข, Reward[เพื่อนฝากเงิน] สำหรับรับผู้ที่ไม่ได้รับโปรโมชั่น สถานะ : ปิดใช้งาน, Reward[เพื่อนฝากเงิน] ไม่ทำงาน
+หมายเหตุ : ยูสเซอร์ไม่ได้เลือกโปรโมชั่น
+ยอดเงืนก่อน: ${resultUser[0].credit}
+ยอดเงินหลังฝาก: ${balance}
+เทิร์นโอเวอร์ที่ต้องทำ: ${resultUser[0].turnover + quantity}
 _______________________
 เวลา: ${formattedDate} ${formattedTime}
 `;
@@ -685,10 +691,31 @@ exports.WinhdrawUser = (req, res) => {
                                 console.log(error)
                             } else {
                                 if (resultPromotion.length === 1) {
-                                    res.send({
-                                        message: "ถอนเงินไม่ได้ เนื่องจากติดโปรโมชั่น",
-                                    });
-                                    res.end();
+                                    if (resultUser[0].turnover === 0) {
+                                        let withdrawWebUser = WinhdrawUserOn(resultUser, formattedDate, quantity, phonenumber, withdrawStatus,
+                                            actualize, statusWitdraw, formattedTime, agent_id)
+                                            .then(data => {
+                                                let sql = `UPDATE member set promotionuser = 'ไม่ได้รับโปรโมชั่น', passwordpromotion = 'ไม่ได้รับโปรโมชั่น', gameplayturn = 'PlayAllGame', turnover = '${0}', credit = '${0}'
+                                            WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}'`;
+                                                connection.query(sql, (error, resultAfter) => {
+                                                    if (error) {
+                                                        console.log(error);
+                                                    } else {
+                                                        res.send({
+                                                            message: "รอการอนุมัติการถอนเงิน",
+                                                        });
+                                                        res.end();
+                                                    }
+                                                })
+                                            }).catch(error => {
+                                                console.error("Error:", error);
+                                            });
+                                    } else {
+                                        res.send({
+                                            message: "ถอนเงินไม่ได้ เนื่องจากติดโปรโมชั่น",
+                                        });
+                                        res.end();
+                                    }
                                 } else {
                                     let sql_conpon = `SELECT * FROM coupon WHERE password_coupon ='${resultUser[0].passwordpromotion}'`;
                                     connection.query(sql_conpon, (error, resultConpon) => {
@@ -699,7 +726,7 @@ exports.WinhdrawUser = (req, res) => {
                                                     actualize, statusWitdraw, formattedTime, agent_id)
                                                     .then(data => {
                                                         if (data.credit < 10) {
-                                                            let sql = `UPDATE member set promotionuser = 'ไม่ได้รับโปรโมชั่น', passwordpromotion = 'ไม่ได้รับโปรโมชั่น', gameplayturn = 'PlayAllGame', turnover = '${0}'
+                                                            let sql = `UPDATE member set promotionuser = 'ไม่ได้รับโปรโมชั่น', passwordpromotion = 'ไม่ได้รับโปรโมชั่น', gameplayturn = 'PlayAllGame', turnover = '${0}', credit = '${0}'
                                                     WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}'`;
                                                             connection.query(sql, (error, resultAfter) => {
                                                                 if (error) {

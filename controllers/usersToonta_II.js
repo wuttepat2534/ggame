@@ -974,10 +974,11 @@ exports.upDateCoupon = async (req, res, next) => {
     const withdraw_valus = req.body.withdraw_valus;
     const valusconpon = req.body.valusconpon;
     const coupon_balance = req.body.coupon_balance;
+    const balance_conditions = rep.body.balance_conditions;
 
     let sql = `UPDATE coupon set typebonus = '${typebonus}',valusbunus = '${valusbunus}',couponpassword = '${couponpassword}',
     statu_coupon = '${"Y"}', namepromotion = '${namepromotion}', startcoupon = '${startcoupon}', endcoupon = '${endcoupon}', maxbunus = '${maxbunus}',
-    withdrawalType = '${withdrawalType}', valustrunover = '${withdraw_valus}', valusconpon = '${valusconpon}', coupon_balance = '${coupon_balance}' 
+    withdrawalType = '${withdrawalType}', valustrunover = '${withdraw_valus}', valusconpon = '${valusconpon}', coupon_balance = '${coupon_balance}', balance_conditions = '${balance_conditions}'
     WHERE password_coupon = '${password_coupon}'`;
     connection.query(sql, (error, result) => {
         try {
