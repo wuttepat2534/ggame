@@ -1367,7 +1367,7 @@ exports.getRepostGameListGame = (require, response) => {
     const nameGame = require.body.nameGame
 
     let sql_ = `SELECT * FROM repostgame WHERE created_atdate >= '${date}' AND created_atdate <= '${endDate}' AND namegame = '${nameGame}' AND gameid = '${searcGameCamp}'
-        AND  username LIKE ? LIMIT ? OFFSET ?`;
+        AND  username LIKE ? ORDER BY id DESC LIMIT ? OFFSET ?`;
     const searchPattern = `%${searchPhones}%`;
     const values = [searchPattern, pageSize, offset];
     connection.query(sql_, values, (error, results) => {
