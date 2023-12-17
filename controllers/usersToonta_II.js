@@ -1365,46 +1365,29 @@ exports.getRepostGameListGame = (require, response) => {
     const date = require.body.dataDate;
     const endDate = require.body.dataEndDate;
     const nameGame = require.body.nameGame
-    let win = 0;
-    let bet = 0
-    const post = {
-        startdate: date, endDate: endDate
-    }
 
-    repostGame.valuewinbet(post)
-        .then(calculatedValues => {
-            win = calculatedValues.win
-            bet = calculatedValues.bet
-        })
-        .catch(error => {
-            console.error(error);
-        });
-
-    setTimeout(() => {
-        let sql_ = `SELECT * FROM repostgame WHERE created_atdate >='${date}' AND created_atdate <= '${endDate}' AND namegame = '${nameGame}' AND gameid = '${searcGameCamp}'
+    let sql_ = `SELECT * FROM repostgame WHERE created_atdate >= '${date}' AND created_atdate <= '${endDate}' AND namegame = '${nameGame}' AND gameid = '${searcGameCamp}'
         AND  username LIKE ? ORDER BY created_atdate DESC LIMIT ? OFFSET ?`;
-        const searchPattern = `%${searchPhones}%`;
-        const values = [searchPattern, pageSize, offset];
-        connection.query(sql_, values, (error, results) => {
-            if (error) { console.log(error); }
-            else {
-                const totalCount = `SELECT COUNT(*) as count FROM repostgame WHERE created_atdate >='${date}' AND created_atdate <= '${endDate}' 
+    const searchPattern = `%${searchPhones}%`;
+    const values = [searchPattern, pageSize, offset];
+    connection.query(sql_, values, (error, results) => {
+        if (error) { console.log(error); }
+        else {
+            const totalCount = `SELECT COUNT(*) as count FROM repostgame WHERE created_atdate >='${date}' AND created_atdate <= '${endDate}' 
                 AND gameid = '${searcGameCamp}' AND username = '${searchPhones}' AND namegame = '${nameGame}'`
-                connection.query(totalCount, (error, res) => {
-                    if (error) { console.log(error); }
-                    else {
-                        response.send({
-                            data: results,
-                            valusData: results.length,
-                            total: res[0].count
-                        });
-                        response.end();
-                    }
-                })
-            }
-        });
-
-    }, 200);
+            connection.query(totalCount, (error, res) => {
+                if (error) { console.log(error); }
+                else {
+                    response.send({
+                        data: results,
+                        valusData: results.length,
+                        total: res[0].count
+                    });
+                    response.end();
+                }
+            })
+        }
+    });
 }
 
 //http://localhost:5000/post/getRepostDeposit getRepostDeposit

@@ -2306,6 +2306,7 @@ exports.getRepostGame = (require, response) => {
     const endDate = require.body.dataEndDate;
     let win = 0;
     let bet = 0
+    console.log(date, endDate);
     const post = {
         startdate: date, endDate: endDate
     }
@@ -2317,9 +2318,9 @@ exports.getRepostGame = (require, response) => {
         .catch(error => {
             console.error(error);
         });
-
+    
+    
     setTimeout(() => {
-        console.log(date, endDate);
         if (searchPhones === '' && searcGameCamp === '') {
             let sql = `SELECT * FROM repostgame WHERE created_atdate >='${date}' AND created_atdate <= '${endDate}' ORDER BY created_atdate DESC LIMIT ${pageSize} OFFSET ${offset}`;
             connection.query(sql, async (error, results) => {
@@ -2468,7 +2469,7 @@ exports.getRepostGame = (require, response) => {
                 }
             });
         }
-    }, 200);
+    }, 1000);
 }
 
 //http://localhost:5000/post/getMemberRegiter getMemberRegiter
