@@ -58,9 +58,9 @@ exports.saveTestGame = async (require, response) => {
         if (results_check.length > 0) {
             const namegame  = results_check[0].playgameuser;
             let user_credit = results_check[0].credit;
-            if (user_credit == "") { user_credit = 0; }
-            user_credit -= bet
+            if (user_credit === "") { user_credit = 0; }
             let jsonGame = MainGame(user_credit, bet, true);
+            user_credit -= bet
             //console.log(jsonGame)
             let isWinFreeSpin = jsonGame.isWinFreeSpin;
             let credit = jsonGame.credit;
@@ -142,7 +142,7 @@ exports.saveTestGame = async (require, response) => {
                                         response.sendStatus(500);
                                         return;
                                     } else {
-                                        const sql_update = `UPDATE member set credit='${user_credit}',bet_latest='${bet}', turnover='${balanceturnover}' WHERE id='${user_id}'`;
+                                        const sql_update = `UPDATE member set credit='${credit}',bet_latest='${bet}', turnover='${balanceturnover}' WHERE id='${user_id}'`;
                                         connection.query(sql_update, (error, result_update_user) => {
                                             if (error) {
                                                 response.sendStatus(500);
@@ -369,11 +369,11 @@ exports.saveTestGame = async (require, response) => {
             // }
 
             //winCount = winLine.length;
-            credit += win;
+            let creditNow = (credit - bet) + win;
             //
 
             //console.log(winStyle);
-            jsArray = '{"credit": \"' + credit + '\","bet":\"' + bet + '\","win":\"' + win + '\","tiles":\"' + tile15 + '\","winline":\"' + winLine + '\","winStyle":\"' +
+            jsArray = '{"credit": \"' + creditNow + '\","bet":\"' + bet + '\","win":\"' + win + '\","tiles":\"' + tile15 + '\","winline":\"' + winLine + '\","winStyle":\"' +
                 winStyle + '\","winCount":\"' + winCount + '\","isWinFreeSpin":\"' + isWinFreeSpin + '\"}';
             //
             jsArray = JSON.parse(jsArray);
