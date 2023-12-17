@@ -177,6 +177,7 @@ module.exports = class Post {
     }
 
     //GVJGIAacXqdKUPQ6D2pruWxT7tp6xfgNpqjchXnAxWk ใช้ test niranam hui
+    //MRfsmoPFGsxyqwKrQKmc9cogxD8Yxq5rKtTGDDIYjhn ใช้ถอน
     static testLine(action, valus, username, date, time) {
         //const text = 'มีการทำรายการ ' + action + ' จำนวน ' + valus +' บาท ' + ' โดย ' + username +' วันที่ ' + date + ' เวลา ' + time 
         try {
@@ -186,7 +187,7 @@ module.exports = class Post {
                 url: 'https://notify-api.line.me/api/notify',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': 'Bearer GVJGIAacXqdKUPQ6D2pruWxT7tp6xfgNpqjchXnAxWk'
+                    'Authorization': 'Bearer MRfsmoPFGsxyqwKrQKmc9cogxD8Yxq5rKtTGDDIYjhn'
                 },
                 data: `message=${action}`
             };
@@ -212,7 +213,7 @@ module.exports = class Post {
                 url: 'https://notify-api.line.me/api/notify',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': 'Bearer euglgxDIgESrrRcV20UMPSCJtcrkUkflroC0jCbCw1d'
+                    'Authorization': 'Bearer MRfsmoPFGsxyqwKrQKmc9cogxD8Yxq5rKtTGDDIYjhn'
                 },
                 data: `message=${action}`
             };
@@ -228,6 +229,7 @@ module.exports = class Post {
         }
     }
 
+    //PcMw65X3J0ntunsWHc5KOAMWbKMwZVTMznvlb4m7T5A ใช้ ฝาก
     static DitpositLinenoti(action) {
         try {
             let config = {
@@ -236,7 +238,7 @@ module.exports = class Post {
                 url: 'https://notify-api.line.me/api/notify',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Authorization': 'Bearer euglgxDIgESrrRcV20UMPSCJtcrkUkflroC0jCbCw1d'
+                    'Authorization': 'Bearer PcMw65X3J0ntunsWHc5KOAMWbKMwZVTMznvlb4m7T5A'
                 },
                 data: `message=${action}`
             };
