@@ -430,12 +430,10 @@ app.post('/login/agent', async (require, response, next) => {
                 }
             } else {
                 const storedUser = data[0];
-                const passwordMatches = await bcrypt.compare(password, storedUser.password);
-
-                if (!passwordMatches) {
-                    const error = new Error('Wrong password!');
-                    error.statusCode = 401;
-                    throw error;
+                const hashedPassword = md5(password)
+                //const passwordMatches = await bcrypt.compare(password, storedUser.password);
+                if (hashedPassword !== storedUser.password) {
+                    return response.status(401).json({ message: 'Incorrect password' });
                 }
                 const token = jwt.sign(
                     {
@@ -1239,7 +1237,7 @@ app.post('/depositToonta', async (req, res) => { //ทดลองอัพโ�
          console.error(error.data);
      });*/
     try {
-        const YOUR_FILE_LOCATION = 'https://drive.google.com/uc?id=1LByExiGSTbVBhYAqlBqDwDaC43YSmg8h';
+        const YOUR_FILE_LOCATION = 'https://drive.google.com/uc?id=1vju9Zfyx4qaScLDzSYdYg7Ou76jXzK07';
         const Url = `https://dogzilla.live/images/${req.body.filename}`
         const restest = await axios.post(
             'https://api.slipok.com/api/line/apikey/9496',

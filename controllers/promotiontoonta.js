@@ -10,6 +10,7 @@ const upload = multer({ dest: 'uploads/' });
 const cron = require('node-cron');
 const app = express();
 const Finance = require('./Finance')
+const logEdit = require('./logEditAll')
 const moment = require('moment-timezone')
 
 app.use(express.static('public'));
@@ -115,9 +116,11 @@ module.exports = class Post {
                                             receive_Promotions(resultPromotion, dataUser, bill_number, quantityUser, formattedDate, formattedNumber,
                                                 statusFinance, destinationAccount, destinationAccountNumber, transRef, qrcodeData, nameimg, totaltopup, ipuser, imgBank, actualize)
                                                 .then(calculatedValues => {
-                                                    let jsArray = { status: calculatedValues.status, 
+                                                    let jsArray = {
+                                                        status: calculatedValues.status,
                                                         promotion: resultPromotion[0].namepromotion,
-                                                        turnover: calculatedValues.turnover};
+                                                        turnover: calculatedValues.turnover
+                                                    };
                                                     resolve(jsArray);
                                                 })
                                                 .catch(error => {
@@ -371,7 +374,19 @@ function receive_Promotions(resultPromotion, dataUser, bill_number, quantity, fo
 
                     addRepostPromotion(dataUser.username, resultPromotion[0].passwordpromotion, resultPromotion[0].namepromotion,
                         resultPromotion[0].promotionsupport, resultPromotion[0].multiplier, balancebunus, creditBunus, ipuser, resultPromotion[0]);
-
+                    
+                    let promotionname = resultPromotion[0].namepromotion
+                    const message = `ฝากเงินสำเร็จ\nลูกค้า: ${dataUser.accountName}\nยูสเซอร์: ${dataUser.phonenumber}
+จำนวนเงิน: ${quantity}
+_______________________
+หมายเหตุ : ยูสเซอร์ได้เลือกโปรโมชั่น: ${promotionname}
+ยอดเงืนก่อน: ${dataUser.credit}
+ยอดเงินหลังฝาก: ${balance}
+เทิร์นโอเวอร์ที่ต้องทำ: ${turnover}
+_______________________
+เวลา: ${formattedDate} ${formattedTime}
+`;
+                    let lintNotify = logEdit.DitpositLinenoti(message)
                     let jsArray = { status: "รับโปรโมชั่นเรียบร้อย", turnover: turnover };
                     resolve(jsArray);
                 });

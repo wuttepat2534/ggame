@@ -551,17 +551,7 @@ exports.financeUser = (req, res) => {
                                                     deposit_member: quantity,
                                                     message: "มีการแจ้งฝากเงินจำนวน"
                                                 }]
-                                            const message = `ฝากเงินสำเร็จ\nลูกค้า: ${resultUser[0].accountName}\nยูสเซอร์: ${phonenumber}
-จำนวนเงิน: ${quantity}
-_______________________
-หมายเหตุ : ยูสเซอร์ได้เลือกโปรโมชั่น: ${calculatedValues.promotion}
-ยอดเงืนก่อน: ${resultUser[0].credit}
-ยอดเงินหลังฝาก: ${balance}
-เทิร์นโอเวอร์ที่ต้องทำ: ${calculatedValues.turnover}
-_______________________
-เวลา: ${formattedDate} ${formattedTime}
-`;
-                                            let lintNotify = logEdit.DitpositLinenoti(message)
+
                                             io.emit('notify-management-deposit', { data: post });
                                             res.send({
                                                 message: "เติมเงินสำเร็จ",
@@ -2318,8 +2308,8 @@ exports.getRepostGame = (require, response) => {
         .catch(error => {
             console.error(error);
         });
-    
-    
+
+
     setTimeout(() => {
         if (searchPhones === '' && searcGameCamp === '') {
             let sql = `SELECT * FROM repostgame WHERE created_atdate >='${date}' AND created_atdate <= '${endDate}' ORDER BY created_atdate DESC LIMIT ${pageSize} OFFSET ${offset}`;

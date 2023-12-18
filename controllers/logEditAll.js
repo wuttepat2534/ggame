@@ -230,7 +230,7 @@ module.exports = class Post {
     }
 
     //PcMw65X3J0ntunsWHc5KOAMWbKMwZVTMznvlb4m7T5A ใช้ ฝาก
-    static DitpositLinenoti(action) {
+    static DitpositLinenoti(message) {
         try {
             let config = {
                 method: 'post',
@@ -240,7 +240,7 @@ module.exports = class Post {
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'Authorization': 'Bearer PcMw65X3J0ntunsWHc5KOAMWbKMwZVTMznvlb4m7T5A'
                 },
-                data: `message=${action}`
+                data: `message=${message}`
             };
             axios.request(config)
                 .then((response) => {
