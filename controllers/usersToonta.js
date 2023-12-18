@@ -2835,7 +2835,7 @@ exports.getRepostWebdaily = (require, response) => {
                     .then(calculatedValuesI => {
                         repostGame.valuedailyBounnusII(post)
                         .then(calculatedValuesII => {
-                            bunus = calculatedValuesII.bunus + calculatedValuesI.bunus;
+                            bunus = calculatedValuesI.bunus + calculatedValuesII.bunus;
                         })
                         .catch(error => {
                             console.error(error);

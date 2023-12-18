@@ -354,6 +354,8 @@ module.exports = class Post {
                         resolve(jsArray);
                     } else {
                         promotionBunnusvalue = 0;
+                        let jsArray = { "bunus": promotionBunnusvalue };
+                        resolve(jsArray);
                     }
                 }
             });
@@ -377,6 +379,8 @@ module.exports = class Post {
                         resolve(jsArray);
                     } else {
                         conponBounnusvalus = 0
+                        let jsArray = { "bunus": conponBounnusvalus };
+                        resolve(jsArray);
                     }
                 }
             });
