@@ -142,7 +142,7 @@ exports.saveTestGame = async (require, response) => {
                                         response.sendStatus(500);
                                         return;
                                     } else {
-                                        const sql_update = `UPDATE member set credit='${credit}',bet_latest='${bet}', turnover='${balanceturnover}' WHERE id='${user_id}'`;
+                                        const sql_update = `UPDATE member set credit='${credit}',bet_latest='${bet}', turnover='${results_check[0].turnover}' WHERE id='${user_id}'`;
                                         connection.query(sql_update, (error, result_update_user) => {
                                             if (error) {
                                                 response.sendStatus(500);
@@ -530,7 +530,7 @@ exports.saveTestGameBuy = async (require, response) => {
                                     if (error) {
                                         console.log(error)
                                     } else {
-                                        const sql_update = `UPDATE member set credit='${user_credit}',bet_latest='${bet}', turnover='${balanceturnover}' WHERE id='${user_id}'`;
+                                        const sql_update = `UPDATE member set credit='${user_credit}',bet_latest='${bet}', turnover='${results_check[0].turnover}' WHERE id='${user_id}'`;
                                         connection.query(sql_update, (error, result_update_user) => {
                                             if (error) {
                                                 console.log(error)

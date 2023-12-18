@@ -557,7 +557,7 @@ _______________________
 หมายเหตุ : ยูสเซอร์ได้เลือกโปรโมชั่น: ${calculatedValues.promotion}
 ยอดเงืนก่อน: ${resultUser[0].credit}
 ยอดเงินหลังฝาก: ${balance}
-เทิร์นโอเวอร์ที่ต้องทำ: ${resultUser[0].turnover + quantity}
+เทิร์นโอเวอร์ที่ต้องทำ: ${calculatedValues.turnover}
 _______________________
 เวลา: ${formattedDate} ${formattedTime}
 `;
