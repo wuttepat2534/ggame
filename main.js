@@ -433,7 +433,9 @@ app.post('/login/agent', async (require, response, next) => {
                 const hashedPassword = md5(password)
                 //const passwordMatches = await bcrypt.compare(password, storedUser.password);
                 if (hashedPassword !== storedUser.password) {
-                    return response.status(401).json({ message: 'Incorrect password' });
+                    const error = new Error('Wrong password!');
+                    error.statusCode = 401;
+                    throw error;
                 }
                 const token = jwt.sign(
                     {
