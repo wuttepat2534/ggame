@@ -110,8 +110,8 @@ module.exports = class Post {
             const last4DigitsUser = inputStringUser.replace(/\D/g, '').slice(-4);
 
             //console.log(last4Digits, last4DigitsUser)
-            //console.log(Bank, resFinance.data.receiver.account.value);
-            
+            //console.log(Bank, resFinance.data.receiver.account.value, resFinance.data.sender.account.value);
+
             if (Bank === "ธนาคารกสิกรไทย") {
                 //console.log(Bank);
                 let sql_deposit = `SELECT * FROM depositaccount WHERE activestatus = "เปิดใช้งาน" AND SUBSTRING(accountNumber, 6, 4) = '${last4DigitsUser}'`;
@@ -425,7 +425,7 @@ module.exports = class Post {
                         }
                     }
                 })
-            } 
+            }
             if (Bank === 'ธนาคารไทยพาณิชย์') {
                 let sql_deposit = `SELECT * FROM depositaccount WHERE activestatus = "เปิดใช้งาน" AND RIGHT(accountNumber, 4) = '${last4DigitsUser}'`;
                 connection.query(sql_deposit, (error, depositData) => {
@@ -529,7 +529,7 @@ module.exports = class Post {
                         }
                     }
                 })
-            } 
+            }
             if (Bank === 'ธนาคารออมสิน') {
                 let sql_deposit = `SELECT * FROM depositaccount WHERE activestatus = "เปิดใช้งาน" AND RIGHT(accountNumber, 4) = '${last4DigitsUser}'`;
                 connection.query(sql_deposit, (error, depositData) => {
@@ -642,7 +642,6 @@ module.exports = class Post {
                             // reject("ผิดพลาด");
                         }
                         else {
-                            //console.log(depositData[0]);
                             const data = depositData;
                             if (data.length !== 0 || data.length > 0) {
                                 let sql_LogDeposit = `SELECT * FROM logfinanceuser WHERE trans_ref ='${resFinance.data.transRef}'`;
@@ -653,14 +652,17 @@ module.exports = class Post {
                                     } else {
                                         const dataLog = logDeposit_transRef;
                                         if (dataLog.length < 1) {
-                                            let sql_NameAccount = `SELECT * FROM member WHERE RIGHT(accountNumber, 4) = '${last4Digits}' AND bank = '${Bank}' AND phonenumber = '${dataUsers.phonenumber}'`;
+                                            const stringWithNumbers = resFinance.data.sender.account.value;
+                                            const numbersOnly = stringWithNumbers.replace(/\D/g, "");
+                                            console.log(Bank)
+                                            let sql_NameAccount = `SELECT * FROM member WHERE bank = '${Bank}' AND phonenumber = '${dataUsers.phonenumber}' AND  accountNumber LIKE '%${numbersOnly}%'`;
                                             connection.query(sql_NameAccount, async (error, nameAccount) => {
                                                 if (error) {
                                                     console.log(error);
                                                     //reject(error);
                                                 } else {
                                                     const dataUserAccount = nameAccount;
-                                                    //console.log(last4Digits, dataUsers.phonenumber)
+                                                    console.log(dataUserAccount.length);
                                                     if (dataUserAccount.length !== 0 || dataUserAccount.length > 0) {
                                                         let sql_Bank = `SELECT images FROM banknames WHERE bankname_name ='${nameAccount[0].bank}' AND status = 'Y' AND status_delete = 'N'`;
                                                         connection.query(sql_Bank, async (error, usernameAgent) => {
