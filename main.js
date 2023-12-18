@@ -192,14 +192,15 @@ app.get('/list_users/agent/:agent_id', (require, response) => {
 });
 
 //http://localhost:5000/list_users
-app.post('/list_users', auth, (require, response) => {
-    const searchKeyword = require.body.name;
+app.post('/list_users', (require, response) => {
+    console.log('pop');
+    const searchKeyword = require.body.searchKeyword;
+    const agent_id = require.body.agent_id;
     const pageSize = require.body.pageSize;
     const pageNumber = require.body.pageIndex;
     const offset = (pageNumber - 1) * pageSize;
-
     if (searchKeyword === "") {
-        let sql = `SELECT id, username_agent, member_code, name, username, credit, status, created_at, accountName FROM member WHERE status_delete='N' LIMIT ${pageSize} OFFSET ${offset}`;
+        let sql = `SELECT * FROM member WHERE agent_id = '${agent_id}' AND status_delete='N' ORDER BY id DESC LIMIT ${pageSize} OFFSET ${offset}`;
         connection.query(sql, async (error, results) => {
             if (error) { console.log(error); }
             else {
@@ -217,8 +218,8 @@ app.post('/list_users', auth, (require, response) => {
             }
         });
     } else {
-        let sql = `SELECT id, username_agent, member_code, name, username, credit, status, created_at, accountName FROM member WHERE status_delete='N' 
-        AND username LIKE '%${searchKeyword}%' OR name LIKE '%${searchKeyword}%' OR username_agent LIKE '%${searchKeyword}%' LIMIT ${pageSize} OFFSET ${offset}`;
+        let sql = `SELECT * FROM member WHERE agent_id = '${agent_id}' AND status_delete='N' 
+        AND username LIKE '%${searchKeyword}%' OR accountName LIKE '%${searchKeyword}%' ORDER BY id DESC LIMIT ${pageSize} OFFSET ${offset}`;
         connection.query(sql, async (error, results) => {
             if (error) { console.log(error); }
             response.send({
@@ -828,7 +829,7 @@ app.put('/member/:id', async (req, res, next) => {
     const post = {
         id: id, edittype: edittype, idedit: idedit, firstName: firstName, edittype: edittype, lastName: lastName, customerGroup: customerGroup,
         Rank: Rank, contact_number: contact_number, IDLIne: IDLIne, note: note, bank: bank, accountName: accountName, accountNumber: accountNumber,
-        status: statuscheck,
+        status: statuscheck, bank: bank,
     };
 
     let sql_before = `SELECT * FROM member WHERE id ='${id}'`;

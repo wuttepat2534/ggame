@@ -64,9 +64,9 @@ exports.signupMember = async (req, res, next) => {
             } else {
                 const data = results;
                 if (data.length === 0 || data.length < 1) {
-                    let sql = `INSERT INTO member (agent_id, username_agent, member_code, name, username, password, credit, created_at, updated_at, customerGroup, userrank, lineid, status,
+                    let sql = `INSERT INTO member (agent_id, username_agent, member_code, name, username, password, credit, created_at, created_attime, updated_at, customerGroup, userrank, lineid, status,
                         note, currency, bank, accountName, accountNumber, phonenumber, lastName, nametpyecreate) 
-                value ('${agent_id}','${nametpyecreate}','${agent_id}','${firstName}','${username}','${hashedPassword}','${credit}','${formattedDate}','${formattedDate}', '${customerGroup}','${Rank}',
+                value ('${agent_id}','${nametpyecreate}','${agent_id}','${firstName}','${username}','${hashedPassword}','${credit}','${formattedDate}','${formattedTime}','${formattedDate}', '${customerGroup}','${Rank}',
                 '${IDLIne}','${statuScheck}', '${note}', '${currency}','${bank}', '${accountName}', '${accountNumber}', '${contact_number}','${lastName}','${tpyeCreate}')`;
                     connection.query(sql, (error, result) => {
                         if (error) { console.log(error) }
@@ -865,7 +865,7 @@ function WinhdrawUserOn(resultUser, formattedDate, quantity, phonenumber, withdr
                                                     withdraw_member: quantity,
                                                     message: "มีการแจ้งถอนเงินจำนวน"
                                                 }]
-                                            const message = `ลูกค้าแจ้งถอน\nลูกค้า: ${phonenumber}\nจำนวนเงิน: ${quantity}\nเวลา: ${formattedDate} ${formattedTime}`;
+                                            const message = `ลูกค้าแจ้งถอน\nลูกค้า: ${phonenumber}\nชื่อบัญชี: ${resultUser[0].accountName}\nจำนวนเงิน: ${quantity}\nเวลา: ${formattedDate} ${formattedTime}`;
                                             let lintNotify = logEdit.testLine(message, quantity, phonenumber, formattedDate, formattedTime)
 
                                             io.emit('notify-management-withdraw', { data: post });
@@ -1235,35 +1235,36 @@ exports.getDataDepositStatementBank = (req, res) => {
     const month = String(today.getMonth() + 1).padStart(2, '0'); // JavaScript months are 0-based, so we add 1
     const year = today.getFullYear();
     const formattedDateBill = `${year}-${month}-${day}`;
-    //console.log(date, enddate);
+    //console.log(searchKeyword, searchPhones);
     if (searchPhones === '' && searchKeyword === '') {
+        //console.log(pageSize, pageNumber);
         try {
-            let sql_deposit = `SELECT * FROM logfinanceuser WHERE tpyefinance = '${depositwithdrawal}' AND transaction_date >='${date}' AND transaction_date <='${enddate}' LIMIT ${pageSize} OFFSET ${offset}`;
+            let sql_deposit = `SELECT * FROM logfinanceuser WHERE tpyefinance = '${depositwithdrawal}' AND transaction_date >='${date}' AND transaction_date <='${enddate}' ORDER BY id DESC LIMIT ${pageSize} OFFSET ${offset}`;
             connection.query(sql_deposit, (error, resultDeposit) => {
                 if (error) {
                     console.log(error)
                 } else {
-                    let sql_statusTrue = `SELECT * FROM logfinanceuser WHERE tpyefinance = '${depositwithdrawal}' AND status ='สำเร็จ' AND transaction_date >='${date}' AND transaction_date <='${enddate}' LIMIT ${pageSize} OFFSET ${offset}`;
+                    let sql_statusTrue = `SELECT * FROM logfinanceuser WHERE tpyefinance = '${depositwithdrawal}' AND status ='สำเร็จ' AND transaction_date >='${date}' AND transaction_date <='${enddate}' ORDER BY id DESC LIMIT ${pageSize} OFFSET ${offset}`;
                     connection.query(sql_statusTrue, (error, resultstatusTrue) => {
                         if (error) {
                             console.log(error)
                         } else {
-                            let sql_statusFalse = `SELECT * FROM logfinanceuser WHERE tpyefinance = '${depositwithdrawal}' AND status ='ไม่สำเร็จ' AND transaction_date >='${date}' AND transaction_date <='${enddate}' LIMIT ${pageSize} OFFSET ${offset}`;
+                            let sql_statusFalse = `SELECT * FROM logfinanceuser WHERE tpyefinance = '${depositwithdrawal}' AND status ='ไม่สำเร็จ' AND transaction_date >='${date}' AND transaction_date <='${enddate}' ORDER BY id DESC LIMIT ${pageSize} OFFSET ${offset}`;
                             connection.query(sql_statusFalse, (error, resultstatusFalse) => {
                                 if (error) {
                                     console.log(error)
                                 } else {
-                                    let sql_statusUnbound = `SELECT * FROM logfinanceuser WHERE tpyefinance = '${depositwithdrawal}' AND status ='ที่ยังไม่ผูก' AND transaction_date >='${date}' AND transaction_date <='${enddate}' LIMIT ${pageSize} OFFSET ${offset}`;
+                                    let sql_statusUnbound = `SELECT * FROM logfinanceuser WHERE tpyefinance = '${depositwithdrawal}' AND status ='ที่ยังไม่ผูก' AND transaction_date >='${date}' AND transaction_date <='${enddate}' ORDER BY id DESC LIMIT ${pageSize} OFFSET ${offset}`;
                                     connection.query(sql_statusUnbound, (error, resultstatusUnbound) => {
                                         if (error) {
                                             console.log(error)
                                         } else {
-                                            let sql_statusWait = `SELECT * FROM logfinanceuser WHERE tpyefinance = '${depositwithdrawal}' AND status ='รอ' AND transaction_date >='${date}' AND transaction_date <='${enddate}' LIMIT ${pageSize} OFFSET ${offset}`;
+                                            let sql_statusWait = `SELECT * FROM logfinanceuser WHERE tpyefinance = '${depositwithdrawal}' AND status ='รอ' AND transaction_date >='${date}' AND transaction_date <='${enddate}' ORDER BY id DESC LIMIT ${pageSize} OFFSET ${offset}`;
                                             connection.query(sql_statusWait, (error, resultstatusWait) => {
                                                 if (error) {
                                                     console.log(error)
                                                 } else {
-                                                    let sql_statusNotready = `SELECT * FROM logfinanceuser WHERE tpyefinance = '${depositwithdrawal}' AND status ='ยังไม่เรียบร้อย' AND transaction_date >='${date}' AND transaction_date <='${enddate}' LIMIT ${pageSize} OFFSET ${offset}`;
+                                                    let sql_statusNotready = `SELECT * FROM logfinanceuser WHERE tpyefinance = '${depositwithdrawal}' AND status ='ยังไม่เรียบร้อย' AND transaction_date >='${date}' AND transaction_date <='${enddate}' ORDER BY id DESC LIMIT ${pageSize} OFFSET ${offset}`;
                                                     connection.query(sql_statusNotready, (error, resultstatusNotready) => {
                                                         if (error) {
                                                             console.log(error)
@@ -1332,7 +1333,7 @@ exports.getDataDepositStatementBank = (req, res) => {
             next(err);
         }
 
-    } else if (searchPhones !== "" && searchKeyword === "") {
+    } else if (searchPhones !== "" && searchKeyword === "" && searchPhones !== undefined) {
         if (searchPhones.length === 10) {
             try {
                 let sql_deposit = `SELECT * FROM logfinanceuser WHERE tpyefinance = ? AND transaction_date >= ? AND transaction_date <= ? AND phonenumber LIKE ?
@@ -1570,147 +1571,149 @@ exports.getDataDepositStatementBank = (req, res) => {
             next(err);
         }
     } else {
-        if (searchPhones.length === 10) {
-            try {
-                let sql_deposit = `SELECT * FROM logfinanceuser WHERE tpyefinance = ? AND transaction_date >= ? AND transaction_date <= ? AND accountName LIKE ?
-                OR accountNumber ? OR phonenumber LIKE ? LIMIT ? OFFSET ?`;
-                const searchPattern = `%${searchPhones}%`;
-                const values = [depositwithdrawal, date, enddate, searchKeyword, searchKeyword, searchPattern, pageSize, offset];
-                connection.query(sql_deposit, values, (error, resultDeposit) => {
-                    if (error) {
-                        console.log(error)
-                    } else {
-                        let sql_statusTrue = `SELECT * FROM logfinanceuser WHERE tpyefinance = ? AND transaction_date >= ? AND transaction_date <= ? AND status = ?
-                                AND accountName LIKE ? OR accountNumber LIKE ? OR phonenumber LIKE ? LIMIT ? OFFSET ?`;
-                        const searchPattern = `%${searchPhones}%`;
-                        const values = [depositwithdrawal, date, enddate, "สำเร็จ", searchKeyword, searchKeyword, searchPattern, pageSize, offset];
-                        connection.query(sql_statusTrue, values, (error, resultstatusTrue) => {
-                            if (error) {
-                                console.log(error)
-                            } else {
-                                let sql_statusFalse = `SELECT * FROM logfinanceuser WHERE tpyefinance = ? AND transaction_date >= ? AND transaction_date <= ? AND status = ?
-                                AND accountName LIKE ? OR accountNumber LIKE ? OR phonenumber LIKE ? LIMIT ? OFFSET ?`;
-                                const searchPattern = `%${searchPhones}%`;
-                                const values = [depositwithdrawal, date, enddate, "ไม่สำเส็จ", searchKeyword, searchKeyword, searchPattern, pageSize, offset];
-                                connection.query(sql_statusFalse, values, (error, resultstatusFalse) => {
-                                    if (error) {
-                                        console.log(error);
-                                    } else {
-                                        let sql_statusUnbound = `SELECT * FROM logfinanceuser WHERE tpyefinance = ? AND transaction_date >= ? AND transaction_date <= ? AND status = ?
-                                        AND accountName LIKE ? OR accountNumber LIKE ? OR phonenumber LIKE ? LIMIT ? OFFSET ?`;
-                                        const searchPattern = `%${searchPhones}%`;
-                                        const values = [depositwithdrawal, date, enddate, "ที่ยังไม่ผูก", searchKeyword, searchKeyword, searchPattern, pageSize, offset];
-                                        connection.query(sql_statusUnbound, values, (error, resultstatusUnbound) => {
-                                            if (error) {
-                                                console.log(error)
-                                            } else {
-                                                let sql_statusWait = `SELECT * FROM logfinanceuser WHERE tpyefinance = ? AND transaction_date >= ? AND transaction_date <= ? AND status = ?
-                                                        AND accountName LIKE ? OR accountNumber LIKE ? OR phonenumber LIKE ? LIMIT ? OFFSET ?`;
-                                                const searchPattern = `%${searchPhones}%`;
-                                                const values = [depositwithdrawal, date, enddate, "รอ", searchKeyword, searchKeyword, searchPattern, pageSize, offset];
-                                                connection.query(sql_statusWait, values, (error, resultstatusWait) => {
-                                                    if (error) {
-                                                        console.log(error)
-                                                    } else {
-                                                        let sql_statusNotready = `SELECT * FROM logfinanceuser WHERE tpyefinance = ? AND transaction_date >= ? AND transaction_date <= ? AND status = ?
+        if (searchPhones !== "" && searchPhones !== undefined) {
+            if (searchPhones.length === 10) {
+                try {
+                    let sql_deposit = `SELECT * FROM logfinanceuser WHERE tpyefinance = ? AND transaction_date >= ? AND transaction_date <= ? AND accountName LIKE ?
+                    OR accountNumber ? OR phonenumber LIKE ? LIMIT ? OFFSET ?`;
+                    const searchPattern = `%${searchPhones}%`;
+                    const values = [depositwithdrawal, date, enddate, searchKeyword, searchKeyword, searchPattern, pageSize, offset];
+                    connection.query(sql_deposit, values, (error, resultDeposit) => {
+                        if (error) {
+                            console.log(error)
+                        } else {
+                            let sql_statusTrue = `SELECT * FROM logfinanceuser WHERE tpyefinance = ? AND transaction_date >= ? AND transaction_date <= ? AND status = ?
+                                    AND accountName LIKE ? OR accountNumber LIKE ? OR phonenumber LIKE ? LIMIT ? OFFSET ?`;
+                            const searchPattern = `%${searchPhones}%`;
+                            const values = [depositwithdrawal, date, enddate, "สำเร็จ", searchKeyword, searchKeyword, searchPattern, pageSize, offset];
+                            connection.query(sql_statusTrue, values, (error, resultstatusTrue) => {
+                                if (error) {
+                                    console.log(error)
+                                } else {
+                                    let sql_statusFalse = `SELECT * FROM logfinanceuser WHERE tpyefinance = ? AND transaction_date >= ? AND transaction_date <= ? AND status = ?
+                                    AND accountName LIKE ? OR accountNumber LIKE ? OR phonenumber LIKE ? LIMIT ? OFFSET ?`;
+                                    const searchPattern = `%${searchPhones}%`;
+                                    const values = [depositwithdrawal, date, enddate, "ไม่สำเส็จ", searchKeyword, searchKeyword, searchPattern, pageSize, offset];
+                                    connection.query(sql_statusFalse, values, (error, resultstatusFalse) => {
+                                        if (error) {
+                                            console.log(error);
+                                        } else {
+                                            let sql_statusUnbound = `SELECT * FROM logfinanceuser WHERE tpyefinance = ? AND transaction_date >= ? AND transaction_date <= ? AND status = ?
+                                            AND accountName LIKE ? OR accountNumber LIKE ? OR phonenumber LIKE ? LIMIT ? OFFSET ?`;
+                                            const searchPattern = `%${searchPhones}%`;
+                                            const values = [depositwithdrawal, date, enddate, "ที่ยังไม่ผูก", searchKeyword, searchKeyword, searchPattern, pageSize, offset];
+                                            connection.query(sql_statusUnbound, values, (error, resultstatusUnbound) => {
+                                                if (error) {
+                                                    console.log(error)
+                                                } else {
+                                                    let sql_statusWait = `SELECT * FROM logfinanceuser WHERE tpyefinance = ? AND transaction_date >= ? AND transaction_date <= ? AND status = ?
                                                             AND accountName LIKE ? OR accountNumber LIKE ? OR phonenumber LIKE ? LIMIT ? OFFSET ?`;
-                                                        const searchPattern = `%${searchPhones}%`;
-                                                        const values = [depositwithdrawal, date, enddate, "ยังไม่เรียบร้อย", searchKeyword, searchKeyword, searchPattern, pageSize, offset];
-                                                        connection.query(sql_statusNotready, values, (error, resultstatusNotready) => {
-                                                            if (error) {
-                                                                console.log(error);
-                                                            } else {
-                                                                //let sql = `SELECT * FROM totalamountdaily WHERE agentid = '${agent_ID}' AND date = '${date}' AND date = '${enddate}' AND typeaction = '${depositwithdrawal}'`;
-                                                                let sql = `
-                                                                    SELECT
-                                                                        accountName,
-                                                                        accountNumber,
-                                                                        bankname,
-                                                                        imgbank,
-                                                                        SUM(billmatched) AS billmatched,
-                                                                        SUM(complated) AS complated,
-                                                                        SUM(balance) AS balance
-                                                                    FROM
-                                                                        totalamountdaily
-                                                                    WHERE
-                                                                        date >= '${date}' AND date <= '${enddate}' AND agentid = '${agent_ID}' AND typeaction = '${depositwithdrawal}'
-                                                                    GROUP BY
-                                                                        accountName, accountNumber, bankname, imgbank
-                                                                    LIMIT ${pageSize} OFFSET ${offset}`;
-                                                                connection.query(sql, (error, results) => {
-                                                                    res.send({
-                                                                        dataDeposit: resultDeposit,
-                                                                        datastatusTrue: resultstatusTrue,
-                                                                        datastatusFalse: resultstatusFalse,
-                                                                        dataUnbound: resultstatusUnbound,
-                                                                        datastatusWait: resultstatusWait,
-                                                                        datastatusNotready: resultstatusNotready,
-                                                                        valusDataDeposit: resultDeposit.length,
-                                                                        valusDatastatusTrue: resultstatusTrue.length,
-                                                                        valusDatastatusFalse: resultstatusFalse.length,
-                                                                        valusdataUnbound: resultstatusUnbound.length,
-                                                                        valusdatastatusWait: resultstatusWait.length,
-                                                                        valusdatastatusNotready: resultstatusNotready.length,
-                                                                        total: resultDeposit.length,
-                                                                        accountreport: results
+                                                    const searchPattern = `%${searchPhones}%`;
+                                                    const values = [depositwithdrawal, date, enddate, "รอ", searchKeyword, searchKeyword, searchPattern, pageSize, offset];
+                                                    connection.query(sql_statusWait, values, (error, resultstatusWait) => {
+                                                        if (error) {
+                                                            console.log(error)
+                                                        } else {
+                                                            let sql_statusNotready = `SELECT * FROM logfinanceuser WHERE tpyefinance = ? AND transaction_date >= ? AND transaction_date <= ? AND status = ?
+                                                                AND accountName LIKE ? OR accountNumber LIKE ? OR phonenumber LIKE ? LIMIT ? OFFSET ?`;
+                                                            const searchPattern = `%${searchPhones}%`;
+                                                            const values = [depositwithdrawal, date, enddate, "ยังไม่เรียบร้อย", searchKeyword, searchKeyword, searchPattern, pageSize, offset];
+                                                            connection.query(sql_statusNotready, values, (error, resultstatusNotready) => {
+                                                                if (error) {
+                                                                    console.log(error);
+                                                                } else {
+                                                                    //let sql = `SELECT * FROM totalamountdaily WHERE agentid = '${agent_ID}' AND date = '${date}' AND date = '${enddate}' AND typeaction = '${depositwithdrawal}'`;
+                                                                    let sql = `
+                                                                        SELECT
+                                                                            accountName,
+                                                                            accountNumber,
+                                                                            bankname,
+                                                                            imgbank,
+                                                                            SUM(billmatched) AS billmatched,
+                                                                            SUM(complated) AS complated,
+                                                                            SUM(balance) AS balance
+                                                                        FROM
+                                                                            totalamountdaily
+                                                                        WHERE
+                                                                            date >= '${date}' AND date <= '${enddate}' AND agentid = '${agent_ID}' AND typeaction = '${depositwithdrawal}'
+                                                                        GROUP BY
+                                                                            accountName, accountNumber, bankname, imgbank
+                                                                        LIMIT ${pageSize} OFFSET ${offset}`;
+                                                                    connection.query(sql, (error, results) => {
+                                                                        res.send({
+                                                                            dataDeposit: resultDeposit,
+                                                                            datastatusTrue: resultstatusTrue,
+                                                                            datastatusFalse: resultstatusFalse,
+                                                                            dataUnbound: resultstatusUnbound,
+                                                                            datastatusWait: resultstatusWait,
+                                                                            datastatusNotready: resultstatusNotready,
+                                                                            valusDataDeposit: resultDeposit.length,
+                                                                            valusDatastatusTrue: resultstatusTrue.length,
+                                                                            valusDatastatusFalse: resultstatusFalse.length,
+                                                                            valusdataUnbound: resultstatusUnbound.length,
+                                                                            valusdatastatusWait: resultstatusWait.length,
+                                                                            valusdatastatusNotready: resultstatusNotready.length,
+                                                                            total: resultDeposit.length,
+                                                                            accountreport: results
+                                                                        });
+                                                                        res.end();
                                                                     });
-                                                                    res.end();
-                                                                });
-                                                            }
-                                                        });
-                                                    }
-                                                });
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-                        });
+                                                                }
+                                                            });
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                } catch (err) {
+                    if (!err.statusCode) {
+                        err.statusCode = 500;
                     }
-                });
-            } catch (err) {
-                if (!err.statusCode) {
-                    err.statusCode = 500;
+                    next(err);
                 }
-                next(err);
-            }
-        } else {
-            //let sql = `SELECT * FROM totalamountdaily WHERE agentid = '${agent_ID}' AND date = '${date}' AND typeaction = '${depositwithdrawal}'`;
-            let sql = `
-            SELECT
-                accountName,
-                accountNumber,
-                bankname,
-                imgbank,
-                SUM(billmatched) AS billmatched,
-                SUM(complated) AS complated,
-                SUM(balance) AS balance
-            FROM
-                totalamountdaily
-            WHERE
-                date >= '${date}' AND date <= '${enddate}' AND agentid = '${agent_ID}' AND typeaction = '${depositwithdrawal}'
-            GROUP BY
-                accountName, accountNumber, bankname, imgbank
-            LIMIT ${pageSize} OFFSET ${offset}`;
-            connection.query(sql, (error, results) => {
-                res.send({
-                    dataDeposit: [],
-                    datastatusTrue: [],
-                    datastatusFalse: [],
-                    dataUnbound: [],
-                    datastatusWait: [],
-                    datastatusNotready: [],
-                    valusDataDeposit: 0,
-                    valusDatastatusTrue: 0,
-                    valusDatastatusFalse: 0,
-                    valusdataUnbound: 0,
-                    valusdatastatusWait: 0,
-                    valusdatastatusNotready: 0,
-                    total: 0,
-                    accountreport: results
+            } else {
+                //let sql = `SELECT * FROM totalamountdaily WHERE agentid = '${agent_ID}' AND date = '${date}' AND typeaction = '${depositwithdrawal}'`;
+                let sql = `
+                SELECT
+                    accountName,
+                    accountNumber,
+                    bankname,
+                    imgbank,
+                    SUM(billmatched) AS billmatched,
+                    SUM(complated) AS complated,
+                    SUM(balance) AS balance
+                FROM
+                    totalamountdaily
+                WHERE
+                    date >= '${date}' AND date <= '${enddate}' AND agentid = '${agent_ID}' AND typeaction = '${depositwithdrawal}'
+                GROUP BY
+                    accountName, accountNumber, bankname, imgbank
+                LIMIT ${pageSize} OFFSET ${offset}`;
+                connection.query(sql, (error, results) => {
+                    res.send({
+                        dataDeposit: [],
+                        datastatusTrue: [],
+                        datastatusFalse: [],
+                        dataUnbound: [],
+                        datastatusWait: [],
+                        datastatusNotready: [],
+                        valusDataDeposit: 0,
+                        valusDatastatusTrue: 0,
+                        valusDatastatusFalse: 0,
+                        valusdataUnbound: 0,
+                        valusdatastatusWait: 0,
+                        valusdatastatusNotready: 0,
+                        total: 0,
+                        accountreport: results
+                    });
+                    res.end();
                 });
-                res.end();
-            });
+            }
         }
     }
 };
@@ -2713,7 +2716,10 @@ exports.getRepostWebdaily = (require, response) => {
                 let topWithdraw;
                 let roundplayvalueTotal = 0;
                 let valususerplayDay = 0;
-
+                let lengthdeposit = 0;
+                let lengthwithdra = 0;
+                let memberdepositfilht = 0;
+                let bunus = 0;
                 const post = {
                     startdate: date, endDate: endDate
                 }
@@ -2738,6 +2744,7 @@ exports.getRepostWebdaily = (require, response) => {
                 repostGame.valuedailyFinanceDeposit(post)
                     .then(calculatedValues => {
                         depositvalut = calculatedValues.depositvalut
+                        lengthdeposit = calculatedValues.lengthdeposit
                     })
                     .catch(error => {
                         console.error(error);
@@ -2746,6 +2753,7 @@ exports.getRepostWebdaily = (require, response) => {
                 repostGame.valuedailyFinanceWithdraw(post)
                     .then(calculatedValues => {
                         withdrawvalue = calculatedValues.withdrawvalue
+                        lengthwithdra = calculatedValues.lengthwithdra
                     })
                     .catch(error => {
                         console.error(error);
@@ -2753,7 +2761,7 @@ exports.getRepostWebdaily = (require, response) => {
 
                 repostGame.valuedailyFinanceDepositTotal()
                     .then(calculatedValues => {
-                        depositvalutTotal = calculatedValues.depositvalutTotal
+                        depositvalutTotal = calculatedValues.depositvalutTotal;
                     })
                     .catch(error => {
                         console.error(error);
@@ -2761,7 +2769,7 @@ exports.getRepostWebdaily = (require, response) => {
 
                 repostGame.valuedailyFinanceWithdrawTotal()
                     .then(calculatedValues => {
-                        withdrawvalueTotal = calculatedValues.withdrawvalueTotal
+                        withdrawvalueTotal = calculatedValues.withdrawvalueTotal;
                     })
                     .catch(error => {
                         console.error(error);
@@ -2815,6 +2823,28 @@ exports.getRepostWebdaily = (require, response) => {
                         console.error(error);
                     });
 
+                repostGame.valuedailyFinanceWithdrawMember(post)
+                    .then(calculatedValues => {
+                        memberdepositfilht = calculatedValues.lengthwithdraMember;
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+
+                repostGame.valuedailyBounnus(post)
+                    .then(calculatedValuesI => {
+                        repostGame.valuedailyBounnusII(post)
+                        .then(calculatedValuesII => {
+                            bunus = calculatedValuesII.bunus + calculatedValuesI.bunus;
+                        })
+                        .catch(error => {
+                            console.error(error);
+                        });
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+
                 setTimeout(() => {
                     response.send({
                         wingame: win,
@@ -2834,6 +2864,10 @@ exports.getRepostWebdaily = (require, response) => {
                         topWithdraw: topWithdraw,
                         roundplayvalueTotal: roundplayvalueTotal,
                         valususerplayDay: valususerplayDay,
+                        lengthdeposit: lengthdeposit,
+                        lengthwithdra: lengthwithdra,
+                        memberdepositfilht: memberdepositfilht,
+                        bunus: bunus,
                     });
                     response.end();
                 }, 500);

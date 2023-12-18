@@ -352,7 +352,7 @@ function receive_Promotions(resultPromotion, dataUser, bill_number, quantity, fo
 
         let sql_before = `INSERT INTO logfinanceuser (idUser, agent_id, accountName, accountNumber, phonenumber, tpyefinance, quantity, creditbonus, 
             balance_before, balance, bill_number, numberbill, status, transaction_date, time, bank, imgBank, destinationAccount, destinationAccountNumber, trans_ref, qrcodeData, nameimg, actualize) value 
-            ('${dataUser.id}','${dataUser.agent_id}','${dataUser.accountName}','${dataUser.accountNumber}','${dataUser.phonenumber}','${'ฝาก'}','${quantity}','${0}','${dataUser.credit}'
+            ('${dataUser.id}','${dataUser.agent_id}','${dataUser.accountName}','${dataUser.accountNumber}','${dataUser.phonenumber}','${'ฝาก'}','${quantity}','${balancebunus}','${dataUser.credit}'
             ,'${balance}','T${formattedDate}${formattedNumber}','${bill_number}','${statusFinance}','${datethai}','${formattedTime}','${dataUser.bank}','${imgBank}'
             ,'${destinationAccount}','${destinationAccountNumber}','${transRef}', '${qrcodeData}','${nameimg}','${actualize}')`;
 
@@ -372,7 +372,7 @@ function receive_Promotions(resultPromotion, dataUser, bill_number, quantity, fo
                         console.log(error);
                     }
 
-                    addRepostPromotion(dataUser.username, resultPromotion[0].passwordpromotion, resultPromotion[0].namepromotion,
+                    let addRepost = addRepostPromotion(dataUser.username, resultPromotion[0].passwordpromotion, resultPromotion[0].namepromotion,
                         resultPromotion[0].promotionsupport, resultPromotion[0].multiplier, balancebunus, creditBunus, ipuser, resultPromotion[0]);
                     
                     let promotionname = resultPromotion[0].namepromotion
@@ -404,11 +404,12 @@ function automaticFunctionTest() {
 function addRepostPromotion(username, passwordpromotion, namepromotion, promotionsupport, multiplier, bunus, userbalance, ipuser, resultPromotion) {
     const currentTimeInThailand = moment().tz('Asia/Bangkok');
     const formattedDate = currentTimeInThailand.format('YYYY-MM-DD');
+    const formattedTime = currentTimeInThailand.format('HH:mm:ss');
     try {
-        let sql_before = `INSERT INTO repostPromotion (username, passwordpromotion, namepromotion, promotionsupport, multiplier, bunus, created_at, 
+        let sql_before = `INSERT INTO repostPromotion (username, passwordpromotion, namepromotion, promotionsupport, multiplier, bunus, created_at, created_attime,
             numbet_received, credit, ip_address, tpyepromotion, tpyebunus, 	startpromotion, endpromotion) value 
-        ('${username}','${passwordpromotion}','${namepromotion}','${promotionsupport}','${multiplier}','${bunus}','${formattedDate}','${1}','${userbalance}','${ipuser}',
-        'ฝาก','${resultPromotion.typebonus}','${resultPromotion.startpromotion}','${resultPromotion.endpromotion}')`;
+        ('${username}','${passwordpromotion}','${namepromotion}','${promotionsupport}','${multiplier}','${bunus}','${formattedDate}','${formattedTime}',
+        '${1}','${userbalance}','${ipuser}','ฝาก','${resultPromotion.typebonus}','${resultPromotion.startpromotion}','${resultPromotion.endpromotion}')`;
         connection.query(sql_before, (error, resultDeposit) => {
             if (error) {
                 console.log(error);

@@ -98,10 +98,10 @@ module.exports = class Post {
               ('${agent_id}','${post.edittype}','${post.idedit}','${username}','${post.id}','${nametpyeEdit}','ข้อมูลmember',
               '${'ชื่อจริง-นามสุกุล' + ' ' + dataMenber.accountName + ' ' + 'กลุ่มลูกค้า' + ' ' + dataMenber.groupmember
                         + ' ' + 'username' + ' ' + dataMenber.username + ' ' + 'ไลน์' + ' ' + dataMenber.lineid + ' ' + 'ชื่อบัญชี' + ' ' + dataMenber.accountName
-                        + ' ' + 'เลขบัญชี' + ' ' + dataMenber.accountNumber}',
+                        + ' ' + 'เลขบัญชี' + ' ' + dataMenber.accountNumber +' '+ 'ธนาคาร'+' '+ dataMenber.bank}',
               '${'ชื่อจริง-นามสุกุล' + ' ' + post.accountName + ' ' + 'กลุ่มลูกค้า' + ' ' + post.customerGroup + ' '
                         + 'username' + ' ' + post.contact_number + ' ' + 'ไลน์' + ' ' + post.IDLIne + ' ' + 'ชื่อบัญชี' + ' ' + post.accountName
-                        + ' ' + 'เลขบัญชี' + ' ' + post.accountNumber}'
+                        + ' ' + 'เลขบัญชี' + ' ' + post.accountNumber+' '+ 'ธนาคาร'+' '+ post.bank}'
               ,now(), now(),'${note}')`;
                     connection.query(sql_before, (error, resultAfter) => {
                         console.log(dataMenber.lastName)

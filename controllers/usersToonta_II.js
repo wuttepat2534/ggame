@@ -145,7 +145,8 @@ exports.ConfirmationWithdraw = async (req, res, next) => {
                                 if (error) {
                                     console.log(error);
                                 } else {
-                                    const message = `ถอนเงินไม่สำเร็จ\nลูกค้า: ${usernameUser}\nจำนวนเงิน: ${value}\nทำโดย: ${approval_person}\nเวลา: ${formattedDate} ${formattedTime}`;
+                                    let creditNow = convertedCredit + convertedLatest_withdrawal
+                                    const message = `ถอนเงินไม่สำเร็จ\nลูกค้า: ${usernameUser}\nชื่อบัญชี: ${userMember[0].accountName}\nจำนวนเงิน: ${value}\nยอดคงเหลือ: ${creditNow}\nทำโดย: ${approval_person}\nเวลา: ${formattedDate} ${formattedTime}`;
                                     let lintNotify = logEdit.winhdrawLinenoti(message, value, usernameUser, formattedDate, formattedTime, approval_person)
                                     res.send({
                                         message: "รอการอนุมัติการถอนเงิน",
@@ -162,7 +163,8 @@ exports.ConfirmationWithdraw = async (req, res, next) => {
                             if (error) {
                                 console.log(error);
                             } else {
-                                const message = `ถอนเงินสำเร็จ\nลูกค้า: ${usernameUser}\nจำนวนเงิน: ${value}\nทำโดย: ${approval_person}\nเวลา: ${formattedDate} ${formattedTime}`;
+                                let creditNow = convertedCredit;
+                                const message = `ถอนเงินสำเร็จ\nลูกค้า: ${usernameUser}\nจำนวนเงิน: ${value}\nยอดคงเหลือ: ${creditNow}\nทำโดย: ${approval_person}\nเวลา: ${formattedDate} ${formattedTime}`;
                                 let lintNotify = logEdit.winhdrawLinenoti(message, value, usernameUser, formattedDate, formattedTime, approval_person)
                                 let updateRepostFinance = Finance.UpdateLogRepostFinance(usernameUser, 'ถอน', convertedLatest_withdrawal)
                                 res.send({
@@ -234,7 +236,7 @@ exports.signupEmployeeAgent = async (req, res, next) => {
     const role = req.body.role;
     const levelRole = req.body.levelRole;
     const hashedPassword = md5(password);
-    let sql_agent = `SELECT username FROM employee WHERE agent_id ='${agent_id}' AND username = '${username}'`;
+    let sql_agent = `SELECT username FROM employee WHERE agent_id ='${agent_id}' AND username = '${username}' AND status = 'true'`;
     connection.query(sql_agent, (error, usernameAgent) => {
         try {
             if (error) {
@@ -1450,3 +1452,44 @@ exports.getturnoverGrach = (require, response) => {
         }
     });
 }
+
+//http://localhost:5000/post/getRepostDeposit getRepostDeposit
+exports.getMemberDataWeb = (require, response) => {
+    const searchKeyword = require.body.searchKeyword;
+    const agent_id = require.body.agent_id;
+    const pageSize = require.body.pageSize;
+    const pageNumber = require.body.pageIndex;
+    const offset = (pageNumber - 1) * pageSize;
+    if (searchKeyword === "") {
+        let sql = `SELECT * FROM member WHERE agent_id = '${agent_id}' AND status_delete='N' ORDER BY id DESC LIMIT ${pageSize} OFFSET ${offset}`;
+        connection.query(sql, async (error, results) => {
+            if (error) { console.log(error); }
+            else {
+                const totalCount = `SELECT COUNT(*) as count FROM member WHERE status_delete='N'`
+                connection.query(totalCount, (error, res) => {
+                    if (error) { console.log(error); }
+                    response.send({
+                        message: 'memberSearchAll',
+                        data: results,
+                        total: res[0].count
+                    });
+
+                    response.end();
+                });
+            }
+        });
+    } else {
+        let sql = `SELECT * FROM member WHERE agent_id = '${agent_id}' AND status_delete='N' 
+        AND username LIKE '%${searchKeyword}%' OR accountName LIKE '%${searchKeyword}%' ORDER BY id DESC LIMIT ${pageSize} OFFSET ${offset}`;
+        connection.query(sql, async (error, results) => {
+            if (error) { console.log(error); }
+            response.send({
+                message: 'memberSearch',
+                data: results,
+                total: results.length
+            });
+            response.end();
+        });
+    }
+}
+

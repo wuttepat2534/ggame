@@ -281,10 +281,10 @@ module.exports = class Post {
                         for (let i = 0; i < results.length; i++) {
                             depositvalue += results[i].quantity;
                         }
-                        let jsArray = { "depositvalut": depositvalue };
+                        let jsArray = { "depositvalut": depositvalue, "lengthdeposit": results.length };
                         resolve(jsArray);
                     } else {
-                        let jsArray = { "depositvalut": 0 };
+                        let jsArray = { "depositvalut": 0, "lengthdeposit": 0 };
                         resolve(jsArray);
                     }
                 }
@@ -305,11 +305,78 @@ module.exports = class Post {
                         for (let i = 0; i < results.length; i++) {
                             withdrawvalue += results[i].quantity;
                         }
-                        let jsArray = { "withdrawvalue": withdrawvalue };
+                        let jsArray = { "withdrawvalue": withdrawvalue, "lengthwithdra": results.length };
                         resolve(jsArray);
                     } else {
-                        let jsArray = { "withdrawvalue": 0 };
+                        let jsArray = { "withdrawvalue": 0, "lengthwithdra": 0 };
                         resolve(jsArray);
+                    }
+                }
+            });
+        });
+    }
+
+    static async valuedailyFinanceWithdrawMember(post) {
+        return new Promise((resolve, reject) => {
+            let sql = `SELECT * FROM member WHERE recharge_times = ${1} AND created_at >='${post.startdate}' AND created_at <= '${post.endDate}'`;
+            connection.query(sql, (error, results) => {
+                if (error) {
+                    console.log(error);
+                    reject(error);
+                } else {
+                    if (results.length !== 0) {
+                        let jsArray = { "lengthwithdraMember": results.length };
+                        resolve(jsArray);
+                    } else {
+                        let jsArray = { "lengthwithdraMember": 0 };
+                        resolve(jsArray);
+                    }
+                }
+            });
+        });
+    }
+
+    static async valuedailyBounnus(post) {
+        return new Promise((resolve, reject) => {
+            let promotionBunnusvalue = 0;
+            let sql = `SELECT bunus FROM repostPromotion WHERE created_at >='${post.startdate}' AND created_at <= '${post.endDate}'`;
+            connection.query(sql, (error, results) => {
+                if (error) {
+                    console.log(error);
+                    reject(error);
+                } else {
+                    if (results.length !== 0) {
+                        for (let i = 0; i < results.length; i++) {
+                            const intValue = parseInt(results[i].bunus, 10);
+                            promotionBunnusvalue += intValue;
+                        }
+                        let jsArray = { "bunus": promotionBunnusvalue };
+                        resolve(jsArray);
+                    } else {
+                        promotionBunnusvalue = 0;
+                    }
+                }
+            });
+        });
+    }
+
+    static async valuedailyBounnusII(post) {
+        return new Promise((resolve, reject) => {
+            let conponBounnusvalus = 0;
+            let sql_conpon = `SELECT valusbunus FROM repost_coupon WHERE created_at >='${post.startdate}' AND created_at <= '${post.endDate}'`;
+            connection.query(sql_conpon, (error, results) => {
+                if (error) {
+                    console.log(error);
+                    reject(error);
+                } else {
+                    if (results.length !== 0) {
+                        for (let i = 0; i < results.length; i++) {
+                            conponBounnusvalus += results[i].valusbunus;
+                        }
+                        let jsArray = { "bunus": conponBounnusvalus };
+                        resolve(jsArray);
+                    } else {
+                        conponBounnusvalus = 0
                     }
                 }
             });
@@ -329,10 +396,10 @@ module.exports = class Post {
                         for (let i = 0; i < results.length; i++) {
                             depositvalueTolal += results[i].quantity;
                         }
-                        let jsArray = { "depositvalutTotal": depositvalueTolal };
+                        let jsArray = { "depositvalutTotal": depositvalueTolal, "lengthdeposit": results.length };
                         resolve(jsArray);
                     } else {
-                        let jsArray = { "depositvalutTotal": 0 };
+                        let jsArray = { "depositvalutTotal": 0, "lengthdeposit": 0 };
                         resolve(jsArray);
                     }
                 }
@@ -353,16 +420,17 @@ module.exports = class Post {
                         for (let i = 0; i < results.length; i++) {
                             withdrawvalueTotal += results[i].quantity;
                         }
-                        let jsArray = { "withdrawvalueTotal": withdrawvalueTotal };
+                        let jsArray = { "withdrawvalueTotal": withdrawvalueTotal, "lengthwithdra": results.length };
                         resolve(jsArray);
                     } else {
-                        let jsArray = { "withdrawvalueTotal": 0 };
+                        let jsArray = { "withdrawvalueTotal": 0, "lengthwithdra": 0 };
                         resolve(jsArray);
                     }
                 }
             });
         });
     }
+
 
     static async topwit(post) {
         return new Promise((resolve, reject) => {
