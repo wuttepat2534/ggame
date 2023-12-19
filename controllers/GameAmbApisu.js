@@ -122,7 +122,7 @@ exports.GameCheckBalance = async (req, res) => {
         connection.query(spl, (error, results) => {
             if (error) { console.log(error) }
             else {
-                if (results.length >= 1){
+                if (results.length >= 1) {
                     const balanceUser = parseFloat(results[0].credit);
                     res.status(201).json({
                         id: id,
@@ -222,7 +222,7 @@ exports.GameSettleBets = async (req, res) => {
     const userAgent = req.headers['user-agent'];
     const userAgentt = req.useragent;
 
-    let spl = `SELECT credit, turnover, gameplayturn, playgameuser FROM member WHERE phonenumber ='${usernameGame}' AND status_delete='N'`;
+    let spl = `SELECT credit, turnover, gameplayturn, playgameuser, tokenplaygame FROM member WHERE phonenumber ='${usernameGame}' AND status_delete='N'`;
     try {
         connection.query(spl, (error, results) => {
             if (error) { console.log(error) }
@@ -240,7 +240,7 @@ exports.GameSettleBets = async (req, res) => {
 
                     const post = {
                         username: usernameGame, gameid: productId, bet: betPlay, win: betAmount, balance_credit: balanceNow,
-                        userAgent: userAgent, platform: userAgentt, namegame: namegame
+                        userAgent: userAgent, platform: userAgentt, namegame: namegame, trans_id: txnsGame[0].tokenplaygame
                     }
                     let repost = repostGame.uploadLogRepostGame(post)
 
@@ -376,23 +376,30 @@ exports.GameUnsettleBets = async (req, res) => {
     const usernameGame = req.body.username;
     const txnsGame = req.body.txns;
     username = 'member001';
-    let spl = `SELECT credit FROM member WHERE phonenumber ='${usernameGame}' AND status_delete='N' 
+    let spl = `SELECT credit, tokenplaygame FROM member WHERE phonenumber ='${usernameGame}' AND status_delete='N' 
   ORDER BY member_code ASC`;
     try {
         connection.query(spl, (error, results) => {
             if (error) { console.log(error) }
             else {
                 const balanceUser = parseFloat(results[0].credit);
-                res.status(201).json({
-                    id: id,
-                    statusCode: 0,
-                    timestampMillis: timestampMillis,
-                    productId: productId,
-                    currency: currency,
-                    balanceBefore: balanceUser,
-                    balanceAfter: balanceUser,
-                    username: usernameGame
-                });
+                let spl_game = `SELECT * FROM repostgame WHERE balance_credit ='${balanceUser}' AND trans_id = ${results[0].tokenplaygame} `;
+                connection.query(spl_game, (error, results_game) => {
+                    if (error) { console.log(error) }
+                    else {
+                        let balanceAfter = (results_game[0].bet + balanceUser) + results_game[0].win
+                        res.status(201).json({
+                            id: id,
+                            statusCode: 0,
+                            timestampMillis: timestampMillis,
+                            productId: productId,
+                            currency: currency,
+                            balanceBefore: balanceUser,
+                            balanceAfter: balanceAfter,
+                            username: usernameGame
+                        });
+                    }
+                })
             }
         })
     } catch (err) {

@@ -661,7 +661,7 @@ exports.WinhdrawUser = (req, res) => {
             } else {
                 // if ()
                 let moneyUserWithDraw = resultUser[0].credit - resultUser[0].turnover
-                if (resultUser[0].credit > quantity && resultUser[0].turnover === 0) {
+                if (resultUser[0].credit >= quantity && resultUser[0].turnover === 0) {
                     if (resultUser[0].promotionuser.includes("ไม่ได้รับโปรโมชั่น")) { //เช็คว่าไม่ได้รับโปรโมชั่นหรือคูปอง
                         let withdrawWebUser = WinhdrawUserOn(resultUser, formattedDate, quantity, phonenumber, withdrawStatus,
                             actualize, statusWitdraw, formattedTime, agent_id)
