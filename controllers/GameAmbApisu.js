@@ -115,8 +115,9 @@ exports.GameCheckBalance = async (req, res) => {
     const productId = req.body.productId;
     const currency = req.body.currency;
     const usernameGame = req.body.username;
+    const sessionToken = req.body.sessionToken;
 
-    let spl = `SELECT credit FROM member WHERE phonenumber ='${usernameGame}' AND status_delete='N'`;
+    let spl = `SELECT credit FROM member WHERE phonenumber ='${usernameGame}' AND status_delete ='N' AND tokenplaygame ='${sessionToken}'`;
     try {
         connection.query(spl, (error, results) => {
             if (error) { console.log(error) }
@@ -124,15 +125,27 @@ exports.GameCheckBalance = async (req, res) => {
                 //console.log(results)
                 const balanceUser = parseFloat(results[0].credit);
                 //console.log(usernameGame, results[0].credit, balanceUser)
-                res.status(201).json({
-                    id: id,
-                    statusCode: 0,
-                    timestampMillis: timestampMillis,
-                    productId: productId,
-                    currency: currency,
-                    balance: balanceUser,
-                    username: usernameGame
-                });
+                if (results.length < 1){
+                    res.status(201).json({
+                        id: id,
+                        statusCode: 0,
+                        timestampMillis: timestampMillis,
+                        productId: productId,
+                        currency: currency,
+                        balance: balanceUser,
+                        username: usernameGame
+                    });
+                } else {
+                    res.status(201).json({
+                        id: id,
+                        statusCode: 30001,
+                        timestampMillis: timestampMillis,
+                        productId: productId,
+                        currency: currency,
+                        balance: balanceUser,
+                        username: usernameGame
+                    });
+                }
             }
         })
     } catch (err) {
