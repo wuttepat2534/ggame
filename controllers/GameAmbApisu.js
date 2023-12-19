@@ -221,21 +221,19 @@ exports.GameSettleBets = async (req, res) => {
     const txnsGame = req.body.txns;
     const userAgent = req.headers['user-agent'];
     const userAgentt = req.useragent;
-
-    let spl = `SELECT credit, turnover, gameplayturn, playgameuser, tokenplaygame FROM member WHERE phonenumber ='${usernameGame}' AND status_delete='N'`;
+    const betAmount = txnsGame[0].payoutAmount;
+    const betPlay = txnsGame[0].betAmount;
+    let spl = `SELECT credit, turnover, gameplayturn, playgameuser, tokenplaygame, bet_latest FROM member WHERE phonenumber ='${usernameGame}' AND status_delete='N'`;
     try {
         connection.query(spl, (error, results) => {
             if (error) { console.log(error) }
             else {
                 const namegame = results[0].playgameuser;
                 const balanceUser = parseFloat(results[0].credit);
-                const betAmount = txnsGame[0].payoutAmount;
-                const betPlay = txnsGame[0].betAmount;
-                let balanceNow = (balanceUser - betPlay) + betAmount;
                 let status = 0;
                 //console.log(balanceUser, betAmount, betPlay, 'GameSettleBets');
-
-                if (balanceUser >= 0 && balanceUser > betPlay) {
+                if (balanceUser >= 0 && balanceUser > betPlay && betPlay > 0) {
+                    let balanceNow = (balanceUser - betPlay) + betAmount;
                     let balanceturnover = hasSimilarData(results[0].gameplayturn, productId, results[0].turnover, betPlay)
 
                     const post = {
@@ -243,7 +241,7 @@ exports.GameSettleBets = async (req, res) => {
                         userAgent: userAgent, platform: userAgentt, namegame: namegame, trans_id: txnsGame[0].tokenplaygame
                     }
                     let repost = repostGame.uploadLogRepostGame(post)
-                    console.log(balanceUser, balanceNow)
+                    //console.log(balanceUser, balanceNow)
                     const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${betPlay}', turnover='${balanceturnover}'
                 WHERE phonenumber ='${usernameGame}'`;
                     
@@ -264,7 +262,7 @@ exports.GameSettleBets = async (req, res) => {
                     });
                 }
                 else {
-                    balanceNow = 0;
+                    let balanceNow = balanceUser + results[0].bet_latest;
                     status = 10002;
                     res.status(201).json({
                         id: id,
@@ -272,8 +270,8 @@ exports.GameSettleBets = async (req, res) => {
                         timestampMillis: timestampMillis,
                         productId: productId,
                         currency: currency,
-                        balanceBefore: balanceUser,
-                        balanceAfter: balanceNow,
+                        balanceBefore: balanceNow,
+                        balanceAfter: balanceUser,
                         username: usernameGame
                     });
                 }
