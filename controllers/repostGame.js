@@ -325,7 +325,11 @@ module.exports = class Post {
                     reject(error);
                 } else {
                     if (results.length !== 0) {
-                        let jsArray = { "lengthwithdraMember": results.length };
+                        let recharge_times = 0;
+                        for (let i = 0; i < results.length; i++) {
+                            recharge_times += results[i].deposit;
+                        }
+                        let jsArray = { "lengthwithdraMember": recharge_times };
                         resolve(jsArray);
                     } else {
                         let jsArray = { "lengthwithdraMember": 0 };

@@ -164,7 +164,7 @@ exports.ConfirmationWithdraw = async (req, res, next) => {
                                 console.log(error);
                             } else {
                                 let creditNow = convertedCredit;
-                                const message = `ถอนเงินสำเร็จ\nลูกค้า: ${usernameUser}\nจำนวนเงิน: ${value}\nยอดคงเหลือ: ${creditNow}\nทำโดย: ${approval_person}\nเวลา: ${formattedDate} ${formattedTime}`;
+                                const message = `ถอนเงินสำเร็จ\nลูกค้า: ${usernameUser}\nชื่อบัญชี: ${userMember[0].accountName}\nจำนวนเงิน: ${value}\nยอดคงเหลือ: ${creditNow}\nทำโดย: ${approval_person}\nเวลา: ${formattedDate} ${formattedTime}`;
                                 let lintNotify = logEdit.winhdrawLinenoti(message, value, usernameUser, formattedDate, formattedTime, approval_person)
                                 let updateRepostFinance = Finance.UpdateLogRepostFinance(usernameUser, 'ถอน', convertedLatest_withdrawal)
                                 res.send({

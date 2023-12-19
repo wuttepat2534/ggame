@@ -374,7 +374,7 @@ function receive_Promotions(resultPromotion, dataUser, bill_number, quantity, fo
 
                     let addRepost = addRepostPromotion(dataUser.username, resultPromotion[0].passwordpromotion, resultPromotion[0].namepromotion,
                         resultPromotion[0].promotionsupport, resultPromotion[0].multiplier, balancebunus, creditBunus, ipuser, resultPromotion[0]);
-                    
+
                     let promotionname = resultPromotion[0].namepromotion
                     const message = `ฝากเงินสำเร็จ\nลูกค้า: ${dataUser.accountName}\nยูสเซอร์: ${dataUser.phonenumber}
 จำนวนเงิน: ${quantity}
@@ -442,6 +442,7 @@ function Check_conditions(conditions, datauser, resultPromotion, quantity, data_
                 break;
             case 'รายวัน':
                 receiving_Daily(datauser, resultPromotion, quantity, timereset).then(calculatedValues => {
+                    console.log(calculatedValues.status);
                     if (calculatedValues.status.includes("OKPromotion")) {
                         resolve({ status: "OKPromotion" })
                     } else {
@@ -593,16 +594,29 @@ function receiving_Daily(dataUser, resultPromotion, quantity, timereset) { //ร
         nextDay.setDate(currentDate.getDate() + 1); // เพิ่ม 1 วัน
 
         const values = [currentDate, nextDay];
-
-        const number = parseInt(quantity, 10); // แปลงเป็น integer
+        //------------------------------------------------------------------------------------------//
+        const date = new Date(currentDate);
+        const year = date.getFullYear();
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+        const formattedDateStart = `${year}-${month}-${day}`;
+        //------------------------------------------------------------------------------------------//
+        const dateEnd = new Date(nextDay);
+        const yearEnd = dateEnd.getFullYear();
+        const monthEnd = (dateEnd.getMonth() + 1).toString().padStart(2, '0');
+        const dayEnd = dateEnd.getDate().toString().padStart(2, '0');
+        const formattedDateEnd = `${yearEnd}-${monthEnd}-${dayEnd}`;
+        //------------------------------------------------------------------------------------------//
+        const number = parseInt(quantity, 10); // แปลงเป็น integer 
         try {
             let sql_UserHavePromotion = `SELECT * FROM repostPromotion WHERE passwordpromotion ='${resultPromotion.passwordpromotions}' AND username ='${dataUser.username}' AND
-            created_at >= ? OR created_at < ?`;
-            connection.query(sql_UserHavePromotion, values, (error, resultuserPromotion) => {
+            created_at >= "${formattedDateStart}" AND created_at <= "${formattedDateEnd}"`;
+            connection.query(sql_UserHavePromotion,(error, resultuserPromotion) => {
                 if (error) {
                     console.log(error)
                 } else {
-                    console.log(resultuserPromotion.length, number)
+                    // console.log("g=H8kkddd = " + currentDate, nextDay);
+                    // console.log(resultuserPromotion.length, number)
                     if (resultuserPromotion.length <= number) {
                         resolve({ status: "OKPromotion" })
                     } else {

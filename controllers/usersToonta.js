@@ -1217,7 +1217,17 @@ exports.depositUserPromotion = (req, res) => {
     }
 };
 
-
+function dateConvert(datedata){
+    const dateString = datedata;
+    const date = new Date(dateString);
+    
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    
+    const formattedDate = `${year}-${month}-${day}`;
+    return formattedDate
+}
 //http://localhost:5000/post/getDataDepositStatementBank getDataStatementBankUsers
 exports.getDataDepositStatementBank = (req, res) => {
     const depositwithdrawal = req.body.depositwithdrawal;
@@ -1236,6 +1246,7 @@ exports.getDataDepositStatementBank = (req, res) => {
     const year = today.getFullYear();
     const formattedDateBill = `${year}-${month}-${day}`;
     //console.log(searchKeyword, searchPhones);
+    //console.log(depositwithdrawal, date, enddate);
     if (searchPhones === '' && searchKeyword === '') {
         //console.log(pageSize, pageNumber);
         try {
@@ -1402,6 +1413,7 @@ exports.getDataDepositStatementBank = (req, res) => {
                                                                         accountName, accountNumber, bankname, imgbank
                                                                     LIMIT ${pageSize} OFFSET ${offset}`;
                                                                 connection.query(sql, (error, results) => {
+                                                                    //console.log(resultDeposit);
                                                                     res.send({
                                                                         dataDeposit: resultDeposit,
                                                                         datastatusTrue: resultstatusTrue,
@@ -2474,7 +2486,7 @@ exports.getMemberRegiter = (require, response) => {
     const endDate = require.body.dataEndDate;
 
     try {
-        const getMemberQuery = `SELECT * FROM member WHERE created_at >= '${date}' AND created_at <= '${endDate}' LIMIT ${pageSize} OFFSET ${offset}`;
+        const getMemberQuery = `SELECT * FROM member WHERE created_at >= '${date}' AND created_at <= '${endDate}' ORDER BY id DESC LIMIT ${pageSize} OFFSET ${offset}`;
         const getTotalCountQuery = `SELECT COUNT(*) as count FROM member WHERE created_at >= '${date}' AND created_at <= '${endDate}'`;
 
         connection.query(getMemberQuery, async (error, results) => {
@@ -2489,8 +2501,8 @@ exports.getMemberRegiter = (require, response) => {
                     } else {
                         const totalCount = totalCountResult[0].count;
 
-                        const getDepositQuery = `SELECT * FROM member WHERE created_at >= '${date}' AND created_at <= '${endDate}' AND recharge_times >= '${1}' LIMIT ${pageSize} OFFSET ${offset}`;
-                        const getNoDepositQuery = `SELECT * FROM member WHERE created_at >= '${date}' AND created_at <= '${endDate}' AND recharge_times = '${0}' LIMIT ${pageSize} OFFSET ${offset}`;
+                        const getDepositQuery = `SELECT * FROM member WHERE created_at >= '${date}' AND created_at <= '${endDate}' AND recharge_times >= '${1}' ORDER BY id DESC LIMIT ${pageSize} OFFSET ${offset}`;
+                        const getNoDepositQuery = `SELECT * FROM member WHERE created_at >= '${date}' AND created_at <= '${endDate}' AND recharge_times = '${0}' ORDER BY id DESC LIMIT ${pageSize} OFFSET ${offset}`;
 
                         connection.query(getDepositQuery, async (error, resultsDeposit) => {
                             if (error) {
