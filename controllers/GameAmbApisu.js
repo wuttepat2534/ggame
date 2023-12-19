@@ -387,7 +387,7 @@ exports.GameUnsettleBets = async (req, res) => {
                 connection.query(spl_game, (error, results_game) => {
                     if (error) { console.log(error) }
                     else {
-                        let balanceAfter = (results_game[0].bet + balanceUser) + results_game[0].win
+                        let balanceAfter = (balanceUser - results_game[0].win) + results_game[0].bet
                         res.status(201).json({
                             id: id,
                             statusCode: 0,
