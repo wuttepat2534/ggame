@@ -125,7 +125,7 @@ exports.GameCheckBalance = async (req, res) => {
                 //console.log(results)
                 const balanceUser = parseFloat(results[0].credit);
                 //console.log(usernameGame, results[0].credit, balanceUser)
-                if (results.length < 1){
+                if (results.length >= 1){
                     res.status(201).json({
                         id: id,
                         statusCode: 0,
