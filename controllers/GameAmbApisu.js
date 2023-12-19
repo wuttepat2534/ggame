@@ -233,7 +233,7 @@ exports.GameSettleBets = async (req, res) => {
                 let status = 0;
                 //console.log(balanceUser, betAmount, betPlay, 'GameSettleBets');
                 if (balanceUser >= 0 && balanceUser > betPlay) {
-                    if (betPlay === 0 && betAmount > 0) {
+                    if (betPlay === 0 && betAmount ===  betPlay) {
                         res.status(201).json({
                             id: id,
                             statusCode: 0,
