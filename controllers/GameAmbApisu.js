@@ -122,10 +122,8 @@ exports.GameCheckBalance = async (req, res) => {
         connection.query(spl, (error, results) => {
             if (error) { console.log(error) }
             else {
-                //console.log(results)
-                const balanceUser = parseFloat(results[0].credit);
-                //console.log(usernameGame, results[0].credit, balanceUser)
                 if (results.length >= 1){
+                    const balanceUser = parseFloat(results[0].credit);
                     res.status(201).json({
                         id: id,
                         statusCode: 0,
@@ -142,7 +140,7 @@ exports.GameCheckBalance = async (req, res) => {
                         timestampMillis: timestampMillis,
                         productId: productId,
                         currency: currency,
-                        balance: balanceUser,
+                        balance: 0,
                         username: usernameGame
                     });
                 }
