@@ -2928,7 +2928,7 @@ exports.getRepostTurnover = (require, response) => {
                     response.send({
                         data: results,
                         valusData: results.length,
-                        total: results.length,
+                        total: res[0].count,
                     });
                     response.end();
                 }
@@ -2964,46 +2964,61 @@ exports.getRepostTurnover = (require, response) => {
                 })
             }
         });
-    } else if (searchPhones === '') {
-        //console.log(endDate, date)
-        let sql_ = `SELECT * FROM totalturnoverrepost WHERE day >= ? AND day <= ? AND usernameuser LIKE ? LIMIT ? OFFSET ?`;
-        const searchPattern = `%${searchPhones}%`;
-        const values = [date, endDate, searchPattern, pageSize, offset];
-        connection.query(sql_, values, (error, results) => {
-            if (error) { console.log(error); }
-            else {
-                const totalCount = `SELECT COUNT(*) as count FROM totalturnoverrepost WHERE day >='${date}' AND day <= '${endDate}'`
-                connection.query(totalCount, (error, res) => {
-                    if (error) { console.log(error); }
-                    else {
-                        response.send({
-                            data: results,
-                            valusData: results.length,
-                            total: results.length
-                        });
-                        response.end();
-                    }
-                })
-            }
-        });
-    } else if (searchPhones === undefined) {
-        let sql = `SELECT * FROM totalturnoverrepost WHERE day >= '${date}' AND day <= '${endDate}' LIMIT ${pageSize} OFFSET ${offset}`;
+    } 
+    //else if (searchPhones === '') {
+    //     let sql_ = `SELECT * FROM totalturnoverrepost WHERE day >= ? AND day <= ? AND usernameuser LIKE ? LIMIT ? OFFSET ?`;
+    //     const searchPattern = `%${searchPhones}%`;
+    //     const values = [date, endDate, searchPattern, pageSize, offset];
+    //     connection.query(sql_, values, (error, results) => {
+    //         if (error) { console.log(error); }
+    //         else {
+    //             const totalCount = `SELECT COUNT(*) as count FROM totalturnoverrepost WHERE day >='${date}' AND day <= '${endDate}'`
+    //             connection.query(totalCount, (error, res) => {
+    //                 if (error) { console.log(error); }
+    //                 else {
+    //                     response.send({
+    //                         data: results,
+    //                         valusData: results.length,
+    //                         total: res[0].count,
+    //                     });
+    //                     response.end();
+    //                 }
+    //             })
+    //         }
+    //     });
+    // } 
+    else if (searchPhones === undefined) {
+        let sql = `
+        SELECT 
+          usernameuser, 
+          SUM(turnover) AS turnover, 
+          SUM(win) AS win, 
+          SUM(lose) AS lose, 
+          SUM(roundplay) AS roundplay, 
+          SUM(ag_winlose) AS ag_winlose, 
+          SUM(ag_comm) AS ag_comm, 
+          SUM(ag_total) AS ag_total, 
+          SUM(comny_total) AS comny_total
+        FROM totalturnoverrepost 
+        WHERE day >= '${date}' AND day <= '${endDate}' 
+        GROUP BY usernameuser 
+        LIMIT ${pageSize} OFFSET ${offset}
+      `;
         connection.query(sql, async (error, results) => {
             if (error) { console.log(error); }
-            else {
-                const totalCount = `SELECT COUNT(*) as count FROM totalturnoverrepost WHERE day >='${date}' AND day <= '${endDate}'`
-                connection.query(totalCount, (error, res) => {
-                    if (error) { console.log(error); }
-                    else {
-                        response.send({
-                            data: results,
-                            valusData: results.length,
-                            total: results.length
-                        });
-                        response.end();
-                    }
-                })
-            }
+            const totalCount = `SELECT COUNT(*) as count FROM totalturnoverrepost WHERE day >='${date}' AND day <= '${endDate}'`
+            connection.query(totalCount, (error, res) => {
+                if (error) { console.log(error); }
+                else {
+                    // console.log(results)
+                    response.send({
+                        data: results,
+                        valusData: results.length,
+                        total: res[0].count,
+                    });
+                    response.end();
+                }
+            });
         });
     } else if (searchPhones !== undefined) {
         let sql_deposit = `SELECT usernameuser, 
@@ -3035,27 +3050,29 @@ exports.getRepostTurnover = (require, response) => {
                 })
             }
         });
-    } else if (searchPhones === undefined) {
-        let sql_ = `SELECT * FROM totalturnoverrepost WHERE day >='${date}' AND day <= '${endDate}' AND usernameuser LIKE ? LIMIT ? OFFSET ?`;
-        const values = [searchPhones, pageSize, offset];
-        connection.query(sql_, values, (error, results) => {
-            if (error) { console.log(error); }
-            else {
-                const totalCount = `SELECT COUNT(*) as count FROM totalturnoverrepost WHERE day >='${date}' AND day <= '${endDate}'`
-                connection.query(totalCount, (error, res) => {
-                    if (error) { console.log(error); }
-                    else {
-                        response.send({
-                            data: results,
-                            valusData: results.length,
-                            total: results.length
-                        });
-                        response.end();
-                    }
-                })
-            }
-        });
-    } else {
+    } 
+    // else if (searchPhones === undefined) {
+    //     let sql_ = `SELECT * FROM totalturnoverrepost WHERE day >='${date}' AND day <= '${endDate}' AND usernameuser LIKE ? LIMIT ? OFFSET ?`;
+    //     const values = [searchPhones, pageSize, offset];
+    //     connection.query(sql_, values, (error, results) => {
+    //         if (error) { console.log(error); }
+    //         else {
+    //             const totalCount = `SELECT COUNT(*) as count FROM totalturnoverrepost WHERE day >='${date}' AND day <= '${endDate}'`
+    //             connection.query(totalCount, (error, res) => {
+    //                 if (error) { console.log(error); }
+    //                 else {
+    //                     response.send({
+    //                         data: results,
+    //                         valusData: results.length,
+    //                         total: results.length
+    //                     });
+    //                     response.end();
+    //                 }
+    //             })
+    //         }
+    //     });
+    // } 
+    else {
         //console.log(searcKey, searchPhones)
         let sql_ = `SELECT * FROM totalturnoverrepost WHERE day >='${date}' AND day <= '${endDate}' AND usernameuser LIKE ? LIMIT ? OFFSET ?`;
         const searchPattern = `%${searchPhones}%`;
@@ -3063,14 +3080,14 @@ exports.getRepostTurnover = (require, response) => {
         connection.query(sql_, values, (error, results) => {
             if (error) { console.log(error); }
             else {
-                const totalCount = `SELECT COUNT(*) as count FROM totalturnoverrepost WHERE day >='${date}' AND day <= '${endDate}'`
+                const totalCount = `SELECT COUNT(*) as count FROM totalturnoverrepost WHERE day >='${date}' AND day <= '${endDate}' AND usernameuser LIKE '%${searchPhones}%'`
                 connection.query(totalCount, (error, res) => {
                     if (error) { console.log(error); }
                     else {
                         response.send({
                             data: results,
                             valusData: results.length,
-                            total: results.length
+                            total: res[0].count,
                         });
                         response.end();
                     }

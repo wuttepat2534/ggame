@@ -248,7 +248,7 @@ exports.GameSettleBets = async (req, res) => {
                         //if ()
                         let balanceNow = (balanceUser - betPlay) + betAmount;
                         let balanceturnover = hasSimilarData(results[0].gameplayturn, productId, results[0].turnover, betPlay)
-                        console.log("BetUp...." + betPlay, betAmount, balanceUser, balanceNow);
+                        //console.log("BetUp...." + betPlay, betAmount, balanceUser, balanceNow);
                         const post = {
                             username: usernameGame, gameid: productId, bet: betPlay, win: betAmount, balance_credit: balanceNow,
                             userAgent: userAgent, platform: userAgentt, namegame: namegame, trans_id: txnsGame[0].tokenplaygame
