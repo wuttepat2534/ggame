@@ -243,10 +243,10 @@ exports.GameSettleBets = async (req, res) => {
                         userAgent: userAgent, platform: userAgentt, namegame: namegame, trans_id: txnsGame[0].tokenplaygame
                     }
                     let repost = repostGame.uploadLogRepostGame(post)
-
+                    console.log(balanceUser, balanceNow)
                     const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${betPlay}', turnover='${balanceturnover}'
                 WHERE phonenumber ='${usernameGame}'`;
-
+                    
                     connection.query(sql_update, (error, resultsGame) => {
                         if (error) { console.log(error) }
                         else {
