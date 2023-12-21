@@ -38,8 +38,8 @@ module.exports = class Post {
             const resFinance = restest;
             const dataUsers = dataUser;
 
-            let baseURL = 'https://dogzilla.live/';
-            //const baseURL = 'http://localhost:5000/';
+            //let baseURL = 'https://dogzilla.live/';
+            const baseURL = 'http://localhost:5000/';
 
             const currentTimeInThailand = moment().tz('Asia/Bangkok');
             const formattedDate = currentTimeInThailand.format('YYYY-MM-DD');
@@ -103,17 +103,19 @@ module.exports = class Post {
                     Bank = "ธนาคารไทยพาณิชย์";
             }
 
-            const inputString = resFinance.data.sender.account.value;
-            const last4Digits = inputString.replace(/\D/g, '').slice(-4);
-
-            const inputStringUser = resFinance.data.receiver.account.value;
-            const last4DigitsUser = inputStringUser.replace(/\D/g, '').slice(-4);
+          
 
             //console.log(last4Digits, last4DigitsUser)
             //console.log(Bank, resFinance.data.receiver.account.value, resFinance.data.sender.account.value);
 
             if (Bank === "ธนาคารกสิกรไทย") {
                 //console.log(Bank);
+                const inputString = resFinance.data.sender.account.value;
+                const last4Digits = inputString.replace(/\D/g, '').slice(-4);
+    
+                const inputStringUser = resFinance.data.receiver.account.value;
+                const last4DigitsUser = inputStringUser.replace(/\D/g, '').slice(-4);
+
                 let sql_deposit = `SELECT * FROM depositaccount WHERE activestatus = "เปิดใช้งาน" AND SUBSTRING(accountNumber, 6, 4) = '${last4DigitsUser}'`;
                 connection.query(sql_deposit, (error, depositData) => {
                     try {
@@ -324,6 +326,11 @@ module.exports = class Post {
                 })
             }
             if (Bank === 'ธนาคารกรุงไทย') {
+                const inputString = resFinance.data.sender.account.value;
+                const last4Digits = inputString.replace(/\D/g, '').slice(-4);
+    
+                const inputStringUser = resFinance.data.receiver.account.value;
+                const last4DigitsUser = inputStringUser.replace(/\D/g, '').slice(-4);
                 let sql_deposit = `SELECT * FROM depositaccount WHERE activestatus = "เปิดใช้งาน" AND RIGHT(accountNumber, 4) = '${last4DigitsUser}'`;
                 connection.query(sql_deposit, (error, depositData) => {
                     try {
@@ -427,6 +434,11 @@ module.exports = class Post {
                 })
             }
             if (Bank === 'ธนาคารไทยพาณิชย์') {
+                const inputString = resFinance.data.sender.account.value;
+                const last4Digits = inputString.replace(/\D/g, '').slice(-4);
+    
+                const inputStringUser = resFinance.data.receiver.account.value;
+                const last4DigitsUser = inputStringUser.replace(/\D/g, '').slice(-4);
                 let sql_deposit = `SELECT * FROM depositaccount WHERE activestatus = "เปิดใช้งาน" AND RIGHT(accountNumber, 4) = '${last4DigitsUser}'`;
                 connection.query(sql_deposit, (error, depositData) => {
                     try {
@@ -531,6 +543,11 @@ module.exports = class Post {
                 })
             }
             if (Bank === 'ธนาคารออมสิน') {
+                const inputString = resFinance.data.sender.account.value;
+                const last4Digits = inputString.replace(/\D/g, '').slice(-4);
+    
+                const inputStringUser = resFinance.data.receiver.account.value;
+                const last4DigitsUser = inputStringUser.replace(/\D/g, '').slice(-4);
                 let sql_deposit = `SELECT * FROM depositaccount WHERE activestatus = "เปิดใช้งาน" AND RIGHT(accountNumber, 4) = '${last4DigitsUser}'`;
                 connection.query(sql_deposit, (error, depositData) => {
                     try {
@@ -634,6 +651,8 @@ module.exports = class Post {
                     }
                 })
             } if (Bank === 'ธนาคารทหารไทยธนชาต') {
+                const inputStringUser = resFinance.data.receiver.account.value;
+                const last4DigitsUser = inputStringUser.replace(/\D/g, '').slice(-4);
                 let sql_deposit = `SELECT * FROM depositaccount WHERE activestatus = "เปิดใช้งาน" AND RIGHT(accountNumber, 4) = '${last4DigitsUser}'`;
                 connection.query(sql_deposit, (error, depositData) => {
                     try {
@@ -738,7 +757,110 @@ module.exports = class Post {
                         }
                     }
                 })
-            }//else {
+            } if (Bank === 'ธนาคารกรุงศรีอยุธยา') {
+               
+                let sql_deposit = `SELECT * FROM depositaccount WHERE activestatus = "เปิดใช้งาน" AND accountNumber = '${resFinance.data.receiver.proxy.value}'`;
+                connection.query(sql_deposit, (error, depositData) => {
+                    try {
+                        if (error) {
+                            console.log(error);
+                        }
+                        else {
+                            const data = depositData;
+                            if (data.length !== 0 || data.length > 0) {
+                                let sql_LogDeposit = `SELECT * FROM logfinanceuser WHERE trans_ref ='${resFinance.data.transRef}'`;
+                                connection.query(sql_LogDeposit, async (error, logDeposit_transRef) => {
+                                    if (error) {
+                                        console.log(error);
+                                    } else {
+                                        const dataLog = logDeposit_transRef;
+                                        if (dataLog.length < 1) {
+                                            //const stringWithNumbers = resFinance.data.sender.account.value;
+                                            const stringWithNumbers = "144452";
+                                            const numbersOnly = stringWithNumbers.match(/\d+/g).join(''); 
+                                            let sql_NameAccount = `SELECT * FROM member WHERE bank = '${Bank}' AND phonenumber = '${dataUsers.phonenumber}' AND  SUBSTRING(accountNumber, 4, 6) = '${numbersOnly}'`;
+                                            connection.query(sql_NameAccount, async (error, nameAccount) => {
+                                                if (error) {
+                                                    console.log(error);
+                                                } else {
+                                                    const dataUserAccount = nameAccount;
+                                                    //console.log(dataUserAccount.length);
+                                                    if (dataUserAccount.length !== 0 || dataUserAccount.length > 0) {
+                                                        let sql_Bank = `SELECT images FROM banknames WHERE bankname_name ='${nameAccount[0].bank}' AND status = 'Y' AND status_delete = 'N'`;
+                                                        connection.query(sql_Bank, async (error, usernameAgent) => {
+                                                            const response = await axios.post(baseURL + "post/financeUser", {
+                                                                resFinance: resFinance,
+                                                                type: dataUsers.type,
+                                                                quantity: resFinance.data.amount,
+                                                                accountNumber: dataUserAccount[0].accountNumber,
+                                                                destinationAccountName: resFinance.data.receiver.displayName,
+                                                                destinationAccountNumber: data[0].accountNumber,
+                                                                phonenumber: dataUsers.phonenumber,
+                                                                statusFinance: 'สำเร็จ',
+                                                                nameimg: dataUsers.filename,
+                                                                transRef: resFinance.data.transRef,
+                                                                qrcodeData: resFinance.data.qrcodeData,
+                                                                agent_id: dataUsers.agent_id,
+                                                                typePromotion: dataUsers.idPromotion,
+                                                                imgBank: usernameAgent[0].images,
+                                                                actualize: "ฝากโดย member จากเว็บไซต์"
+                                                            });
+                                                            if (response.data.message === "เติมเงินสำเร็จ") {
+                                                                resolve("ฝากเงินสำเสร็จ")
+                                                            } else {
+                                                                console.log(response.data.message);
+                                                                resolve(response.data.message)
+                                                            }
+                                                        })
+                                                    } else {
+                                                        const response = await axios.post(baseURL + "post/financeUser", {
+                                                            resFinance: resFinance,
+                                                            type: dataUsers.type,
+                                                            quantity: resFinance.data.amount,
+                                                            accountNumber: "ไม่มีเลขบัญชีในระบบ",
+                                                            destinationAccountName: resFinance.data.receiver.displayName,
+                                                            destinationAccountNumber: data[0].accountNumber,
+                                                            phonenumber: dataUsers.phonenumber,
+                                                            statusFinance: 'รอ',
+                                                            nameimg: dataUsers.filename,
+                                                            transRef: resFinance.data.transRef,
+                                                            qrcodeData: resFinance.data.qrcodeData,
+                                                            agent_id: dataUsers.agent_id,
+                                                            typePromotion: dataUsers.idPromotion,
+                                                            imgBank: 'https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png'
+                                                        });
+                                                        if (response.data.message === "บันทึกสำเร็จ") {
+                                                            resolve("ชื่อบัญชีที่ได้ลงทะเบียนไม่ถูกต้อง กรุณาตรวจสอบ สลิปโอนเงิน ")
+                                                        } else {
+                                                            resolve("ล้มเหลวในการทำรายการ")
+                                                        }
+                                                    }
+                                                }
+                                            })
+                                        } else {
+                                            let sql_depositFlash = `INSERT INTO logfinanceuser (idUser, agent_id, accountName, accountNumber, phonenumber, tpyefinance, quantity, creditbonus, 
+                                                balance_before, balance, bill_number, numberbill, status, transaction_date, time, bank, imgBank, destinationAccount, destinationAccountNumber, trans_ref, qrcodeData, nameimg) value 
+                                                ('${dataUsers.id}','${dataUsers.agent_id}','${dataUsers.accountName}','${dataUsers.accountNumber}','${dataUsers.phonenumber}','${'ฝาก'}','${0}','${0}','${0}'
+                                                ,'${0}','${'00000'}${'00000'}','${0}','ไม่สำเร็จ','${formattedDate}','${formattedTime}','สลิปนี้เคยถูกใช้งานแล้ว','${"https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png"}'
+                                                ,'${resFinance.data.receiver.displayName}','${data[0].accountNumber}','สลิปนี้เคยถูกใช้งานแล้ว', 'สลิปนี้เคยถูกใช้งานแล้ว', '${dataUsers.filename}')`;
+                                            connection.query(sql_depositFlash, (error, result) => {
+                                                resolve("สลิปนี้เคยถูกใช้งานแล้ว")
+                                            })
+                                        }
+                                    }
+                                })
+                            } else {
+                                resolve("ไม่มีชื่อบัญชีธนาคารของเว็บ Toonta ในระบบเงินฝาก")
+                            }
+                        }
+                    } catch (err) {
+                        if (!err.statusCode) {
+                            err.statusCode = 500;
+                        }
+                    }
+                })
+            }
+            //else {
             //     let sql_deposit = `SELECT * FROM depositaccount WHERE activestatus = "เปิดใช้งาน" AND SUBSTRING(accountNumber, 6, 4) = '${last4DigitsUser}'`;
             //     connection.query(sql_deposit, (error, depositData) => {
             //         try {

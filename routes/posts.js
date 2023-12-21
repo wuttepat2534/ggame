@@ -109,6 +109,7 @@ router.post('/getRepostGameListGame', userstoonTaII.getRepostGameListGame)
 router.post('/getRepostEdit', userstoonTaII.getRepostEdit)
 router.post('/getturnoverGrach', userstoonTaII.getturnoverGrach);
 router.post('/getMemberDataWeb', userstoonTaII.getMemberDataWeb);
+router.post('/withdrawMoneyUser/:username/:agent_id', userstoonTaII.withdrawMoneyUser);
 
 router.get('/getDepositaccount/:agent_id', userToonta.getDepositaccount)
 router.get('/getWithdrawalaccount', userToonta.getWithdrawalaccount)

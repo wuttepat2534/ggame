@@ -251,10 +251,10 @@ module.exports = class Post {
                 } else {
                     let balanceNow = resultuserPromotion[0].credit - post.bet
                     if (resultuserPromotion[0].passwordpromotion !== "ไม่ได้รับโปรโมชั่น") {
-                        if (resultuserPromotion[0].turnover !== 0) {
-                            let sql_ePromotion = `SELECT * FROM creditpromotion WHERE passwordpromotion ='${resultuserPromotion[0].passwordpromotion}' AND statuspromotion = 'Y'`;
-                            connection.query(sql_ePromotion, (error, resultPromotion) => {
-                                if (resultPromotion.length !== 0) {
+                        let sql_ePromotion = `SELECT * FROM creditpromotion WHERE passwordpromotion ='${resultuserPromotion[0].passwordpromotion}' AND statuspromotion = 'Y'`;
+                        connection.query(sql_ePromotion, (error, resultPromotion) => {
+                            if (resultuserPromotion[0].turnover !== 0) {
+                                if (resultPromotion.length !== 0) { //หลุดโปร
                                     if (resultPromotion[0].leakedPro === "ค่าคงที่") {
                                         if (balanceNow <= resultPromotion[0].valusbunus) {
                                             let sql = `UPDATE member set promotionuser = 'ไม่ได้รับโปรโมชั่น', passwordpromotion = 'ไม่ได้รับโปรโมชั่น', gameplayturn = 'PlayAllGame', turnover = '${0}' WHERE username ='${post.username}'`;
@@ -290,15 +290,15 @@ module.exports = class Post {
                                         });
                                     }
                                 }
-                            })
-                        } else {
-                            let sql = `UPDATE member set promotionuser = 'ไม่ได้รับโปรโมชั่น', passwordpromotion = 'ไม่ได้รับโปรโมชั่น', gameplayturn = 'PlayAllGame', turnover = '${0}' WHERE username ='${post.username}'`;
-                            connection.query(sql, (error, resultAfter) => {
-                                if (error) {
-                                    console.log(error);
-                                }
-                            });
-                        }
+                            } else { //เล่นจน TrunOver เหลือ ศูนย์
+                                let sql = `UPDATE member set promotionuser = 'จบโปรโมทชั่น', gameplayturn = 'PlayAllGame', turnover = '${0}' WHERE username ='${post.username}'`;
+                                connection.query(sql, (error, resultAfter) => {
+                                    if (error) {
+                                        console.log(error);
+                                    }
+                                });
+                            }
+                        })
                     }
                 }
             })
@@ -351,10 +351,11 @@ function receive_Promotions(resultPromotion, dataUser, bill_number, quantity, fo
         const turnover = creditBunus * resultPromotion[0].multiplier;
 
         let sql_before = `INSERT INTO logfinanceuser (idUser, agent_id, accountName, accountNumber, phonenumber, tpyefinance, quantity, creditbonus, 
-            balance_before, balance, bill_number, numberbill, status, transaction_date, time, bank, imgBank, destinationAccount, destinationAccountNumber, trans_ref, qrcodeData, nameimg, actualize) value 
+            balance_before, balance, bill_number, numberbill, status, transaction_date, time, bank, imgBank, destinationAccount, 
+            destinationAccountNumber, trans_ref, qrcodeData, nameimg, actualize, promotion) value 
             ('${dataUser.id}','${dataUser.agent_id}','${dataUser.accountName}','${dataUser.accountNumber}','${dataUser.phonenumber}','${'ฝาก'}','${quantity}','${balancebunus}','${dataUser.credit}'
             ,'${balance}','T${formattedDate}${formattedNumber}','${bill_number}','${statusFinance}','${datethai}','${formattedTime}','${dataUser.bank}','${imgBank}'
-            ,'${destinationAccount}','${destinationAccountNumber}','${transRef}', '${qrcodeData}','${nameimg}','${actualize}')`;
+            ,'${destinationAccount}','${destinationAccountNumber}','${transRef}', '${qrcodeData}','${nameimg}','${actualize}','${resultPromotion[0].namepromotion}')`;
 
         let totalamountdaily = logTotalAmount(dataUser, formattedDate, 'ฝาก', destinationAccount, destinationAccountNumber, quantity, statusFinance)
         let updateRepostFinance = Finance.UpdateLogRepostFinance(dataUser.username, 'ฝาก', quantity)
@@ -611,7 +612,7 @@ function receiving_Daily(dataUser, resultPromotion, quantity, timereset) { //ร
         try {
             let sql_UserHavePromotion = `SELECT * FROM repostPromotion WHERE passwordpromotion ='${resultPromotion.passwordpromotions}' AND username ='${dataUser.username}' AND
             created_at >= "${formattedDateStart}" AND created_at <= "${formattedDateEnd}"`;
-            connection.query(sql_UserHavePromotion,(error, resultuserPromotion) => {
+            connection.query(sql_UserHavePromotion, (error, resultuserPromotion) => {
                 if (error) {
                     console.log(error)
                 } else {

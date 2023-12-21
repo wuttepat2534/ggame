@@ -163,14 +163,21 @@ exports.ConfirmationWithdraw = async (req, res, next) => {
                             if (error) {
                                 console.log(error);
                             } else {
-                                let creditNow = convertedCredit;
-                                const message = `ถอนเงินสำเร็จ\nลูกค้า: ${usernameUser}\nชื่อบัญชี: ${userMember[0].accountName}\nจำนวนเงิน: ${value}\nยอดคงเหลือ: ${creditNow}\nทำโดย: ${approval_person}\nเวลา: ${formattedDate} ${formattedTime}`;
-                                let lintNotify = logEdit.winhdrawLinenoti(message, value, usernameUser, formattedDate, formattedTime, approval_person)
-                                let updateRepostFinance = Finance.UpdateLogRepostFinance(usernameUser, 'ถอน', convertedLatest_withdrawal)
-                                res.send({
-                                    message: "ถอนเงินสำเร็จ",
+                                let sql = `UPDATE member set promotionuser = 'ไม่ได้รับโปรโมชั่น', passwordpromotion = 'ไม่ได้รับโปรโมชั่น', gameplayturn = 'PlayAllGame'  WHERE username ='${usernameUser}' AND agent_id ='${agent_id}'`;
+                                connection.query(sql, (error, resultAfter) => {
+                                    if (error) {
+                                        console.log(error);
+                                    } else {
+                                        let creditNow = convertedCredit;
+                                        const message = `ถอนเงินสำเร็จ\nลูกค้า: ${usernameUser}\nชื่อบัญชี: ${userMember[0].accountName}\nจำนวนเงิน: ${value}\nยอดคงเหลือ: ${creditNow}\nทำโดย: ${approval_person}\nเวลา: ${formattedDate} ${formattedTime}`;
+                                        let lintNotify = logEdit.winhdrawLinenoti(message, value, usernameUser, formattedDate, formattedTime, approval_person)
+                                        let updateRepostFinance = Finance.UpdateLogRepostFinance(usernameUser, 'ถอน', convertedLatest_withdrawal)
+                                        res.send({
+                                            message: "ถอนเงินสำเร็จ",
+                                        });
+                                        res.end();
+                                    }
                                 });
-                                res.end();
                             }
                         })
                     }
@@ -1493,3 +1500,101 @@ exports.getMemberDataWeb = (require, response) => {
     }
 }
 
+//http://localhost:5000/post/getRepostDeposit getRepostDeposit
+exports.withdrawMoneyUser = (require, response) => {
+    const username = require.params.username;
+    const agent_id = require.params.agent_id;
+    let sql_before = `SELECT * FROM member WHERE phonenumber ='${username}' AND agent_id = '${agent_id}'`;
+    connection.query(sql_before, (error, resultUser) => {
+        if (error) {
+            console.log(error)
+        } else {
+            if (resultUser[0].passwordpromotion.includes("ไม่ได้รับโปรโมชั่น")) {
+                if (resultUser[0].turnover === 0) {
+                    response.send({
+                        withdrawMoney: resultUser[0].credit
+                    });
+                    response.end();
+                } else {
+                    response.send({
+                        withdrawMoney: 0
+                    });
+                    response.end();
+                }
+            } else {
+                let sql_Promotion = `SELECT * FROM creditpromotion WHERE passwordpromotion ='${resultUser[0].passwordpromotion}'`;
+                connection.query(sql_Promotion, (error, resultPromotion) => {
+                    if (error) {
+                        console.log(error)
+                    } else {
+                        if (resultPromotion[0].withdrawalType === 'ถอน') {
+                            if (resultUser[0].credit > 100) {
+                                if (resultUser[0].credit < resultPromotion[0].withdraw_valus){
+                                    response.send({
+                                        withdrawMoney: resultUser[0].credit
+                                    });
+                                    response.end();
+                                } else {
+                                    response.send({
+                                        withdrawMoney: resultPromotion[0].withdraw_valusII
+                                    });
+                                    response.end();
+                                }
+                            } else {
+                                response.send({
+                                    withdrawMoney: 0
+                                });
+                                response.end();
+                            }
+
+                        } else if (resultPromotion[0].withdrawalTypeII === 'ถอน') {
+                            if (resultUser[0].credit > 100) {
+                                if (resultUser[0].credit < resultPromotion[0].withdraw_valusII){
+                                    response.send({
+                                        withdrawMoney: resultUser[0].credit
+                                    });
+                                    response.end();
+                                } else {
+                                    response.send({
+                                        withdrawMoney: resultPromotion[0].withdraw_valusII
+                                    });
+                                    response.end();
+                                }
+                            } else {
+                                response.send({
+                                    withdrawMoney: 0
+                                });
+                                response.end();
+                            }
+
+                        } else if (resultPromotion[0].withdrawalTypeIII === 'ถอน') {
+                            if (resultUser[0].credit > 100) {
+                                if (resultUser[0].credit < resultPromotion[0].withdraw_valusIII){
+                                    response.send({
+                                        withdrawMoney: resultUser[0].credit
+                                    });
+                                    response.end();
+                                } else {
+                                    response.send({
+                                        withdrawMoney: resultPromotion[0].withdraw_valusIII
+                                    });
+                                    response.end();
+                                }
+                            } else {
+                                response.send({
+                                    withdrawMoney: 0
+                                });
+                                response.end();
+                            }
+                        } else {
+                            response.send({
+                                withdrawMoney: 0
+                            });
+                            response.end();
+                        }
+                    }
+                })
+            }
+        }
+    });
+}
