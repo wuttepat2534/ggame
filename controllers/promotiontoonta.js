@@ -37,7 +37,7 @@ module.exports = class Post {
         });
     }
 
-    static promotionDeposit(quantityUser, dataUser, idPromotion, bill_number, totaltopup, nameimg, imgBank,
+    static promotionDeposit(quantityUser, dataUser, idPromotion, bill_number, totaltopup, nameimg, imgBank, note,
         statusFinance, qrcodeData, transRef, destinationAccount, destinationAccountNumber, formattedDate, formattedNumber, actualize) {
         return new Promise((resolve, reject) => {
             let ipuser = "192.168.1.1"
@@ -68,7 +68,7 @@ module.exports = class Post {
                                                         Check_conditions(receiving_data_typeII, dataUser, resultPromotion[0], quantityII, data_typeII, quantityUser, ipuser, resetII).then(calculatedValuesII => {
                                                             if (calculatedValuesII.status && calculatedValuesII.status.includes('OKPromotion')) {
                                                                 receive_Promotions(resultPromotion, dataUser, bill_number, quantityUser, formattedDate, formattedNumber,
-                                                                    statusFinance, destinationAccount, destinationAccountNumber, transRef, qrcodeData, nameimg, totaltopup, ipuser, imgBank, actualize)
+                                                                    statusFinance, destinationAccount, destinationAccountNumber, transRef, qrcodeData, nameimg, totaltopup, ipuser, imgBank, actualize, note)
                                                                     .then(calculatedValues => {
                                                                         let jsArray = {
                                                                             status: calculatedValues.status,
@@ -90,7 +90,7 @@ module.exports = class Post {
                                                     } else {
                                                         console.log('on3')
                                                         receive_Promotions(resultPromotion, dataUser, bill_number, quantityUser, formattedDate, formattedNumber,
-                                                            statusFinance, destinationAccount, destinationAccountNumber, transRef, qrcodeData, nameimg, totaltopup, ipuser, imgBank, actualize)
+                                                            statusFinance, destinationAccount, destinationAccountNumber, transRef, qrcodeData, nameimg, totaltopup, ipuser, imgBank, actualize, note)
                                                             .then(calculatedValues => {
                                                                 let jsArray = {
                                                                     status: calculatedValues.status,
@@ -114,7 +114,7 @@ module.exports = class Post {
                                         } else {
                                             console.log('on1.5')
                                             receive_Promotions(resultPromotion, dataUser, bill_number, quantityUser, formattedDate, formattedNumber,
-                                                statusFinance, destinationAccount, destinationAccountNumber, transRef, qrcodeData, nameimg, totaltopup, ipuser, imgBank, actualize)
+                                                statusFinance, destinationAccount, destinationAccountNumber, transRef, qrcodeData, nameimg, totaltopup, ipuser, imgBank, actualize, note)
                                                 .then(calculatedValues => {
                                                     let jsArray = {
                                                         status: calculatedValues.status,
@@ -311,7 +311,7 @@ module.exports = class Post {
     }
 };
 
-function receive_Promotions(resultPromotion, dataUser, bill_number, quantity, formattedDate, formattedNumber, statusFinance, destinationAccount, destinationAccountNumber, transRef, qrcodeData, nameimg, totaltopup, ipuser, imgBank, actualize) {
+function receive_Promotions(resultPromotion, dataUser, bill_number, quantity, formattedDate, formattedNumber, statusFinance, destinationAccount, destinationAccountNumber, transRef, qrcodeData, nameimg, totaltopup, ipuser, imgBank, actualize, note) {
     return new Promise((resolve, reject) => {
         let rank = 'NewMember';
         const currentTimeInThailand = moment().tz('Asia/Bangkok');
@@ -352,10 +352,10 @@ function receive_Promotions(resultPromotion, dataUser, bill_number, quantity, fo
 
         let sql_before = `INSERT INTO logfinanceuser (idUser, agent_id, accountName, accountNumber, phonenumber, tpyefinance, quantity, creditbonus, 
             balance_before, balance, bill_number, numberbill, status, transaction_date, time, bank, imgBank, destinationAccount, 
-            destinationAccountNumber, trans_ref, qrcodeData, nameimg, actualize, promotion) value 
+            destinationAccountNumber, trans_ref, qrcodeData, nameimg, actualize, promotion, note) value 
             ('${dataUser.id}','${dataUser.agent_id}','${dataUser.accountName}','${dataUser.accountNumber}','${dataUser.phonenumber}','${'ฝาก'}','${quantity}','${balancebunus}','${dataUser.credit}'
             ,'${balance}','T${formattedDate}${formattedNumber}','${bill_number}','${statusFinance}','${datethai}','${formattedTime}','${dataUser.bank}','${imgBank}'
-            ,'${destinationAccount}','${destinationAccountNumber}','${transRef}', '${qrcodeData}','${nameimg}','${actualize}','${resultPromotion[0].namepromotion}')`;
+            ,'${destinationAccount}','${destinationAccountNumber}','${transRef}', '${qrcodeData}','${nameimg}','${actualize}','${resultPromotion[0].namepromotion}','${note}')`;
 
         let totalamountdaily = logTotalAmount(dataUser, formattedDate, 'ฝาก', destinationAccount, destinationAccountNumber, quantity, statusFinance)
         let updateRepostFinance = Finance.UpdateLogRepostFinance(dataUser.username, 'ฝาก', quantity)
@@ -387,7 +387,7 @@ _______________________
 _______________________
 เวลา: ${formattedDate} ${formattedTime}
 `;
-                    let lintNotify = logEdit.DitpositLinenoti(message)
+                    //let lintNotify = logEdit.DitpositLinenoti(message)
                     let jsArray = { status: "รับโปรโมชั่นเรียบร้อย", turnover: turnover };
                     resolve(jsArray);
                 });

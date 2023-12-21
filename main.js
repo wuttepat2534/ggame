@@ -503,7 +503,8 @@ app.post('/login/member', async (require, response, next) => {
     const currentTimeInThailand = moment().tz('Asia/Bangkok');
     const formattedDate = currentTimeInThailand.format('YYYY-MM-DD');
 
-    let sql = `SELECT id, credit, name, password, phonenumber FROM member WHERE phonenumber='${phoneNumber}' AND status_delete='N' AND agent_id = '${agent_id}'`;
+    let sql = `SELECT id, credit, name, password, phonenumber FROM member WHERE phonenumber='${phoneNumber}' AND status_delete='N' 
+    AND agent_id = '${agent_id}' AND status = 'Y'`;
     connection.query(sql, async (error, results) => {
         try {
             let update = `UPDATE member set ip_address = '${ipAddress}', browserlogin = '${browser}', updated_at = '${formattedDate}'

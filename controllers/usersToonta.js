@@ -448,7 +448,7 @@ exports.getImgPromotion = (req, res) => {
 http: //localhost:5000/post/getDatafinanceUser/:id  Get getDatafinanceUser
 exports.getDatafinanceUser = (req, res) => {
     const id = req.params.id;
-    let sql = `SELECT accountNumber, accountName FROM member WHERE id ='${id}' `;
+    let sql = `SELECT accountNumber, accountName FROM member WHERE id ='${id}' AND status = 'Y' `;
     connection.query(sql, async (error, results) => {
         try {
             if (error) { console.log(error) }
@@ -473,7 +473,7 @@ function formatNumber(num) {
 //http://localhost:5000/post/financeUser financeUserMoney
 exports.financeUser = (req, res) => {
     //console.log(req.body);
-    const disposittpye = req.body.type;
+    const disposittpye = req.body.disposittpye;
     const usernamedisposit = req.body.usernamedisposit;
     const type = req.body.type;
     const quantity = req.body.quantity;
@@ -506,7 +506,7 @@ exports.financeUser = (req, res) => {
             } else {
                 const dataLog = logDeposit_transRef;
                 if (dataLog.length < 1) {
-                    let sql_before = `SELECT * FROM member WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}' ORDER BY phonenumber ASC`;
+                    let sql_before = `SELECT * FROM member WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}' AND status = 'Y' ORDER BY phonenumber ASC`;
                     connection.query(sql_before, (error, resultUser) => {
                         if (error) {
                             console.log(error)
@@ -544,7 +544,7 @@ exports.financeUser = (req, res) => {
                                         }
 
                                         if (typePromotion !== '0') {
-                                            promotiontoonta.promotionDeposit(quantity, resultUser[0], typePromotion, formattedNumber, totaltopup, nameimg, imgBank,
+                                            promotiontoonta.promotionDeposit(quantity, resultUser[0], typePromotion, formattedNumber, totaltopup, nameimg, imgBank, nots,
                                                 statusFinance, qrcodeData, transRef, destinationAccount, destinationAccountNumber, formattedDate, formattedNumber, actualize)
                                                 .then(calculatedValues => {
                                                     //console.log(calculatedValues.status)
@@ -577,11 +577,11 @@ exports.financeUser = (req, res) => {
                                             //console.log('55555')
                                             let sql_before = `INSERT INTO logfinanceuser (idUser, agent_id, accountName, accountNumber, phonenumber, tpyefinance, quantity, creditbonus, 
                                                 balance_before, balance, bill_number, numberbill, status, transaction_date, time, bank, imgBank, destinationAccount, destinationAccountNumber, 
-                                                trans_ref, qrcodeData, nameimg, actualize, promotion) value 
+                                                trans_ref, qrcodeData, nameimg, actualize, promotion, note) value 
                                                 ('${resultUser[0].id}','${resultUser[0].agent_id}','${resultUser[0].accountName}','${accountNumber}','${phonenumber}','${'ฝาก'}','${quantity}','${0}','${resultUser[0].credit}'
                                                 ,'${balance}','T${formattedDate}${formattedNumber}','${billnum}','${statusFinance}','${formattedDate}','${formattedTime}'
                                                 ,'${resultUser[0].bank}','${imgBank}','${destinationAccount}','${destinationAccountNumber}','${transRef}','${qrcodeData}'
-                                                ,'${nameimg}','${actualize}','${'ไม่ได้รับโปรโมชั่น'}')`;
+                                                ,'${nameimg}','${actualize}','${'ไม่ได้รับโปรโมชั่น'}','${nots}')`;
 
                                             if (statusFinance === "สำเร็จ") {
                                                 logTotalAmount(resultUser, formattedDate, 'ฝาก', destinationAccount, destinationAccountNumber, quantity, statusFinance)
@@ -593,7 +593,7 @@ exports.financeUser = (req, res) => {
 
                                                         let sql = `UPDATE member set credit = '${balance}', recharge_times = '${resultUser[0].recharge_times + 1}', deposit ='${quantity}',
                                                             total_top_up_amount = '${totaltopup}', groupmember = '${rank}', turnover = '${resultUser[0].turnover + quantity}' 
-                                                            WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}'`;
+                                                            WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}' AND status = 'Y'`;
                                                         connection.query(sql, (error, resultAfter) => {
                                                             if (error) {
                                                                 console.log(error);
@@ -621,7 +621,7 @@ _______________________
 _______________________
 เวลา: ${formattedDate} ${formattedTime}
 `;
-                                                                let lintNotify = logEdit.DitpositLinenoti(message)
+                                                                //let lintNotify = logEdit.DitpositLinenoti(message)
                                                                 io.emit('notify-management-deposit', { data: post });
 
                                                                 res.send({
@@ -682,7 +682,7 @@ exports.WinhdrawUser = (req, res) => {
     const io = socket.getIO();
     //console.log(req.body);
     try {
-        let sql_before = `SELECT * FROM member WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}'  ORDER BY phonenumber ASC`;
+        let sql_before = `SELECT * FROM member WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}' AND status = 'Y' ORDER BY phonenumber ASC`;
         connection.query(sql_before, (error, resultUser) => {
             if (error) {
                 console.log(error)
@@ -716,7 +716,7 @@ exports.WinhdrawUser = (req, res) => {
                                                     actualize, statusWitdraw, formattedTime, agent_id)
                                                     .then(data => {
                                                         let sql = `UPDATE member set turnover = '${0}', credit = '${0}'
-                                                    WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}'`;
+                                                    WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}' AND status = 'Y'`;
                                                         connection.query(sql, (error, resultAfter) => {
                                                             if (error) {
                                                                 console.log(error);
@@ -742,7 +742,7 @@ exports.WinhdrawUser = (req, res) => {
                                                     actualize, statusWitdraw, formattedTime, agent_id)
                                                     .then(data => {
                                                         let sql = `UPDATE member set turnover = '${0}', credit = '${0}'
-                                                    WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}'`;
+                                                    WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}' AND status = 'Y'`;
                                                         connection.query(sql, (error, resultAfter) => {
                                                             if (error) {
                                                                 console.log(error);
@@ -768,7 +768,7 @@ exports.WinhdrawUser = (req, res) => {
                                                     actualize, statusWitdraw, formattedTime, agent_id)
                                                     .then(data => {
                                                         let sql = `UPDATE member set turnover = '${0}', credit = '${0}'
-                                                    WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}'`;
+                                                    WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}' AND status = 'Y'`;
                                                         connection.query(sql, (error, resultAfter) => {
                                                             if (error) {
                                                                 console.log(error);
@@ -793,7 +793,7 @@ exports.WinhdrawUser = (req, res) => {
                                                 actualize, statusWitdraw, formattedTime, agent_id)
                                                 .then(data => {
                                                     let sql = `UPDATE member set turnover = '${0}', credit = '${0}'
-                                                WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}'`;
+                                                WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}' AND status = 'Y'`;
                                                     connection.query(sql, (error, resultAfter) => {
                                                         if (error) {
                                                             console.log(error);
@@ -823,7 +823,7 @@ exports.WinhdrawUser = (req, res) => {
                                                 actualize, statusWitdraw, formattedTime, agent_id)
                                                 .then(data => {
                                                     let sql = `UPDATE member set promotionuser = 'ไม่ได้รับโปรโมชั่น', passwordpromotion = 'ไม่ได้รับโปรโมชั่น', gameplayturn = 'PlayAllGame', turnover = '${0}', credit = '${0}'
-                                                WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}'`;
+                                                WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}' AND status = 'Y'`;
                                                     connection.query(sql, (error, resultAfter) => {
                                                         if (error) {
                                                             console.log(error);
@@ -854,7 +854,7 @@ exports.WinhdrawUser = (req, res) => {
                                                         .then(data => {
                                                             if (data.credit < 10) {
                                                                 let sql = `UPDATE member set promotionuser = 'ไม่ได้รับโปรโมชั่น', passwordpromotion = 'ไม่ได้รับโปรโมชั่น', gameplayturn = 'PlayAllGame', turnover = '${0}', credit = '${0}'
-                                                        WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}'`;
+                                                        WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}' AND status = 'Y'`;
                                                                 connection.query(sql, (error, resultAfter) => {
                                                                     if (error) {
                                                                         console.log(error);
@@ -886,7 +886,7 @@ exports.WinhdrawUser = (req, res) => {
                                                     .then(data => {
                                                         if (data.credit < 10) {
                                                             let sql = `UPDATE member set promotionuser = 'ไม่ได้รับโปรโมชั่น', passwordpromotion = 'ไม่ได้รับโปรโมชั่น', gameplayturn = 'PlayAllGame', turnover = '${0}'
-                                                    WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}'`;
+                                                    WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}' AND status = 'Y'`;
                                                             connection.query(sql, (error, resultAfter) => {
                                                                 if (error) {
                                                                     console.log(error);
@@ -974,7 +974,7 @@ function WinhdrawUserOn(resultUser, formattedDate, quantity, phonenumber, withdr
                                     const tpyeApproval_person = req.body.tpye_Approval_person
 
                                     let sql = `UPDATE member set credit = '${balanceNow}', withdraw_member = '${resultUser[0].withdraw_member + quantity}', latest_withdrawal = '${quantity}'
-                                WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}'`;
+                                WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}' AND status = 'Y'`;
                                     connection.query(sql, (error, resultAfter) => {
                                         if (error) {
                                             console.log(error);
@@ -992,7 +992,7 @@ function WinhdrawUserOn(resultUser, formattedDate, quantity, phonenumber, withdr
                                     });
                                 } else {
                                     let sql = `UPDATE member set credit = '${balanceNow}', withdraw_member = '${resultUser[0].withdraw_member + quantity}', latest_withdrawal = '${quantity}'
-                                WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}'`;
+                                WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}' AND status = 'Y'`;
                                     connection.query(sql, (error, resultAfter) => {
                                         if (error) {
                                             console.log(error);
@@ -2225,7 +2225,7 @@ exports.resetPasswordUserToonta = async (require, response, next) => {
 
     const hashedPassword = md5(newPassword);
     const logFuntion = logEdit.uploadLogResetPasswordMenber(idUser, idedit, username, typeedit, note, agent_id);
-    let sql = `UPDATE member set password = '${hashedPassword}' WHERE username = "${username}" AND agent_id = "${agent_id}"`;
+    let sql = `UPDATE member set password = '${hashedPassword}' WHERE username = "${username}" AND agent_id = "${agent_id}" AND status = 'Y'`;
     connection.query(sql, (error, result) => {
         try {
             if (error) { console.log(error) }
@@ -2295,7 +2295,7 @@ exports.PutCreditUserToonta = async (require, response, next) => {
     const note = require.body.note;
 
     const logFuntion = logEdit.uploadLogEditCredit(idUser, idedit, typeedit, creditnew, creditBefore, note, agent_id, useranme);
-    let sql = `UPDATE member set  credit = '${creditnew}' WHERE username = "${useranme}" AND agent_id = "${agent_id}"`;
+    let sql = `UPDATE member set  credit = '${creditnew}' WHERE username = "${useranme}" AND agent_id = "${agent_id}" AND status = 'Y'`;
     connection.query(sql, (error, result) => {
         try {
             if (error) { console.log(error) }
@@ -2353,7 +2353,7 @@ exports.banUserToonta = async (require, response) => {
     const agent_id = require.body.agent_id;
     const logFuntion = logEdit.uploadLogBan(idUser, idedit, typeedit, turnovernew, turnoverBefore, notinfo, agent_id, useranme);
 
-    let sql = `UPDATE member set  status = 'Y', note = '${notinfo}' WHERE username = "${useranme}"`;
+    let sql = `UPDATE member set  status = 'N', note = '${notinfo}' WHERE username = "${useranme}"`;
     connection.query(sql, (error, result) => {
         try {
             if (error) { console.log(error) }

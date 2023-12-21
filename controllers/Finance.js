@@ -161,7 +161,7 @@ module.exports = class Post {
                                                                 typePromotion: dataUsers.idPromotion,
                                                                 imgBank: usernameAgent[0].images,
                                                                 actualize: "ฝากโดย member จากเว็บไซต์",
-                                                                nots: '',
+                                                                nots: 'ฝากจากหน้าเว็บ',
                                                                 usernamedisposit: dataUsers.phonenumber,
                                                                 disposittpye: 'member'
                                                             });
@@ -188,7 +188,7 @@ module.exports = class Post {
                                                             agent_id: dataUsers.agent_id,
                                                             typePromotion: dataUsers.idPromotion,
                                                             imgBank: 'https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png',
-                                                            nots: '',
+                                                            nots: 'ฝากจากหน้าเว็บ',
                                                             usernamedisposit: dataUsers.phonenumber,
                                                             disposittpye: 'member'
                                                         });
@@ -275,7 +275,7 @@ module.exports = class Post {
                                                                 typePromotion: dataUsers.idPromotion,
                                                                 imgBank: usernameAgent[0].images,
                                                                 actualize: "ฝากโดย member จากเว็บไซต์",
-                                                                nots: '',
+                                                                nots: 'ฝากจากหน้าเว็บ',
                                                                 usernamedisposit: dataUsers.phonenumber,
                                                                 disposittpye: 'member'
                                                             });
@@ -302,7 +302,7 @@ module.exports = class Post {
                                                             agent_id: dataUsers.agent_id,
                                                             typePromotion: dataUsers.idPromotion,
                                                             imgBank: 'https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png',
-                                                            nots: '',
+                                                            nots: 'ฝากจากหน้าเว็บ',
                                                             usernamedisposit: dataUsers.phonenumber,
                                                             disposittpye: 'member'
                                                         });
@@ -389,7 +389,7 @@ module.exports = class Post {
                                                                 typePromotion: dataUsers.idPromotion,
                                                                 imgBank: usernameAgent[0].images,
                                                                 actualize: "ฝากโดย member จากเว็บไซต์",
-                                                                nots: '',
+                                                                nots: 'ฝากจากหน้าเว็บ',
                                                                 usernamedisposit: dataUsers.phonenumber,
                                                                 disposittpye: 'member'
                                                             });
@@ -416,7 +416,7 @@ module.exports = class Post {
                                                             agent_id: dataUsers.agent_id,
                                                             typePromotion: dataUsers.idPromotion,
                                                             imgBank: 'https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png',
-                                                            nots: '',
+                                                            nots: 'ฝากจากหน้าเว็บ',
                                                             usernamedisposit: dataUsers.phonenumber,
                                                             disposittpye: 'member'
                                                         });
@@ -503,7 +503,7 @@ module.exports = class Post {
                                                                 typePromotion: dataUsers.idPromotion,
                                                                 imgBank: usernameAgent[0].images,
                                                                 actualize: "ฝากโดย member จากเว็บไซต์",
-                                                                nots: '',
+                                                                nots: 'ฝากจากหน้าเว็บ',
                                                                 usernamedisposit: dataUsers.phonenumber,
                                                                 disposittpye: 'member'
                                                             });
@@ -531,7 +531,7 @@ module.exports = class Post {
                                                             agent_id: dataUsers.agent_id,
                                                             typePromotion: dataUsers.idPromotion,
                                                             imgBank: 'https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png',
-                                                            nots: '',
+                                                            nots: 'ฝากจากหน้าเว็บ',
                                                             usernamedisposit: dataUsers.phonenumber,
                                                             disposittpye: 'member'
                                                         });
@@ -618,7 +618,7 @@ module.exports = class Post {
                                                                 typePromotion: dataUsers.idPromotion,
                                                                 imgBank: usernameAgent[0].images,
                                                                 actualize: "ฝากโดย member จากเว็บไซต์",
-                                                                nots: '',
+                                                                nots: 'ฝากจากหน้าเว็บ',
                                                                 usernamedisposit: dataUsers.phonenumber,
                                                                 disposittpye: 'member'
                                                             });
@@ -646,7 +646,7 @@ module.exports = class Post {
                                                             agent_id: dataUsers.agent_id,
                                                             typePromotion: dataUsers.idPromotion,
                                                             imgBank: 'https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png',
-                                                            nots: '',
+                                                            nots: 'ฝากจากหน้าเว็บ',
                                                             usernamedisposit: dataUsers.phonenumber,
                                                             disposittpye: 'member'
                                                         });
@@ -731,7 +731,7 @@ module.exports = class Post {
                                                                 typePromotion: dataUsers.idPromotion,
                                                                 imgBank: usernameAgent[0].images,
                                                                 actualize: "ฝากโดย member จากเว็บไซต์",
-                                                                nots: '',
+                                                                nots: 'ฝากจากหน้าเว็บ',
                                                                 usernamedisposit: dataUsers.phonenumber,
                                                                 disposittpye: 'member'
                                                             });
@@ -759,7 +759,7 @@ module.exports = class Post {
                                                             agent_id: dataUsers.agent_id,
                                                             typePromotion: dataUsers.idPromotion,
                                                             imgBank: 'https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png',
-                                                            nots: '',
+                                                            nots: 'ฝากจากหน้าเว็บ',
                                                             usernamedisposit: dataUsers.phonenumber,
                                                             disposittpye: 'member'
                                                         });
@@ -839,7 +839,7 @@ module.exports = class Post {
                                                                 typePromotion: dataUsers.idPromotion,
                                                                 imgBank: usernameAgent[0].images,
                                                                 actualize: "ฝากโดย member จากเว็บไซต์",
-                                                                nots: '',
+                                                                nots: 'ฝากจากหน้าเว็บ',
                                                                 usernamedisposit: dataUsers.phonenumber,
                                                                 disposittpye: 'member'
                                                             });
@@ -866,7 +866,7 @@ module.exports = class Post {
                                                             agent_id: dataUsers.agent_id,
                                                             typePromotion: dataUsers.idPromotion,
                                                             imgBank: 'https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png',
-                                                            nots: '',
+                                                            nots: 'ฝากจากหน้าเว็บ',
                                                             usernamedisposit: dataUsers.phonenumber,
                                                             disposittpye: 'member'
                                                         });
