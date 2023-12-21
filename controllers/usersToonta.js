@@ -703,7 +703,7 @@ exports.WinhdrawUser = (req, res) => {
                                 console.error("Error:", error);
                             });
                     } else {
-                        if (resultUser[0].promotionuser.includes("จบโปรโมทชั่น")) {
+                        if (resultUser[0].promotionuser.includes("จบโปรโมชั่น")) {
                             if (resultUser[0].turnover === 0) {
                                 let sql_Promotion = `SELECT * FROM creditpromotion WHERE passwordpromotion ='${resultUser[0].passwordpromotion}'`;
                                 connection.query(sql_Promotion, (error, resultPromotion) => {

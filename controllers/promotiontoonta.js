@@ -291,7 +291,7 @@ module.exports = class Post {
                                     }
                                 }
                             } else { //เล่นจน TrunOver เหลือ ศูนย์
-                                let sql = `UPDATE member set promotionuser = 'จบโปรโมทชั่น', gameplayturn = 'PlayAllGame', turnover = '${0}' WHERE username ='${post.username}'`;
+                                let sql = `UPDATE member set promotionuser = 'จบโปรโมชั่น', gameplayturn = 'PlayAllGame', turnover = '${0}' WHERE username ='${post.username}'`;
                                 connection.query(sql, (error, resultAfter) => {
                                     if (error) {
                                         console.log(error);
