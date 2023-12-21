@@ -676,20 +676,21 @@ exports.WinhdrawUser = (req, res) => {
     const currentTimeInThailand = moment().tz('Asia/Bangkok');
     const formattedDate = currentTimeInThailand.format('YYYY-MM-DD');
     const formattedTime = currentTimeInThailand.format('HH:mm:ss');
-
+    const quantityInt = parseInt(quantity);
     const statusWitdraw = req.body.statusWitdraw;
     const withdrawStatus = req.body.withdrawStatus;
     const io = socket.getIO();
     //console.log(req.body);
     try {
-        let sql_before = `SELECT * FROM member WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}' AND status = 'Y' ORDER BY phonenumber ASC`;
+        let sql_before = `SELECT * FROM member WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}' AND status = 'Y'`;
         connection.query(sql_before, (error, resultUser) => {
             if (error) {
                 console.log(error)
             } else {
                 // if ()
-                let moneyUserWithDraw = resultUser[0].credit - resultUser[0].turnover
-                if (resultUser[0].credit >= quantity && resultUser[0].turnover === 0) {
+                //console.log(resultUser[0]);
+                //let moneyUserWithDraw = resultUser[0].credit - resultUser[0].turnover
+                if (resultUser[0].credit >= quantityInt && resultUser[0].turnover <= 0) {
                     if (resultUser[0].promotionuser.includes("ไม่ได้รับโปรโมชั่น")) { //เช็คว่าไม่ได้รับโปรโมชั่นหรือคูปอง
                         let withdrawWebUser = WinhdrawUserOn(resultUser, formattedDate, quantity, phonenumber, withdrawStatus,
                             actualize, statusWitdraw, formattedTime, agent_id)
@@ -737,7 +738,8 @@ exports.WinhdrawUser = (req, res) => {
                                                 res.end();
                                             }
                                         } else if (resultPromotion[0].withdrawalTypeII === 'ถอน') {
-                                            if (resultPromotion[0].withdraw_valusII <= quantity) {
+                                            if (quantity <= resultPromotion[0].withdraw_valusII) {
+                                                console.log()
                                                 let withdrawWebUser = WinhdrawUserOn(resultUser, formattedDate, quantity, phonenumber, withdrawStatus,
                                                     actualize, statusWitdraw, formattedTime, agent_id)
                                                     .then(data => {
@@ -763,7 +765,7 @@ exports.WinhdrawUser = (req, res) => {
                                                 res.end();
                                             }
                                         } else if (resultPromotion[0].withdrawalTypeIII === 'ถอน') {
-                                            if (resultPromotion[0].withdraw_valusIII <= quantity) {
+                                            if (quantity <= resultPromotion[0].withdraw_valusIII) {
                                                 let withdrawWebUser = WinhdrawUserOn(resultUser, formattedDate, quantity, phonenumber, withdrawStatus,
                                                     actualize, statusWitdraw, formattedTime, agent_id)
                                                     .then(data => {
