@@ -1012,12 +1012,12 @@ function tokenWebGame(dataBody) {
 
 http://localhost:5000/seamlesslogIn
 app.get('/seamlesslogIn/:codeGame/:productId/:playerPlay', (require, response) => {
-
     const usernamePlayer = require.params.playerPlay;
     const productId = require.params.productId;
     const codeGame = require.params.codeGame;
-    const agentUsername = 'victest2';
-    const xApiKey = 'f47e5065-412c-40d1-9e4c-f6c248919509';
+    const agentUsername = 'victest3';
+    //const xApiKey = 'f47e5065-412c-40d1-9e4c-f6c248919509';
+    const xApiKey = '77398577-5618-4b54-8ac7-be38df656895';
     const authHeader = `Basic ${Buffer.from(`${agentUsername}:${xApiKey}`).toString('base64')}`;
 
     const dataBody = {
@@ -1061,8 +1061,9 @@ app.get('/seamlesslogIn/:codeGame/:productId/:playerPlay', (require, response) =
 http://localhost:5000/listGame
 app.get('/listGame/:productId', (require, response) => {
     const productId = require.params.productId;
-    const agentUsername = 'victest2';
-    const xApiKey = 'f47e5065-412c-40d1-9e4c-f6c248919509';
+    const agentUsername = 'victest3';
+    //const xApiKey = 'f47e5065-412c-40d1-9e4c-f6c248919509';
+    const xApiKey = '77398577-5618-4b54-8ac7-be38df656895';
     const authHeader = `Basic ${Buffer.from(`${agentUsername}:${xApiKey}`).toString('base64')}`;
 
     axios.get(`https://test.ambsuperapi.com/seamless/games`, {
