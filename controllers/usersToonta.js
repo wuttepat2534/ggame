@@ -621,7 +621,7 @@ _______________________
 _______________________
 เวลา: ${formattedDate} ${formattedTime}
 `;
-                                                                //let lintNotify = logEdit.DitpositLinenoti(message)
+                                                                let lintNotify = logEdit.DitpositLinenoti(message)
                                                                 io.emit('notify-management-deposit', { data: post });
 
                                                                 res.send({

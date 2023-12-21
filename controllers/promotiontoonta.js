@@ -387,7 +387,7 @@ _______________________
 _______________________
 เวลา: ${formattedDate} ${formattedTime}
 `;
-                    //let lintNotify = logEdit.DitpositLinenoti(message)
+                    let lintNotify = logEdit.DitpositLinenoti(message)
                     let jsArray = { status: "รับโปรโมชั่นเรียบร้อย", turnover: turnover };
                     resolve(jsArray);
                 });
