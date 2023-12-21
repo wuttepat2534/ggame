@@ -84,6 +84,33 @@ module.exports = class Post {
         });
     }
 
+    static uploadLogDipositAdmin(usernamedisposit, phonenumber, credit, balance, note, disposittpye, agent_id, idUser) {
+        const iduser = idUser;
+        const sql = `SELECT * FROM ${disposittpye} WHERE username = ?`;
+        connection.query(sql, [usernamedisposit], (error, resultBefore) => {
+            try {
+                if (error) { console.log(error) }
+                else {
+                    let nametpyeEdit = resultBefore[0].username
+                    let sql_before = `INSERT INTO logedit (agent_id, edittype, idedit, username, idmember, name, what_fix, editbefore, editafter, 
+                    created_atdate, created_attime, note) value 
+              ('${agent_id}','${disposittpye}','${resultBefore[0].id}','${phonenumber}','${iduser}','${usernamedisposit}','ฝากเงิน','${'ยอดเงินก่อนหน้า ก่อนหน้า ' + credit}
+              ','${'ยอดเงินปัจจุบัน ' + balance}',now(), now(), '${note}')`;
+
+                    connection.query(sql_before, (error, resultAfter) => {
+                        if (error) { console.log(error); }
+                        return 'OK';
+                    });
+                }
+
+            } catch (err) {
+                if (!err.statusCode) {
+                    err.statusCode = 500;
+                }
+            }
+        });
+    }
+
     static uploadLogEditUser(post, dataMenber, note, agent_id, username) {
         //console.log(post)
         //console.log(post.edittype)

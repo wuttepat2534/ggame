@@ -473,6 +473,8 @@ function formatNumber(num) {
 //http://localhost:5000/post/financeUser financeUserMoney
 exports.financeUser = (req, res) => {
     //console.log(req.body);
+    const disposittpye = req.body.type;
+    const usernamedisposit = req.body.usernamedisposit;
     const type = req.body.type;
     const quantity = req.body.quantity;
     const accountNumber = req.body.accountNumber;
@@ -491,8 +493,10 @@ exports.financeUser = (req, res) => {
     const formattedTime = currentTimeInThailand.format('HH:mm:ss');
     const imgBank = req.body.imgBank
     const actualize = req.body.actualize
+    const nots = req.body.nots;
     let promotiontres = ''
     //console.log(statusFinance)
+    let notsdipost = actualize + ' ' + nots
     const io = socket.getIO();
     try {
         let sql_before = `SELECT * FROM member WHERE phonenumber ='${phonenumber}' AND agent_id = '${agent_id}' ORDER BY phonenumber ASC`;
@@ -586,31 +590,39 @@ exports.financeUser = (req, res) => {
                                             connection.query(sql, (error, resultAfter) => {
                                                 if (error) {
                                                     console.log(error);
-                                                }
-                                                let updateRepostFinance = Finance.UpdateLogRepostFinance(resultUser[0].username, 'ฝาก', quantity)
-                                                const post = [
-                                                    {
-                                                        username: resultUser[0].username,
-                                                        deposit_member: quantity,
-                                                        message: "มีการแจ้งฝากเงินจำนวน"
-                                                    }]
-                                                const message = `ฝากเงินสำเร็จ\nลูกค้า: ${resultUser[0].accountName}\nยูสเซอร์: ${phonenumber}
+                                                } else {
+                                                    let updateRepostFinance = Finance.UpdateLogRepostFinance(resultUser[0].username, 'ฝาก', quantity)
+
+                                                    if (disposittpye !== 'member'){
+                                                        let repostFinace = logEdit.uploadLogDipositAdmin(usernamedisposit, phonenumber, resultUser[0].credit, 
+                                                            balance, nots, disposittpye, agent_id, resultUser[0].id)
+                                                    }
+                                                    const post = [
+                                                        {
+                                                            username: resultUser[0].username,
+                                                            deposit_member: quantity,
+                                                            message: "มีการแจ้งฝากเงินจำนวน"
+                                                        }]
+                                                    const message = `ฝากเงินสำเร็จ\nลูกค้า: ${resultUser[0].accountName}\nยูสเซอร์: ${phonenumber}
 จำนวนเงิน: ${quantity}
 _______________________
 หมายเหตุ : ยูสเซอร์ไม่ได้เลือกโปรโมชั่น
 ยอดเงืนก่อน: ${resultUser[0].credit}
 ยอดเงินหลังฝาก: ${balance}
 เทิร์นโอเวอร์ที่ต้องทำ: ${resultUser[0].turnover + quantity}
+ฝากโดย: ${notsdipost}
 _______________________
 เวลา: ${formattedDate} ${formattedTime}
 `;
-                                                let lintNotify = logEdit.DitpositLinenoti(message)
-                                                io.emit('notify-management-deposit', { data: post });
-
-                                                res.send({
-                                                    message: "เติมเงินสำเร็จ"
-                                                });
-                                                res.end();
+                                                    let lintNotify = logEdit.DitpositLinenoti(message)
+                                                    io.emit('notify-management-deposit', { data: post });
+    
+                                                    res.send({
+                                                        message: "เติมเงินสำเร็จ"
+                                                    });
+                                                    res.end();
+                                                }
+                                               
                                             });
 
                                         }

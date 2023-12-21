@@ -38,8 +38,8 @@ module.exports = class Post {
             const resFinance = restest;
             const dataUsers = dataUser;
 
-            //let baseURL = 'https://dogzilla.live/';
-            const baseURL = 'http://localhost:5000/';
+            let baseURL = 'https://dogzilla.live/';
+            //const baseURL = 'http://localhost:5000/';
 
             const currentTimeInThailand = moment().tz('Asia/Bangkok');
             const formattedDate = currentTimeInThailand.format('YYYY-MM-DD');
@@ -103,7 +103,7 @@ module.exports = class Post {
                     Bank = "ธนาคารไทยพาณิชย์";
             }
 
-          
+
 
             //console.log(last4Digits, last4DigitsUser)
             //console.log(Bank, resFinance.data.receiver.account.value, resFinance.data.sender.account.value);
@@ -112,7 +112,7 @@ module.exports = class Post {
                 //console.log(Bank);
                 const inputString = resFinance.data.sender.account.value;
                 const last4Digits = inputString.replace(/\D/g, '').slice(-4);
-    
+
                 const inputStringUser = resFinance.data.receiver.account.value;
                 const last4DigitsUser = inputStringUser.replace(/\D/g, '').slice(-4);
 
@@ -160,7 +160,10 @@ module.exports = class Post {
                                                                 agent_id: dataUsers.agent_id,
                                                                 typePromotion: dataUsers.idPromotion,
                                                                 imgBank: usernameAgent[0].images,
-                                                                actualize: "ฝากโดย member จากเว็บไซต์"
+                                                                actualize: "ฝากโดย member จากเว็บไซต์",
+                                                                nots: '',
+                                                                usernamedisposit: dataUsers.phonenumber,
+                                                                disposittpye: 'member'
                                                             });
                                                             //console.log(response.data)
                                                             if (response.data.message === "เติมเงินสำเร็จ") {
@@ -184,7 +187,10 @@ module.exports = class Post {
                                                             qrcodeData: resFinance.data.qrcodeData,
                                                             agent_id: dataUsers.agent_id,
                                                             typePromotion: dataUsers.idPromotion,
-                                                            imgBank: 'https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png'
+                                                            imgBank: 'https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png',
+                                                            nots: '',
+                                                            usernamedisposit: dataUsers.phonenumber,
+                                                            disposittpye: 'member'
                                                         });
                                                         if (response.data.message === "บันทึกสำเร็จ") {
                                                             resolve("ชื่อบัญชีที่ได้ลงทะเบียนไม่ถูกต้อง กรุณาตรวจสอบ สลิปโอนเงิน ")
@@ -268,7 +274,10 @@ module.exports = class Post {
                                                                 agent_id: dataUsers.agent_id,
                                                                 typePromotion: dataUsers.idPromotion,
                                                                 imgBank: usernameAgent[0].images,
-                                                                actualize: "ฝากโดย member จากเว็บไซต์"
+                                                                actualize: "ฝากโดย member จากเว็บไซต์",
+                                                                nots: '',
+                                                                usernamedisposit: dataUsers.phonenumber,
+                                                                disposittpye: 'member'
                                                             });
                                                             //console.log(response.data.message)
                                                             if (response.data.message === "เติมเงินสำเร็จ") {
@@ -292,7 +301,10 @@ module.exports = class Post {
                                                             qrcodeData: resFinance.data.qrcodeData,
                                                             agent_id: dataUsers.agent_id,
                                                             typePromotion: dataUsers.idPromotion,
-                                                            imgBank: 'https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png'
+                                                            imgBank: 'https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png',
+                                                            nots: '',
+                                                            usernamedisposit: dataUsers.phonenumber,
+                                                            disposittpye: 'member'
                                                         });
                                                         if (response.data.message === "บันทึกสำเร็จ") {
                                                             resolve("ชื่อบัญชีที่ได้ลงทะเบียนไม่ถูกต้อง กรุณาตรวจสอบ สลิปโอนเงิน ")
@@ -328,7 +340,7 @@ module.exports = class Post {
             if (Bank === 'ธนาคารกรุงไทย') {
                 const inputString = resFinance.data.sender.account.value;
                 const last4Digits = inputString.replace(/\D/g, '').slice(-4);
-    
+
                 const inputStringUser = resFinance.data.receiver.account.value;
                 const last4DigitsUser = inputStringUser.replace(/\D/g, '').slice(-4);
                 let sql_deposit = `SELECT * FROM depositaccount WHERE activestatus = "เปิดใช้งาน" AND RIGHT(accountNumber, 4) = '${last4DigitsUser}'`;
@@ -376,7 +388,10 @@ module.exports = class Post {
                                                                 agent_id: dataUsers.agent_id,
                                                                 typePromotion: dataUsers.idPromotion,
                                                                 imgBank: usernameAgent[0].images,
-                                                                actualize: "ฝากโดย member จากเว็บไซต์"
+                                                                actualize: "ฝากโดย member จากเว็บไซต์",
+                                                                nots: '',
+                                                                usernamedisposit: dataUsers.phonenumber,
+                                                                disposittpye: 'member'
                                                             });
                                                             //console.log(response.data.message)
                                                             if (response.data.message === "เติมเงินสำเร็จ") {
@@ -400,7 +415,10 @@ module.exports = class Post {
                                                             qrcodeData: resFinance.data.qrcodeData,
                                                             agent_id: dataUsers.agent_id,
                                                             typePromotion: dataUsers.idPromotion,
-                                                            imgBank: 'https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png'
+                                                            imgBank: 'https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png',
+                                                            nots: '',
+                                                            usernamedisposit: dataUsers.phonenumber,
+                                                            disposittpye: 'member'
                                                         });
                                                         if (response.data.message === "บันทึกสำเร็จ") {
                                                             resolve("ชื่อบัญชีที่ได้ลงทะเบียนไม่ถูกต้อง กรุณาตรวจสอบ สลิปโอนเงิน ")
@@ -436,7 +454,7 @@ module.exports = class Post {
             if (Bank === 'ธนาคารไทยพาณิชย์') {
                 const inputString = resFinance.data.sender.account.value;
                 const last4Digits = inputString.replace(/\D/g, '').slice(-4);
-    
+
                 const inputStringUser = resFinance.data.receiver.account.value;
                 const last4DigitsUser = inputStringUser.replace(/\D/g, '').slice(-4);
                 let sql_deposit = `SELECT * FROM depositaccount WHERE activestatus = "เปิดใช้งาน" AND RIGHT(accountNumber, 4) = '${last4DigitsUser}'`;
@@ -484,7 +502,10 @@ module.exports = class Post {
                                                                 agent_id: dataUsers.agent_id,
                                                                 typePromotion: dataUsers.idPromotion,
                                                                 imgBank: usernameAgent[0].images,
-                                                                actualize: "ฝากโดย member จากเว็บไซต์"
+                                                                actualize: "ฝากโดย member จากเว็บไซต์",
+                                                                nots: '',
+                                                                usernamedisposit: dataUsers.phonenumber,
+                                                                disposittpye: 'member'
                                                             });
                                                             //console.log(response.data.message)
                                                             if (response.data.message === "เติมเงินสำเร็จ") {
@@ -509,7 +530,10 @@ module.exports = class Post {
                                                             qrcodeData: resFinance.data.qrcodeData,
                                                             agent_id: dataUsers.agent_id,
                                                             typePromotion: dataUsers.idPromotion,
-                                                            imgBank: 'https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png'
+                                                            imgBank: 'https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png',
+                                                            nots: '',
+                                                            usernamedisposit: dataUsers.phonenumber,
+                                                            disposittpye: 'member'
                                                         });
                                                         if (response.data.message === "บันทึกสำเร็จ") {
                                                             resolve("ชื่อบัญชีที่ได้ลงทะเบียนไม่ถูกต้อง กรุณาตรวจสอบ สลิปโอนเงิน ")
@@ -545,7 +569,7 @@ module.exports = class Post {
             if (Bank === 'ธนาคารออมสิน') {
                 const inputString = resFinance.data.sender.account.value;
                 const last4Digits = inputString.replace(/\D/g, '').slice(-4);
-    
+
                 const inputStringUser = resFinance.data.receiver.account.value;
                 const last4DigitsUser = inputStringUser.replace(/\D/g, '').slice(-4);
                 let sql_deposit = `SELECT * FROM depositaccount WHERE activestatus = "เปิดใช้งาน" AND RIGHT(accountNumber, 4) = '${last4DigitsUser}'`;
@@ -593,7 +617,10 @@ module.exports = class Post {
                                                                 agent_id: dataUsers.agent_id,
                                                                 typePromotion: dataUsers.idPromotion,
                                                                 imgBank: usernameAgent[0].images,
-                                                                actualize: "ฝากโดย member จากเว็บไซต์"
+                                                                actualize: "ฝากโดย member จากเว็บไซต์",
+                                                                nots: '',
+                                                                usernamedisposit: dataUsers.phonenumber,
+                                                                disposittpye: 'member'
                                                             });
                                                             //console.log(response.data.message)
                                                             if (response.data.message === "เติมเงินสำเร็จ") {
@@ -618,7 +645,10 @@ module.exports = class Post {
                                                             qrcodeData: resFinance.data.qrcodeData,
                                                             agent_id: dataUsers.agent_id,
                                                             typePromotion: dataUsers.idPromotion,
-                                                            imgBank: 'https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png'
+                                                            imgBank: 'https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png',
+                                                            nots: '',
+                                                            usernamedisposit: dataUsers.phonenumber,
+                                                            disposittpye: 'member'
                                                         });
                                                         if (response.data.message === "บันทึกสำเร็จ") {
                                                             resolve("ชื่อบัญชีที่ได้ลงทะเบียนไม่ถูกต้อง กรุณาตรวจสอบ สลิปโอนเงิน ")
@@ -700,7 +730,10 @@ module.exports = class Post {
                                                                 agent_id: dataUsers.agent_id,
                                                                 typePromotion: dataUsers.idPromotion,
                                                                 imgBank: usernameAgent[0].images,
-                                                                actualize: "ฝากโดย member จากเว็บไซต์"
+                                                                actualize: "ฝากโดย member จากเว็บไซต์",
+                                                                nots: '',
+                                                                usernamedisposit: dataUsers.phonenumber,
+                                                                disposittpye: 'member'
                                                             });
                                                             //console.log(response.data.message)
                                                             if (response.data.message === "เติมเงินสำเร็จ") {
@@ -725,7 +758,10 @@ module.exports = class Post {
                                                             qrcodeData: resFinance.data.qrcodeData,
                                                             agent_id: dataUsers.agent_id,
                                                             typePromotion: dataUsers.idPromotion,
-                                                            imgBank: 'https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png'
+                                                            imgBank: 'https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png',
+                                                            nots: '',
+                                                            usernamedisposit: dataUsers.phonenumber,
+                                                            disposittpye: 'member'
                                                         });
                                                         if (response.data.message === "บันทึกสำเร็จ") {
                                                             resolve("ชื่อบัญชีที่ได้ลงทะเบียนไม่ถูกต้อง กรุณาตรวจสอบ สลิปโอนเงิน ")
@@ -758,7 +794,7 @@ module.exports = class Post {
                     }
                 })
             } if (Bank === 'ธนาคารกรุงศรีอยุธยา') {
-               
+
                 let sql_deposit = `SELECT * FROM depositaccount WHERE activestatus = "เปิดใช้งาน" AND accountNumber = '${resFinance.data.receiver.proxy.value}'`;
                 connection.query(sql_deposit, (error, depositData) => {
                     try {
@@ -776,7 +812,7 @@ module.exports = class Post {
                                         const dataLog = logDeposit_transRef;
                                         if (dataLog.length < 1) {
                                             const stringWithNumbers = resFinance.data.sender.account.value;
-                                            const numbersOnly = stringWithNumbers.match(/\d+/g).join(''); 
+                                            const numbersOnly = stringWithNumbers.match(/\d+/g).join('');
                                             let sql_NameAccount = `SELECT * FROM member WHERE bank = '${Bank}' AND phonenumber = '${dataUsers.phonenumber}' AND  SUBSTRING(accountNumber, 4, 6) = '${numbersOnly}'`;
                                             connection.query(sql_NameAccount, async (error, nameAccount) => {
                                                 if (error) {
@@ -802,7 +838,10 @@ module.exports = class Post {
                                                                 agent_id: dataUsers.agent_id,
                                                                 typePromotion: dataUsers.idPromotion,
                                                                 imgBank: usernameAgent[0].images,
-                                                                actualize: "ฝากโดย member จากเว็บไซต์"
+                                                                actualize: "ฝากโดย member จากเว็บไซต์",
+                                                                nots: '',
+                                                                usernamedisposit: dataUsers.phonenumber,
+                                                                disposittpye: 'member'
                                                             });
                                                             if (response.data.message === "เติมเงินสำเร็จ") {
                                                                 resolve("ฝากเงินสำเสร็จ")
@@ -826,7 +865,10 @@ module.exports = class Post {
                                                             qrcodeData: resFinance.data.qrcodeData,
                                                             agent_id: dataUsers.agent_id,
                                                             typePromotion: dataUsers.idPromotion,
-                                                            imgBank: 'https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png'
+                                                            imgBank: 'https://asset.cloudigame.co/build/admin/img/wt_theme/ezc/payment-logo-baac.png',
+                                                            nots: '',
+                                                            usernamedisposit: dataUsers.phonenumber,
+                                                            disposittpye: 'member'
                                                         });
                                                         if (response.data.message === "บันทึกสำเร็จ") {
                                                             resolve("ชื่อบัญชีที่ได้ลงทะเบียนไม่ถูกต้อง กรุณาตรวจสอบ สลิปโอนเงิน ")
