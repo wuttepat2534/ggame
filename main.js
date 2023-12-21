@@ -1240,11 +1240,11 @@ app.post('/depositToonta', async (req, res) => { //ทดลองอัพโ�
          console.error(error.data);
      });*/
     try {
-        const YOUR_FILE_LOCATION = 'https://drive.google.com/uc?id=1X04iPc01qnmQes-MQiVarWiFt9V3vbY1';
+        const YOUR_FILE_LOCATION = 'https://drive.google.com/uc?id=1s2An3k_84jnZKLJ4Prkr0UhF0rw_zKeR';
         const Url = `https://dogzilla.live/images/${req.body.filename}`
         const restest = await axios.post(
             'https://api.slipok.com/api/line/apikey/9496',
-            { url: Url },
+            { url: YOUR_FILE_LOCATION },
             {
                 headers: {
                     'x-authorization': 'SLIPOKCJ8CI5X',

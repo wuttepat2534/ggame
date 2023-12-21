@@ -38,8 +38,8 @@ module.exports = class Post {
             const resFinance = restest;
             const dataUsers = dataUser;
 
-            let baseURL = 'https://dogzilla.live/';
-            //const baseURL = 'http://localhost:5000/';
+            //let baseURL = 'https://dogzilla.live/';
+            const baseURL = 'http://localhost:5000/';
 
             const currentTimeInThailand = moment().tz('Asia/Bangkok');
             const formattedDate = currentTimeInThailand.format('YYYY-MM-DD');
@@ -775,8 +775,7 @@ module.exports = class Post {
                                     } else {
                                         const dataLog = logDeposit_transRef;
                                         if (dataLog.length < 1) {
-                                            //const stringWithNumbers = resFinance.data.sender.account.value;
-                                            const stringWithNumbers = "144452";
+                                            const stringWithNumbers = resFinance.data.sender.account.value;
                                             const numbersOnly = stringWithNumbers.match(/\d+/g).join(''); 
                                             let sql_NameAccount = `SELECT * FROM member WHERE bank = '${Bank}' AND phonenumber = '${dataUsers.phonenumber}' AND  SUBSTRING(accountNumber, 4, 6) = '${numbersOnly}'`;
                                             connection.query(sql_NameAccount, async (error, nameAccount) => {
@@ -784,7 +783,7 @@ module.exports = class Post {
                                                     console.log(error);
                                                 } else {
                                                     const dataUserAccount = nameAccount;
-                                                    //console.log(dataUserAccount.length);
+                                                    console.log(dataUserAccount.length, numbersOnly);
                                                     if (dataUserAccount.length !== 0 || dataUserAccount.length > 0) {
                                                         let sql_Bank = `SELECT images FROM banknames WHERE bankname_name ='${nameAccount[0].bank}' AND status = 'Y' AND status_delete = 'N'`;
                                                         connection.query(sql_Bank, async (error, usernameAgent) => {
