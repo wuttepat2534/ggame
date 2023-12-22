@@ -532,7 +532,7 @@ exports.GameWinRewards = async (req, res) => {
     const currency = req.body.currency;
     const usernameGame = req.body.username;
     const txnsGame = req.body.txns;
-    username = 'member001';
+    
     let spl = `SELECT credit FROM member WHERE phonenumber ='${usernameGame}' AND status_delete='N'`;
     try {
         connection.query(spl, (error, results) => {
@@ -541,7 +541,7 @@ exports.GameWinRewards = async (req, res) => {
                 const balanceUser = parseFloat(results[0].credit);
                 const betPlay = txnsGame[0].betAmount;
                 const betpayoutAmount = txnsGame[0].payoutAmount;
-                const balanceNow = balanceUser + betpayoutAmount - betPlay;
+                const balanceNow = balanceUser + betpayoutAmount;
                 const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${betPlay}' WHERE phonenumber ='${usernameGame}'`;
                 connection.query(sql_update, (error, resultsGame) => {
                     if (error) { console.log(error) }
