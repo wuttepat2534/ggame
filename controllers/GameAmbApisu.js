@@ -209,7 +209,7 @@ exports.GamePlaceBets = async (req, res) => {
                 let balanceNow = balanceUser - betPlay;
                 //console.log(balanceUser, betPlay, 'GamePlaceBets');
                 if (balanceUser >= 0 && balanceUser > betPlay) {
-                    if (roundId === results[0].roundId){
+                    if (idbetPlay === results[0].idplaygame){
                         res.status(201).json({
                             id: id,
                             statusCode: 20002,
@@ -217,8 +217,8 @@ exports.GamePlaceBets = async (req, res) => {
                             productId: productId,
                         });
                     } else {
-                        const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${betPlay}', idplaygame  = '${idbetPlay}', 
-                        roundId = '${roundId}' WHERE phonenumber ='${usernameGame}'`;
+                        const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${betPlay}', idplaygame  = '${idbetPlay}'
+                        WHERE phonenumber ='${usernameGame}'`;
                         connection.query(sql_update, (error, resultsGame) => {
                             if (error) { console.log(error) }
                             else {
