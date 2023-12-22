@@ -211,6 +211,16 @@ exports.GamePlaceBets = async (req, res) => {
     }
 };
 
+function convertToTwoDecimalPlaces(number) {
+    if (!isNaN(number) && Number(number) % 1 !== 0) {
+        const strNumber = number.toString();
+        const decimalPlaces = strNumber.split('.')[1].length;
+        if (decimalPlaces > 2) {
+            return Math.round(number); // แปลงเป็นจำนวนเต็ม
+        }
+    }
+    return number; // คืนค่าเดิมถ้าไม่เข้าเงื่อนไข
+}
 http://localhost:5000/post/game/settleBets 
 exports.GameSettleBets = async (req, res) => {
     const id = req.body.id;
@@ -251,8 +261,8 @@ exports.GameSettleBets = async (req, res) => {
                                         timestampMillis: timestampMillis,
                                         productId: productId,
                                         currency: currency,
-                                        balanceBefore: balanceUser,
-                                        balanceAfter: balanceUser,
+                                        balanceBefore: convertToTwoDecimalPlaces(balanceUser),
+                                        balanceAfter: convertToTwoDecimalPlaces(balanceUser),
                                         username: usernameGame
                                     });
                                 } else {
@@ -278,8 +288,8 @@ exports.GameSettleBets = async (req, res) => {
                                                 timestampMillis: timestampMillis,
                                                 productId: productId,
                                                 currency: currency,
-                                                balanceBefore: balanceUser,
-                                                balanceAfter: balanceNow,
+                                                balanceBefore: convertToTwoDecimalPlaces(balanceUser),
+                                                balanceAfter: convertToTwoDecimalPlaces(balanceNow),
                                                 username: usernameGame
                                             });
                                         }
@@ -294,8 +304,8 @@ exports.GameSettleBets = async (req, res) => {
                                     timestampMillis: timestampMillis,
                                     productId: productId,
                                     currency: currency,
-                                    balanceBefore: balanceUser,
-                                    balanceAfter: balanceUser,
+                                    balanceBefore: convertToTwoDecimalPlaces(balanceUser),
+                                    balanceAfter: convertToTwoDecimalPlaces(balanceUser),
                                     username: usernameGame
                                 });
                             }
@@ -309,8 +319,8 @@ exports.GameSettleBets = async (req, res) => {
                         timestampMillis: timestampMillis,
                         productId: productId,
                         currency: currency,
-                        balanceBefore: balanceUser,
-                        balanceAfter: balanceUser,
+                        balanceBefore: convertToTwoDecimalPlaces(balanceUser),
+                        balanceAfter: convertToTwoDecimalPlaces(balanceUser),
                         username: usernameGame
                     });
                 }
