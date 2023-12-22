@@ -285,7 +285,7 @@ exports.GameSettleBets = async (req, res) => {
                         if (error) { console.log(error) }
                         else {
                             const namegame = results[0].playgameuser;
-                            const balanceUser = parseFloat(resultsstart[0].credit);
+                            const balanceUser = parseFloat(results[0].credit);
                             const betAmount = txnsGame[0].payoutAmount;
                             const betPlay = txnsGame[0].betAmount;
                             const idbetPlay = txnsGame[0].id;
