@@ -218,7 +218,7 @@ exports.GamePlaceBets = async (req, res) => {
                                 productId: productId,
                                 currency: currency,
                                 balanceBefore: balanceUser,
-                                balanceAfter: balanceUser,
+                                balanceAfter: balanceNow,
                                 username: usernameGame
                             });
                         }
