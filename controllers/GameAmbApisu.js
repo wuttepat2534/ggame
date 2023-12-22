@@ -207,7 +207,7 @@ exports.GamePlaceBets = async (req, res) => {
                 let balanceNow = balanceUser - betPlay;
                 //console.log(balanceUser, betPlay, 'GamePlaceBets');
                 if (balanceUser >= 0 && balanceUser > betPlay) {
-                    const sql_update = `UPDATE member set credit='${balanceUser}',bet_latest='${betPlay}' WHERE phonenumber ='${usernameGame}'`;
+                    const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${betPlay}' WHERE phonenumber ='${usernameGame}'`;
                     connection.query(sql_update, (error, resultsGame) => {
                         if (error) { console.log(error) }
                         else {
