@@ -483,7 +483,7 @@ module.exports = class Post {
                                                     //reject(error);
                                                 } else {
                                                     const dataUserAccount = nameAccount;
-                                                    //console.log(last4Digits, dataUsers.phonenumber)
+                                                    //console.log(dataUserAccount)
                                                     if (dataUserAccount.length !== 0 || dataUserAccount.length > 0) {
                                                         let sql_Bank = `SELECT images FROM banknames WHERE bankname_name ='${nameAccount[0].bank}' AND status = 'Y' AND status_delete = 'N'`;
                                                         connection.query(sql_Bank, async (error, usernameAgent) => {
