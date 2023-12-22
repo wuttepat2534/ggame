@@ -532,7 +532,7 @@ exports.GameWinRewards = async (req, res) => {
     const currency = req.body.currency;
     const usernameGame = req.body.username;
     const txnsGame = req.body.txns;
-    const idbetPlay = txnsGame[0].id;
+    const roundId = txnsGame[0].roundId;
     let spl = `SELECT credit, roundId FROM member 
         WHERE phonenumber ='${usernameGame}' AND status_delete='N' AND status = 'Y'`;
     try {
@@ -544,7 +544,7 @@ exports.GameWinRewards = async (req, res) => {
                 const betpayoutAmount = txnsGame[0].payoutAmount;
                 const balanceNow = balanceUser + betpayoutAmount;
 
-                if (idbetPlay === results[0].roundId) {
+                if (roundId === results[0].roundId) {
                     res.status(201).json({
                         id: id,
                         statusCode: 20002,
