@@ -303,10 +303,10 @@ exports.GameSettleBets = async (req, res) => {
                                     statusCode: 10002,
                                     timestampMillis: timestampMillis,
                                     productId: productId,
-                                    currency: currency,
-                                    balanceBefore: convertToTwoDecimalPlaces(balanceUser),
-                                    balanceAfter: convertToTwoDecimalPlaces(balanceUser),
-                                    username: usernameGame
+                                    // currency: currency,
+                                    // balanceBefore: convertToTwoDecimalPlaces(balanceUser),
+                                    // balanceAfter: convertToTwoDecimalPlaces(balanceUser),
+                                    // username: usernameGame
                                 });
                             }
                         }
