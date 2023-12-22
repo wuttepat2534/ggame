@@ -116,39 +116,74 @@ exports.GameCheckBalance = async (req, res) => {
     const currency = req.body.currency;
     const usernameGame = req.body.username;
     const sessionToken = req.body.sessionToken;
-
-    let spl = `SELECT credit FROM member WHERE phonenumber ='${usernameGame}' AND status_delete ='N' AND tokenplaygame ='${sessionToken}'`;
-    try {
-        connection.query(spl, (error, results) => {
-            if (error) { console.log(error) }
-            else {
-                if (results.length >= 1) {
-                    const balanceUser = parseFloat(results[0].credit);
-                    res.status(201).json({
-                        id: id,
-                        statusCode: 0,
-                        timestampMillis: timestampMillis,
-                        productId: productId,
-                        currency: currency,
-                        balance: balanceUser,
-                        username: usernameGame
-                    });
-                } else {
-                    res.status(201).json({
-                        id: id,
-                        statusCode: 30001,
-                        timestampMillis: timestampMillis,
-                        productId: productId,
-                        currency: currency,
-                        balance: 0,
-                        username: usernameGame
-                    });
+    if (sessionToken != '') {
+        let spl = `SELECT credit FROM member WHERE phonenumber ='${usernameGame}' AND status_delete ='N' AND tokenplaygame ='${sessionToken}'`;
+        try {
+            connection.query(spl, (error, results) => {
+                if (error) { console.log(error) }
+                else {
+                    if (results.length >= 1) {
+                        const balanceUser = parseFloat(results[0].credit);
+                        res.status(201).json({
+                            id: id,
+                            statusCode: 0,
+                            timestampMillis: timestampMillis,
+                            productId: productId,
+                            currency: currency,
+                            balance: balanceUser,
+                            username: usernameGame
+                        });
+                    } else {
+                        res.status(201).json({
+                            id: id,
+                            statusCode: 30001,
+                            timestampMillis: timestampMillis,
+                            productId: productId,
+                            currency: currency,
+                            balance: 0,
+                            username: usernameGame
+                        });
+                    }
                 }
-            }
-        })
-    } catch (err) {
-        err.statusCode = 500;
-        res.json({ status: "Not Data Request Body." });
+            })
+        } catch (err) {
+            err.statusCode = 500;
+            res.json({ status: "Not Data Request Body." });
+        }
+    } else {
+        let spl = `SELECT credit FROM member WHERE phonenumber ='${usernameGame}' AND status_delete ='N'`;
+        try {
+            connection.query(spl, (error, results) => {
+                if (error) { console.log(error) }
+                else {
+                    if (results.length >= 1) {
+                        const balanceUser = parseFloat(results[0].credit);
+                        res.status(201).json({
+                            id: id,
+                            statusCode: 0,
+                            timestampMillis: timestampMillis,
+                            productId: productId,
+                            currency: currency,
+                            balance: balanceUser,
+                            username: usernameGame
+                        });
+                    } else {
+                        res.status(201).json({
+                            id: id,
+                            statusCode: 30001,
+                            timestampMillis: timestampMillis,
+                            productId: productId,
+                            currency: currency,
+                            balance: 0,
+                            username: usernameGame
+                        });
+                    }
+                }
+            })
+        } catch (err) {
+            err.statusCode = 500;
+            res.json({ status: "Not Data Request Body." });
+        }
     }
 };
 
