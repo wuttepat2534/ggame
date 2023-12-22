@@ -204,10 +204,12 @@ exports.GamePlaceBets = async (req, res) => {
                 let status = 0;
                 const balanceUser = parseFloat(results[0].credit);
                 const betPlay = txnsGame[0].betAmount;
+                const idbetPlay = txnsGame[0].id;
                 let balanceNow = balanceUser - betPlay;
                 //console.log(balanceUser, betPlay, 'GamePlaceBets');
                 if (balanceUser >= 0 && balanceUser > betPlay) {
-                    const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${betPlay}' WHERE phonenumber ='${usernameGame}'`;
+                    const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${betPlay}', idplaygame  = '${idbetPlay}' 
+                    WHERE phonenumber ='${usernameGame}'`;
                     connection.query(sql_update, (error, resultsGame) => {
                         if (error) { console.log(error) }
                         else {
@@ -276,16 +278,17 @@ exports.GameSettleBets = async (req, res) => {
             if (error) { console.log(error) }
             else {
                 if (resultsstart.length <= 0) {
-                    let spl = `SELECT credit, turnover, gameplayturn, playgameuser, tokenplaygame, bet_latest FROM member 
+                    let spl = `SELECT credit, turnover, gameplayturn, playgameuser, tokenplaygame, bet_latest, idplaygame FROM member 
                     WHERE phonenumber ='${usernameGame}' AND status_delete='N' AND status = 'Y'`;
 
                     connection.query(spl, (error, results) => {
                         if (error) { console.log(error) }
                         else {
                             const namegame = results[0].playgameuser;
-                            const balanceUser = parseFloat(results[0].credit);
+                            const balanceUser = parseFloat(resultsstart[0].credit);
                             const betAmount = txnsGame[0].payoutAmount;
                             const betPlay = txnsGame[0].betAmount;
+                            const idbetPlay = txnsGame[0].id;
                             let status = 0;
                             //console.log(balanceUser, betAmount, betPlay, 'GameSettleBets');
                             if (balanceUser >= 0 && balanceUser >= betPlay) {
@@ -302,33 +305,61 @@ exports.GameSettleBets = async (req, res) => {
                                     });
                                 } else {
                                     console.log(balanceUser, betPlay, betAmount)
-                                    let balanceNow = (balanceUser - betPlay) + betAmount;
-                                    let balanceturnover = hasSimilarData(results[0].gameplayturn, productId, results[0].turnover, betPlay)
-                                    //console.log("BetUp...." + betPlay, betAmount, balanceUser, balanceNow);
-                                    const post = {
-                                        username: usernameGame, gameid: productId, bet: betPlay, win: betAmount, balance_credit: balanceNow,
-                                        userAgent: userAgent, platform: userAgentt, namegame: namegame, trans_id: txnsGame[0].tokenplaygame
-                                    }
-                                    let repost = repostGame.uploadLogRepostGame(post)
-                                    //console.log(balanceUser, balanceNow)
-                                    const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${betPlay}', turnover='${balanceturnover}',
-                                    roundId = '${roundId}' WHERE phonenumber ='${usernameGame}'`;
-
-                                    connection.query(sql_update, (error, resultsGame) => {
-                                        if (error) { console.log(error) }
-                                        else {
-                                            res.status(201).json({
-                                                id: id,
-                                                statusCode: 0,
-                                                timestampMillis: timestampMillis,
-                                                productId: productId,
-                                                currency: currency,
-                                                balanceBefore: convertToTwoDecimalPlaces(balanceUser),
-                                                balanceAfter: convertToTwoDecimalPlaces(balanceNow),
-                                                username: usernameGame
-                                            });
+                                    if (results[0].idplaygame === idbetPlay){
+                                        let balanceNow = balanceUser + betAmount;
+                                        let balanceturnover = hasSimilarData(results[0].gameplayturn, productId, results[0].turnover, betPlay)
+                                        const post = {
+                                            username: usernameGame, gameid: productId, bet: betPlay, win: betAmount, balance_credit: balanceNow,
+                                            userAgent: userAgent, platform: userAgentt, namegame: namegame, trans_id: txnsGame[0].tokenplaygame
                                         }
-                                    });
+                                        let repost = repostGame.uploadLogRepostGame(post)
+                                        const sql_update = `UPDATE member set credit='${balanceNow}', turnover='${balanceturnover}',
+                                        roundId = '${roundId}' WHERE phonenumber ='${usernameGame}'`;
+    
+                                        connection.query(sql_update, (error, resultsGame) => {
+                                            if (error) { console.log(error) }
+                                            else {
+                                                res.status(201).json({
+                                                    id: id,
+                                                    statusCode: 0,
+                                                    timestampMillis: timestampMillis,
+                                                    productId: productId,
+                                                    currency: currency,
+                                                    balanceBefore: convertToTwoDecimalPlaces(balanceUser),
+                                                    balanceAfter: convertToTwoDecimalPlaces(balanceNow),
+                                                    username: usernameGame
+                                                });
+                                            }
+                                        });
+                                    } else {
+                                        let balanceNow = (balanceUser - betPlay) + betAmount;
+                                        let balanceturnover = hasSimilarData(results[0].gameplayturn, productId, results[0].turnover, betPlay)
+                                        //console.log("BetUp...." + betPlay, betAmount, balanceUser, balanceNow);
+                                        const post = {
+                                            username: usernameGame, gameid: productId, bet: betPlay, win: betAmount, balance_credit: balanceNow,
+                                            userAgent: userAgent, platform: userAgentt, namegame: namegame, trans_id: txnsGame[0].tokenplaygame
+                                        }
+                                        let repost = repostGame.uploadLogRepostGame(post)
+                                        //console.log(balanceUser, balanceNow)
+                                        const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${betPlay}', turnover='${balanceturnover}',
+                                        roundId = '${roundId}' WHERE phonenumber ='${usernameGame}'`;
+    
+                                        connection.query(sql_update, (error, resultsGame) => {
+                                            if (error) { console.log(error) }
+                                            else {
+                                                res.status(201).json({
+                                                    id: id,
+                                                    statusCode: 0,
+                                                    timestampMillis: timestampMillis,
+                                                    productId: productId,
+                                                    currency: currency,
+                                                    balanceBefore: convertToTwoDecimalPlaces(balanceUser),
+                                                    balanceAfter: convertToTwoDecimalPlaces(balanceNow),
+                                                    username: usernameGame
+                                                });
+                                            }
+                                        });
+                                    }
                                 }
                             }
                             else {
