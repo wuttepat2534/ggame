@@ -533,7 +533,7 @@ exports.GameWinRewards = async (req, res) => {
     const usernameGame = req.body.username;
     const txnsGame = req.body.txns;
     const idbetPlay = txnsGame[0].id;
-    let spl = `SELECT credit, idplaygame FROM member 
+    let spl = `SELECT credit, roundId FROM member 
         WHERE phonenumber ='${usernameGame}' AND status_delete='N' AND status = 'Y'`;
     try {
         connection.query(spl, (error, results) => {
@@ -544,7 +544,7 @@ exports.GameWinRewards = async (req, res) => {
                 const betpayoutAmount = txnsGame[0].payoutAmount;
                 const balanceNow = balanceUser + betpayoutAmount;
 
-                if (idbetPlay === results[0].idplaygame) {
+                if (idbetPlay === results[0].roundId) {
                     res.status(201).json({
                         id: id,
                         statusCode: 20002,
@@ -557,6 +557,7 @@ exports.GameWinRewards = async (req, res) => {
                         if (error) { console.log(error) }
                         else {
                             res.status(201).json({
+                                username: usernameGame,
                                 id: id,
                                 statusCode: 0,
                                 timestampMillis: timestampMillis,
@@ -564,7 +565,6 @@ exports.GameWinRewards = async (req, res) => {
                                 currency: currency,
                                 balanceBefore: balanceUser,
                                 balanceAfter: balanceNow,
-                                username: usernameGame
                             });
                         }
                     });
