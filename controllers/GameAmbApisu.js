@@ -304,7 +304,7 @@ exports.GameSettleBets = async (req, res) => {
                                         username: usernameGame
                                     });
                                 } else {
-                                    if (results[0].idplaygame === idbetPlay){
+                                    if (results[0].idplaygame === idbetPlay) {
                                         console.log(balanceUser, betPlay, betAmount, results[0].idplaygame, idbetPlay, 'NO')
                                         let balanceNow = balanceUser + betAmount;
                                         let balanceturnover = hasSimilarData(results[0].gameplayturn, productId, results[0].turnover, betPlay)
@@ -315,7 +315,7 @@ exports.GameSettleBets = async (req, res) => {
                                         let repost = repostGame.uploadLogRepostGame(post)
                                         const sql_update = `UPDATE member set credit='${balanceNow}', turnover='${balanceturnover}',
                                         roundId = '${roundId}' WHERE phonenumber ='${usernameGame}'`;
-    
+
                                         connection.query(sql_update, (error, resultsGame) => {
                                             if (error) { console.log(error) }
                                             else {
@@ -344,7 +344,7 @@ exports.GameSettleBets = async (req, res) => {
                                         //console.log(balanceUser, balanceNow)
                                         const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${betPlay}', turnover='${balanceturnover}',
                                         roundId = '${roundId}' WHERE phonenumber ='${usernameGame}'`;
-    
+
                                         connection.query(sql_update, (error, resultsGame) => {
                                             if (error) { console.log(error) }
                                             else {
@@ -532,8 +532,9 @@ exports.GameWinRewards = async (req, res) => {
     const currency = req.body.currency;
     const usernameGame = req.body.username;
     const txnsGame = req.body.txns;
-    
-    let spl = `SELECT credit FROM member WHERE phonenumber ='${usernameGame}' AND status_delete='N'`;
+    const idbetPlay = txnsGame[0].id;
+    let spl = `SELECT credit, idplaygame FROM member 
+        WHERE phonenumber ='${usernameGame}' AND status_delete='N' AND status = 'Y'`;
     try {
         connection.query(spl, (error, results) => {
             if (error) { console.log(error) }
@@ -542,23 +543,32 @@ exports.GameWinRewards = async (req, res) => {
                 const betPlay = txnsGame[0].betAmount;
                 const betpayoutAmount = txnsGame[0].payoutAmount;
                 const balanceNow = balanceUser + betpayoutAmount;
-               
-                const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${betPlay}' WHERE phonenumber ='${usernameGame}'`;
-                connection.query(sql_update, (error, resultsGame) => {
-                    if (error) { console.log(error) }
-                    else {
-                        res.status(201).json({
-                            id: id,
-                            statusCode: 0,
-                            timestampMillis: timestampMillis,
-                            productId: productId,
-                            currency: currency,
-                            balanceBefore: balanceUser,
-                            balanceAfter: balanceNow,
-                            username: usernameGame
-                        });
-                    }
-                });
+
+                if (idbetPlay === results[0].idplaygame) {
+                    res.status(201).json({
+                        id: id,
+                        statusCode: 20002,
+                        timestampMillis: timestampMillis,
+                        productId: productId,
+                    });
+                } else {
+                    const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${betPlay}' WHERE phonenumber ='${usernameGame}'`;
+                    connection.query(sql_update, (error, resultsGame) => {
+                        if (error) { console.log(error) }
+                        else {
+                            res.status(201).json({
+                                id: id,
+                                statusCode: 0,
+                                timestampMillis: timestampMillis,
+                                productId: productId,
+                                currency: currency,
+                                balanceBefore: balanceUser,
+                                balanceAfter: balanceNow,
+                                username: usernameGame
+                            });
+                        }
+                    });
+                }
             }
         })
     } catch (err) {
