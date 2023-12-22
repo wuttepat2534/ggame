@@ -304,8 +304,8 @@ exports.GameSettleBets = async (req, res) => {
                                         username: usernameGame
                                     });
                                 } else {
-                                    console.log(balanceUser, betPlay, betAmount, results[0].idplaygame, idbetPlay)
                                     if (results[0].idplaygame === idbetPlay){
+                                        console.log(balanceUser, betPlay, betAmount, results[0].idplaygame, idbetPlay, 'NO')
                                         let balanceNow = balanceUser + betAmount;
                                         let balanceturnover = hasSimilarData(results[0].gameplayturn, productId, results[0].turnover, betPlay)
                                         const post = {
@@ -332,7 +332,7 @@ exports.GameSettleBets = async (req, res) => {
                                             }
                                         });
                                     } else {
-                                        console.log(balanceUser, betPlay, betAmount, results[0].idplaygame, idbetPlay)
+                                        console.log(balanceUser, betPlay, betAmount, results[0].idplaygame, idbetPlay, 'Yes')
                                         let balanceNow = (balanceUser - betPlay) + betAmount;
                                         let balanceturnover = hasSimilarData(results[0].gameplayturn, productId, results[0].turnover, betPlay)
                                         //console.log("BetUp...." + betPlay, betAmount, balanceUser, balanceNow);
