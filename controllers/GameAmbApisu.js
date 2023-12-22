@@ -552,7 +552,8 @@ exports.GameWinRewards = async (req, res) => {
                         productId: productId,
                     });
                 } else {
-                    const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${betPlay}' WHERE phonenumber ='${usernameGame}'`;
+                    const sql_update = `UPDATE member set credit='${balanceNow}',bet_latest='${betPlay}',
+                    roundId = '${roundId}' WHERE phonenumber ='${usernameGame}'`;
                     connection.query(sql_update, (error, resultsGame) => {
                         if (error) { console.log(error) }
                         else {
