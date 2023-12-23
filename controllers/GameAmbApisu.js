@@ -230,9 +230,9 @@ exports.GamePlaceBets = async (req, res) => {
                                     timestampMillis: timestampMillis,
                                     productId: productId,
                                     currency: currency,
+                                    username: usernameGame,
                                     balanceBefore: balanceUser,
                                     balanceAfter: balanceNow,
-                                    username: usernameGame
                                 });
                             }
                         });
@@ -282,13 +282,15 @@ exports.GameSettleBets = async (req, res) => {
     const userAgentt = req.useragent;
     const roundId = txnsGame[0].roundId;
 
-    let splTest = `SELECT credit FROM member 
+    let splTest = `SELECT credit, roundId FROM member 
     WHERE phonenumber ='${usernameGame}' AND status_delete='N' AND roundId = '${roundId}' AND status = 'Y'`;
 
     try {
         connection.query(splTest, (error, resultsstart) => {
             if (error) { console.log(error) }
             else {
+                console.log(resultsstart[0].roundId, roundId)
+                
                 if (resultsstart.length <= 0) {
                     let spl = `SELECT credit, turnover, gameplayturn, playgameuser, tokenplaygame, bet_latest, idplaygame FROM member 
                     WHERE phonenumber ='${usernameGame}' AND status_delete='N' AND status = 'Y'`;
